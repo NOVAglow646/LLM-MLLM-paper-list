@@ -1,3 +1,15 @@
+## Preface
+
+本仓库记录关于LLM和Multimodal LLM的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
+
+有关OOD generalization的paper list请移步：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
+
+###  🔥 Updates
+
+- 2024-05 接下来主要关注探究ICL机制的相关工作
+
+## Directory
+
 * [LLMs/Large Multi-modal models](#llmslarge-multi-modal-models) 
 * [Prompt Learning](#prompt-learning)
 * ⭐[In-Context Learning](#in-context-learning)
