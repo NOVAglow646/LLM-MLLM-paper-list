@@ -62,8 +62,6 @@
 
 1. **VisionLLaMA: A Unified LLaMA Interface for Vision Tasks** (Arxiv Mar 2024) [[paper]](https://arxiv.org/pdf/2403.00522) Vision LLaMa
 
-   
-
 
 
 ## Vision-language understanding
@@ -77,6 +75,7 @@
 4. **Decomposing Complex Visual Comprehension into Atomic Visual Skills for Vision Language Models** [[paper]](https://openreview.net/pdf?id=nFU4xCyoe0) 原子视觉任务benchmark Atomic Visual Skills Benchmark (AVSBench) 
 5. **Task Navigator: Decomposing Complex Tasks for Multimodal Large Language Models** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024W/MAR/papers/Ma_Task_Navigator_Decomposing_Complex_Tasks_for_Multimodal_Large_Language_Models_CVPRW_2024_paper.pdf) 工程文章，借助LLM分解任务，提升MLLM完成复杂视觉理解任务的能力
 6. **DOES SPATIAL COGNITION EMERGE IN FRONTIER MODELS? **(Arxiv Oct 2024) [[paper]](http://arxiv.org/abs/2410.06468) 空间理解任务 SPACE benchmark
+7. **Multimodal Chain-of-Thought Reasoning in Language Models** (TMLR 2024) [[paper]](http://arxiv.org/abs/2302.00923) 两阶段训练，第一阶段接受文本和视觉的融合特征输出一个rationale（推理过程的文本描述），第二阶段将生成的rationale和原始文本结合，再与视觉特征融合重新输入模型产生预测。【insight 1】直接
 
 
 
@@ -86,6 +85,15 @@
 
 1. **Emu3: Next-Token Prediction is All You Need** (Arxiv September 2024) [[paper]](http://arxiv.org/abs/2409.18869) 将文本、图片、视频都转化为token，进行next-token prediction的预训练。能同时做图片视频的生成、视觉-语言理解。
 2. **Janus: Decoupling Visual Encoding for Unified Multimodal Understanding and Generation** (Arxiv Oct 2024) [[paper]](http://arxiv.org/abs/2410.13848) 用一个自回归transformer统一实现多模态的理解和生成任务
+
+
+
+## Test-time computation
+
+### 2024
+
+1. **Scaling LLM Test-time Compute Optimally can be More Effective than Scaling Model Parameters**  [[paper]](https://arxiv.org/pdf/2408.03314)
+2. 
 
 
 
