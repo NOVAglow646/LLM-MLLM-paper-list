@@ -1,11 +1,12 @@
 ## Preface
 
-本仓库记录关于LLM和Multimodal LLM的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
+本仓库记录关于LLM和Multimodal LLM的文章，特别是关于In-context Learning (ICL)的。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
 
 有关OOD generalization的paper list请移步：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
 
 ###  🔥 Updates
 
+- 2024-12 接下来主要关注VLM的hallucination、reasoning问题。同时也会follow ICL的最新进展。
 - 2024-05 接下来主要关注探究ICL机制的相关工作
 
 ## Directory
@@ -15,9 +16,10 @@
   * [ICL Theories](#icl-theories)
   * [Test-time compute](#test-time-compute)
   * [Alignment](#alignment)
-* [VLM](vlm)
+* [VLM](#vlm)
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * [Improving multimodal reasoning](#improving-multimodal-reasoning)
+  * [Hallucination of VLMs](#hallucination-of-vlms)
   * [Unifying understanding and generation](#unifying-understanding-and-generation)
   * [Multimodal ICL](#multimodal-icl)
   * [Prompt Learning](#prompt-learning)
@@ -285,7 +287,11 @@
 
  
 
-Hallucinations of VLMs
+## Hallucination of VLMs
+
+### 2024
+
+
 
 
 
