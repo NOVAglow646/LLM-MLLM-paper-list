@@ -232,7 +232,9 @@
 
 1. **The pitfalls of next-token prediction** (Arxiv April 2024) [[paper]](http://arxiv.org/abs/2403.06963) 指出了自回归模型的缺陷：错误滚雪球效应和在一个单一token路径上只能学出一个类似induction head的shortcut模型
 
-1. **A Law of Next-Token Prediction in Large Language Models** (Arxiv August 2024) [[paper]](https://arxiv.org/pdf/2408.13442v1)
+1. **A Law of Next-Token Prediction in Large Language Models** (Arxiv Aug 2024) [[paper]](https://arxiv.org/pdf/2408.13442v1)
+
+1. **SEMIEVOL: Semi-supervised Fine-tuning for LLM Adaptation** (Arxiv Oct 2024) [[paper]](https://arxiv.org/pdf/2410.14745) 提出了半监督fine-tuning框架SEMIEVOL。
 
    
 
@@ -290,6 +292,9 @@
 ## Hallucination of VLMs
 
 ### 2024
+
+1. **Mitigating Hallucination in Large Vision-Language Models via Modular Attribution and Intervention** (ICLR 2025 8866) [[paper]](https://openreview.net/forum?id=Bjq4W7P2Us) 发现幻觉的产生是由于某些特定的attention head，这些head是源自VLM的LM部分。他们会给文本分配更高的attention。提出了在推理时关闭这些幻觉head和在instruction tunning时专门调这些head两种改进方法。
+2. **Reducing Hallucinations in Large Vision-Language Models via Latent Space Steering** (ICLR 2025 886) [[paper]](https://openreview.net/forum?id=LBl7Hez0fF) 动机：发现使用扰动后再平均的vision feature能降低幻觉，认为幻觉来自vision encoder的不够鲁棒。提出使用in-context vector的做法，计算从正常feature到扰动平均后的feature的主成分，加到推理的时候。
 
 
 
@@ -358,3 +363,4 @@
 
 1. **VisionLLaMA: A Unified LLaMA Interface for Vision Tasks** (Arxiv Mar 2024) [[paper]](https://arxiv.org/pdf/2403.00522) Vision LLaMa
 1. **Are We on the Right Way for Evaluating Large Vision-Language Models?** (Arxiv April 2024) [[paper]](http://arxiv.org/abs/2403.20330) 现有的vision-language数据集质量不够好，很多问题都是只看语言部分就能解决，或者问题在类似的训练语料中见过，根本不需要图片；构建了一个高质量的vision-language数据集。
+1. **Visual Instruction Tuning** (NeurIPS 2023) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2023/file/6dcf277ea32ce3288914faf369fe6de0-Paper-Conference.pdf) LLaVA
