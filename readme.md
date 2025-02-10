@@ -14,8 +14,11 @@
 * [LLM](#llm) 
   * ⭐[In-Context Learning](#in-context-learning)
   * [ICL Theories](#icl-theories)
+  * [Reasoning](#reasoning)
   * [Test-time compute](#test-time-compute)
   * [Alignment](#alignment)
+  * [Interpretability](#interpretability)
+  * [Other](#other)
 * [VLM](#vlm)
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * [Improving multimodal reasoning](#improving-multimodal-reasoning)
@@ -43,7 +46,7 @@
 
 6. **RefuteBench: Evaluating Refuting Instruction-Following for Large Language Models** (Arxiv Feb 2024) [[paper]](http://arxiv.org/abs/2402.13463) 评估模型的改变它们的原始输出并遵循和一开始相违背的指令的能力。主要观察：1)大部分模型都会倾向于遵守它们的预训练知识 2)模型很难根据人类后续的反馈泛化到新的问题 3)所有模型都会逐步忘记人类反馈并落回到它们的内部知识里 4)模型是不是第一时间遵守了人类的反馈，对于后续的行为起到关键作用
 
-7. **Function Vectors in Large Language Models** (ICLR 2024) [[paper]](http://arxiv.org/abs/2310.15213) 发现context prompt的最后一个token的隐层表示encode了这个任务的信息，称为function vector（FV）。将其加到zero-shot的prompt上，发现有显著提升。
+7. **Function Vectors in Large Language Models** (ICLR 2024) [[paper]](http://arxiv.org/abs/2310.15213) 发现context prompt的最后一个token的隐层表示encode了这个任务的信息，称为function vector（FV）。将其加到zero-shot的prompt上，发现有显著提升。5
 
 8. **A Data Generation Perspective to the Mechanism of In-Context Learning** (Arxiv Feb 2024) [[paper]](http://arxiv.org/abs/2402.02212) 有关task recognition和task learning的综述
 
@@ -188,6 +191,14 @@
 
 
 
+## Reasoning
+
+### 2025
+
+1. **Benchmarking and Understanding Compositional Relational Reasoning of LLMs** (AAAI 2025) [[paper]](http://arxiv.org/abs/2412.12841) 提出了GAR benchmark来测试模型的Compositional Relational Reasoning能力。发现compositional gap随着模型增大而增大。同时发现了Vicunna-33b存在一些共享的circuit能在不同任务中都发挥作用。
+
+
+
 ## Test-time compute
 
 ### 2024
@@ -215,12 +226,14 @@
 
 
 
-## Hallucination
+## Interpretability
 
 ### 2024
 
 1. **LLMs Know More Than They Show: On the Intrinsic Representation of LLM Hallucinations** (ICLR 2025 Ratings:8666) [[paper]](https://openreview.net/forum?id=KRnsX5Em3W) 用一个线性probe来根据模型中间层表示判断模型输出的正确与否。然后让LLM对同一个问题生成多个答案，并用该分类器筛选出正确概率最高的答案，发现能相比原本的答案正确率更高。
 1. **Insights into LLM Long-Context Failures: When Transformers Know but Don't Tell** (EMNLP 2024 Findings) [[paper] ](http://arxiv.org/abs/2406.14673)用一个线性probe来根据模型中间层表示来直接预测问题的答案。发现probe acc比直接生成的acc好。
+1. **Does Representation Matter? Exploring Intermediate Layers in Large Language Models** (NeurIPS 2024 workshop) [[paper]](http://arxiv.org/abs/2412.09563) LLM的中间层下游性能比最后一层好。探究了Prompt Entropy、Curvature等representation quality的指标和下游acc的关系。
+1. 
 
 
 
@@ -281,7 +294,8 @@
 3. **TOPVIEWRS: Vision-Language Models as Top-View Spatial Reasoners** (Arxiv June 2024) [[paper]](http://arxiv.org/abs/2406.02537) 提了一个新的俯视图理解的数据集，发现VLM的俯视图理解能力仍然很差
 4. **Decomposing Complex Visual Comprehension into Atomic Visual Skills for Vision Language Models** [[paper]](https://openreview.net/pdf?id=nFU4xCyoe0) 原子视觉任务benchmark Atomic Visual Skills Benchmark (AVSBench) 
 5. **DOES SPATIAL COGNITION EMERGE IN FRONTIER MODELS? ** (Arxiv Oct 2024) [[paper]](http://arxiv.org/abs/2410.06468) 提出了空间理解任务 SPACE benchmark。发现目前最强的模型在简单的空间任务上性能很差
-6. **Towards Interpreting Visual Information Processing in Vision-Language Models** (ICLR 2025 886) 
+6. **Towards Interpreting Visual Information Processing in Vision-Language Models** (ICLR 2025 886) 检查物体信息是否编码在了特定的vision token里。发现object token去掉之后模型掉点最严重。高gradient token影响也挺大。
+7. **Zero-Shot Visual Reasoning by Vision-Language Models: Benchmarking and Analysis**
 
 
 
@@ -297,6 +311,8 @@
 6. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
 7. **Link-Context Learning for Multimodal LLMs** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024/html/Tai_Link-Context_Learning_for_Multimodal_LLMs_CVPR_2024_paper.html) 提出一种新的fine-tune MLLM的方法：让context和query具有一定的causal联系，发现能提升模型通过context学习新概念的能力
 8. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
+9. **Natural Language Inference Improves Compositionality in Vision-Language Models** (ICLR 2025 Ratings 8866) [[paper]](https://openreview.net/forum?id=G3aXjVAJjU) 生成
+10. **MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs** （ICLR 2025) [[paper]](https://openreview.net/forum?id=DgaY5mDdmT) 发现MLLM能够关注到正确的视觉区域，即使回答错误。提出了几个自动化的training-free的裁剪出目标区域的方法。将目标区域的visual token连接到原始图片token后面。
 
  
 
@@ -348,7 +364,8 @@
 4. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
 5. **Towards Global Optimal Visual In-Context Learning Prompt Selection** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2405.15279) 没细看，也是做ICL example排序的。base idea都是与测试样本越相似的example效果越好。训练一个用于排序的transformer进行局部排序，再根据局部排序训练一个全局排序信息的向量。
 6. **What Factors Affect Multi-Modal In-Context Learning? An In-Depth Exploration** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2410.20482) 从demo选择、demo顺序和context的构建三个角度探究了影响多模态ICL的因素
-7. **What Makes Multimodal In-Context Learning Work?** (CVPR 2024 Workshop on Prompting in Vision) [[paper]](https://arxiv.org/abs/2404.15736) 对Multimodal ICL的实验性分析，主要发现：文本和图像同时输入时，MLLM更依赖文本；目前的MICL基本上是在做从context co'p'y
+7. **What Makes Multimodal In-Context Learning Work?** (CVPR 2024 Workshop on Prompting in Vision) [[paper]](https://arxiv.org/abs/2404.15736) 对Multimodal ICL的实验性分析，主要发现：文本和图像同时输入时，MLLM更依赖文本；目前的MICL基本上是在做从context copy
+8. **Task vectors are cross-modal** (ICLR 2025 submission) 
 
 ### 2023
 
@@ -390,4 +407,4 @@
 
 1. **VisionLLaMA: A Unified LLaMA Interface for Vision Tasks** (Arxiv Mar 2024) [[paper]](https://arxiv.org/pdf/2403.00522) Vision LLaMa
 1. **Are We on the Right Way for Evaluating Large Vision-Language Models?** (Arxiv April 2024) [[paper]](http://arxiv.org/abs/2403.20330) 现有的vision-language数据集质量不够好，很多问题都是只看语言部分就能解决，或者问题在类似的训练语料中见过，根本不需要图片；构建了一个高质量的vision-language数据集。
-1. **Visual Instruction Tuning** (NeurIPS 2023) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2023/file/6dcf277ea32ce3288914faf369fe6de0-Paper-Conference.pdf) LLaVA
+   1. **Visual Instruction Tuning** (NeurIPS 2023) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2023/file/6dcf277ea32ce3288914faf369fe6de0-Paper-Conference.pdf) LLaVA
