@@ -6,6 +6,7 @@
 
 ###  🔥 Updates
 
+- 2025-03 接下来主要关注MLLM的reasoning和perception的问题，以及LLM的reasoning、test-time scaling
 - 2024-12 接下来主要关注VLM的hallucination、reasoning问题。同时也会follow ICL的最新进展。
 - 2024-05 接下来主要关注探究ICL机制的相关工作
 
@@ -14,8 +15,7 @@
 * [LLM](#llm) 
   * ⭐[In-Context Learning](#in-context-learning)
   * [ICL Theories](#icl-theories)
-  * [Reasoning](#reasoning)
-  * [Test-time compute](#test-time-compute)
+  * ⭐[Reasoning and Test-time compute](#reasoning-and-test-time-compute)
   * [Alignment](#alignment)
   * [Interpretability](#interpretability)
   * [Other](#other)
@@ -191,29 +191,33 @@
 
 
 
-## Reasoning
+## Reasoning and Test-time compute
 
 ### 2025
 
 1. **Benchmarking and Understanding Compositional Relational Reasoning of LLMs** (AAAI 2025) [[paper]](http://arxiv.org/abs/2412.12841) 提出了GAR benchmark来测试模型的Compositional Relational Reasoning能力。发现compositional gap随着模型增大而增大。同时发现了Vicunna-33b存在一些共享的circuit能在不同任务中都发挥作用。
 1. **Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.05171) 提出一种循环结构来提升reasoning能力：类似RNN，循环结构的每一个循环块都接受原始prompt和上一个状态作为输入；循环越多性能越好。
 1. **SoftCoT: Soft Chain-of-Thought for Efficient Reasoning with LLMs** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.12134) 用一个小网络最后一层的隐层表示接上一个projector得到所谓的soft thoughts，将之与问题文本一同输入，后续让做文本CoT。不用像COCONUT那样fine-tune整个LLM，避免了灾难性遗忘导致的掉点。但是提升也比较有限，有点像一个简单的prompt tuning + CoT。
+1. **Mutual Reasoning Makes Smaller LLMs Stronger Problem-Solvers** (ICLR 2025) [[paper]](https://openreview.net/forum?id=6aHUmotXaw) 提出了r-start，training-free MCTS，人工定义action  space，reward是self-consistency：找另一个SLM，如果它和policy SLM的某一推理步的输出一致，那么就认为这是一个好的step（被喷可能存在consistent but wrong的情况）。性能提升巨大。
+1. **rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.04519) self-evolution训练：每一轮让policy mode和一个本文提出的process preference model（PPM）做MCTS产生高质量推理路径，然后再用它们来训练policy model和PPM
+1. **【综述】Test-time Computing: from System-1 Thinking to System-2 Thinking** [[paper]](https://arxiv.org/pdf/2501.02497) test-time reasoning 综述
+1. **ReasonFlux: Hierarchical LLM Reasoning via Scaling Thought Templates** [[paper]](https://arxiv.org/pdf/2410.02884?) 
 
 ### 2024
 
 1. **DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models** (Arxiv April 2024) 提出GRPO （Group Relative Policy Optimization）
 
-2. **Training Large Language Model to Reason in a Continuous Latent Space** (COCONUT Arxiv Dec 2024, ICLR 2025 被拒，主要是因为相比于普通CoT会在GSM8K上掉点) [[paper]](https://openreview.net/forum?id=tG4SgayTtk) 将reasoning step的某些中间步从word embedding 替换为该token的last hidden state。 
+2. **Scaling LLM Test-time Compute Optimally can be More Effective than Scaling Model Parameters**  [[paper]](https://arxiv.org/pdf/2408.03314) 研究了两种scaling test-time compute的策略：1）基于verifier（process reward model）的；2）基于模型的self-revision的。发现了根据具体任务（不同难度）来选择最优scaling策略能在达到相同性能时相比best-of-N降低四倍计算量
 
-   
+3. **Training Large Language Model to Reason in a Continuous Latent Space** (COCONUT Arxiv Dec 2024, ICLR 2025 被拒，主要是因为相比于普通CoT会在GSM8K上掉点) [[paper]](https://openreview.net/forum?id=tG4SgayTtk) 将reasoning step的某些中间步从word embedding 替换为该token的last hidden state。 
 
+4. **Beyond Examples: High-level Automated Reasoning Paradigm in In-Context Learning via MCTS** (Arxiv 2024.11) [[paper]](http://arxiv.org/abs/2411.18478) 用了rStar的self-consistent reward和人工定义的action space，但是加入了thought card的技术。性能和rstar差不多，但是计算代价小了很多，因为测试时不用MCTS了，只需要从seed dataset中找出card即可。
 
-
-## Test-time compute
+## 
 
 ### 2024
 
-1. **Scaling LLM Test-time Compute Optimally can be More Effective than Scaling Model Parameters**  [[paper]](https://arxiv.org/pdf/2408.03314) 研究了两种scaling test-time compute的策略：1）基于verifier（process reward model）的；2）基于模型的self-revision的。发现了根据具体任务（不同难度）来选择最优scaling策略能在达到相同性能时相比best-of-N降低四倍计算量
+1. 
 
 
 
@@ -321,7 +325,7 @@
 1. **Boosting Multimodal Reasoning with MCTS-Automated Structured Thinking** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.02339) training-free。定义一个动作空间（Visual Parsing、CoT、divide-and-conquer等）在一个500样本的小数据集上产生reasoning path，为每个问题进行MCTS：每一步从动作空间选择一个动作。为每个问题得到最优推理路径后，为每个路径计算Problem Condition Complexity (PCC)，每个问题-路径-PCC称为一个card。测试时，计算测试问题的PCC，并找出与之PCC最接近的card，让其按照这个card的每一步的action选择进行推理。这样避免了测试时进行复杂的搜索。
 1. **Virgo: A Preliminary Exploration on Reproducing o1-like MLLM** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.01904) 用少量（5k）纯文本的long thought数据训练MLLM就能带来显著提升
 1. **URSA: Understanding and Verifying Chain-of-thought Reasoning in Multimodal Mathematics** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.04686) 借助Gemini合成CoT做fine-tune。提了两种方法对SFT得到的模型进一步训练得到一个verifier，没太看懂文中提到的MCTS用在哪了以及所提的MIE为什么能增强visual perception能力。
-1. 
+1. **Introducing Visual Perception Token into Multimodal Large Language Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.17425) 提了两种方法。方法一：fine-tune MLLM使其学会什么时候该输出一个“visual perception token”，其中包含图像关键区域的坐标信息，然后把这部分图片裁下来重新输进去；方法二：ine-tune MLLM使其学会什么时候该输出“re-encode token”，re-encode token是一个hidden rep，不需要要求其有可解码的意义。然后将训练MLLM根据re-encode token预测答案，同时利用re-encode token来筛选DINO的特征作为辅助信息输入MLLM。
 
 ### 2024
 
@@ -342,6 +346,7 @@
 15. **MR-MLLM: Mutual Reinforcement of Multimodal Comprehension and Vision Perception** (Arxiv 2024.06) [[paper]](http://arxiv.org/abs/2406.15768)
 16. **Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
 17. **Cantor: Inspiring Multimodal Chain-of-Thought of MLLM** (MM 2024) [[paper]](http://arxiv.org/abs/2404.16033) 纯prompt engineering文章。为了增强perception，提示MLLM根据问题找出具体该看什么图片细节，然后问一个MLLM让它专门去看，最后再综合它的输出来做最终回答
+18. **Self-Correction is More than Refinement: A Learning Framework for Visual and Language Reasoning Tasks** (Arxiv 2024.10) [[paper] ](https://arxiv.org/pdf/2410.04055) 给MLLM提供Self-correction Prompt，然后选出改对的和改错的样本分别作为正负样本进行DPO。
 
  ### 2023
 
@@ -370,6 +375,8 @@
 11. **Self-Introspective Decoding: Alleviating Hallucinations for Large Vision-Language Models** (ICLR 2025 Ratings: 8665) [[paper]](http://arxiv.org/abs/2408.02032) 首先指出了过往的contrastive decoding方法的问题：有可能所减去的幻觉输出“不够幻觉”，导致正常输出减去它之后反而不准确了。本文认为低attention score的vision token更容易导致幻觉，因此为了更好地引发幻觉输出再减去它，提出在推理时仅保留低attention score的token。 
 12. **Intervening Anchor Token: Decoding Strategy in Alleviating Hallucinations for MLLMs** (ICLR 2025 Ratings: 8866) [[paper]](https://openreview.net/forum?id=zGb4WgCW5i) 先定义了一种分析工具：token propagation probability $\rho$ ，来描述一个token在前传时的贡献。发现幻觉和 $\rho$ 的低熵有关（attention都集中在summary token上了，从而丢失了视觉token的信息）。理论证明了将QK矩阵的二范数控制在一个合理范围内可以增大 $\rho$ 的熵，提了一个启发式策略来实现这一目标。
 13. **Visual Description Grounding Reduces Hallucinations and Boosts Reasoning in LVLMs** (ICLR 2025 Ratings: 8666) [[paper]](https://openreview.net/forum?id=3PRvlT8b1R) 现有的解决幻觉的方法难以提升在视觉推理benchmark上的能力。VLM能识别视觉元素，但难以利用它们进行推理。
+14. **Look Twice Before You Answer: Memory-Space Visual Retracing for Hallucination Mitigation in Multimodal Large Language Models** (ICLR 2025 rejected) [[openreview]](https://openreview.net/forum?id=tkg9XMFo0H) 找output prediction entropy最大的层，然后将visual token作为额外信息，加入到FFN之后
+15. **Self-Correcting Decoding with Generative Feedback for Mitigating Hallucinations in Large Vision-Language Models** (ICLR 2025) [[openreview]](https://openreview.net/forum?id=tTBXePRKSx) idea：生成模型引导VLM以减少幻觉。用LVLMs产生的初始响应生成图像，该图像充当辅助视觉参考，并提供自我反馈。
 
 
 
