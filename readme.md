@@ -1,6 +1,6 @@
 ## Preface
 
-本仓库记录关于LLM (large language models)和VLM (vision-language models)的文章，特别是关于In-context Learning (ICL)的。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
+本仓库记录关于LLM (large language models)和VLM (vision-language models)的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
 
 有关OOD generalization的paper list请移步：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
 
@@ -202,6 +202,7 @@
 1. **rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.04519) self-evolution训练：每一轮让policy mode和一个本文提出的process preference model（PPM）做MCTS产生高质量推理路径，然后再用它们来训练policy model和PPM
 1. **【综述】Test-time Computing: from System-1 Thinking to System-2 Thinking** [[paper]](https://arxiv.org/pdf/2501.02497) test-time reasoning 综述
 1. **ReasonFlux: Hierarchical LLM Reasoning via Scaling Thought Templates** [[paper]](https://arxiv.org/pdf/2410.02884?) 
+1. **DOTS: Learning to Reason Dynamically in LLMs via Optimal Reasoning Trajectories Search** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.03864) **核心点：**训练模型自动选择最优的推理方案。与rstar有些类似，都是将任务先从更高层次的动作空间进行规划。**方法：**将解决问题的过程分成analysis、solution、verification三个阶段，每个阶段有不同的选择，也可以选择什么都不做。给定问题-答案对，为每个问题按照success rate搜索出最优的推理方案（algo1）。选出最优方案后用gpt4o结合问题给一个对这个推理方案的解释，然后进行SFT，训练LLM预测推理方案、解释和最终答案。
 
 ### 2024
 
@@ -213,7 +214,7 @@
 
 4. **Beyond Examples: High-level Automated Reasoning Paradigm in In-Context Learning via MCTS** (Arxiv 2024.11) [[paper]](http://arxiv.org/abs/2411.18478) 用了rStar的self-consistent reward和人工定义的action space，但是加入了thought card的技术。性能和rstar差不多，但是计算代价小了很多，因为测试时不用MCTS了，只需要从seed dataset中找出card即可。
 
-## 
+
 
 ### 2024
 
@@ -326,6 +327,7 @@
 1. **Virgo: A Preliminary Exploration on Reproducing o1-like MLLM** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.01904) 用少量（5k）纯文本的long thought数据训练MLLM就能带来显著提升
 1. **URSA: Understanding and Verifying Chain-of-thought Reasoning in Multimodal Mathematics** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.04686) 借助Gemini合成CoT做fine-tune。提了两种方法对SFT得到的模型进一步训练得到一个verifier，没太看懂文中提到的MCTS用在哪了以及所提的MIE为什么能增强visual perception能力。
 1. **Introducing Visual Perception Token into Multimodal Large Language Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.17425) 提了两种方法。方法一：fine-tune MLLM使其学会什么时候该输出一个“visual perception token”，其中包含图像关键区域的坐标信息，然后把这部分图片裁下来重新输进去；方法二：ine-tune MLLM使其学会什么时候该输出“re-encode token”，re-encode token是一个hidden rep，不需要要求其有可解码的意义。然后将训练MLLM根据re-encode token预测答案，同时利用re-encode token来筛选DINO的特征作为辅助信息输入MLLM。
+1. **Visual-RFT: Visual Reinforcement Fine-Tuning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.01785) 借鉴deepseek-r1的思想，使用RL+verifiable reward来增强MLLM在物体检测和分类上的性能
 
 ### 2024
 
@@ -347,6 +349,7 @@
 16. **Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
 17. **Cantor: Inspiring Multimodal Chain-of-Thought of MLLM** (MM 2024) [[paper]](http://arxiv.org/abs/2404.16033) 纯prompt engineering文章。为了增强perception，提示MLLM根据问题找出具体该看什么图片细节，然后问一个MLLM让它专门去看，最后再综合它的输出来做最终回答
 18. **Self-Correction is More than Refinement: A Learning Framework for Visual and Language Reasoning Tasks** (Arxiv 2024.10) [[paper] ](https://arxiv.org/pdf/2410.04055) 给MLLM提供Self-correction Prompt，然后选出改对的和改错的样本分别作为正负样本进行DPO。
+19. **Beyond Embeddings: The Promise of Visual Table in Visual Reasoning** (EMNLP 2024) [[paper] ](http://arxiv.org/abs/2403.18252) 训练一个visual table generator，来产生对图片的详细描述。训练generator的方法：prompt GPT4V来生成visual table。总共从COCO找了61K数据。三阶段训练：1）caption数据上训练connector 2）在GPT生成的instruction tunning数据集上训练connector和LLM 3）在vis table数据上训练LLM。
 
  ### 2023
 
