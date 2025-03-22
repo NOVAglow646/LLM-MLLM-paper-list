@@ -1,6 +1,6 @@
 ## Preface
 
-本仓库记录关于LLM (large language models)和VLM (vision-language models)的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
+本仓库记录关于LLM (large language models)和Multimodal LLM的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
 
 有关OOD generalization的paper list请移步：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
 
@@ -19,10 +19,10 @@
   * [Alignment](#alignment)
   * [Interpretability](#interpretability)
   * [Other](#other)
-* [VLM](#vlm)
+* [MLLM](#mllm)
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * ⭐[Improving multimodal reasoning](#improving-multimodal-reasoning)
-  * ⭐[Hallucination of VLMs](#hallucination-of-vlms)
+  * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
   * [Explainability](#explainability)
   * [Unifying understanding and generation](#unifying-understanding-and-generation)
   * [Multimodal ICL](#multimodal-icl)
@@ -120,7 +120,7 @@
 
 43. **Algorithmic Phases of In-context Learning** (ICLR 2025 Ratings 10 8 6 6) [[paper]](https://openreview.net/pdf?id=XgH1wfHSX8) 在一个马尔可夫链上，识别了ICL的四种推理模式：unigram/bigram-inference/retrieval，这几种模式之间的切换可以解释目前的一系列ICL现象，如task diversity threshold, transient nature, task retreival/task learning, early ascent等。
 
-44. **Can In-context Learning Really Generalize to Out-of-distribution Tasks?** (ICLR 2025 Ratings 8665) [[paper]](https://arxiv.org/abs/2410.09695) 通过一系列实验分析发现了ICL在OOD任务上只能实现从预训练任务中寻找一个最优任务来拟合下游任务。并从理论上论证了ICL的算法选择机制的存在。
+44. **Can In-context Learning Really Generalize to Out-of-distribution Tasks?** (ICLR 2025) [[paper]](https://arxiv.org/abs/2410.09695) 通过一系列实验分析发现了ICL在OOD任务上只能实现从预训练任务中寻找一个最优任务来拟合下游任务。并从理论上论证了ICL的算法选择机制的存在。
 
     
 
@@ -198,11 +198,12 @@
 1. **Benchmarking and Understanding Compositional Relational Reasoning of LLMs** (AAAI 2025) [[paper]](http://arxiv.org/abs/2412.12841) 提出了GAR benchmark来测试模型的Compositional Relational Reasoning能力。发现compositional gap随着模型增大而增大。同时发现了Vicunna-33b存在一些共享的circuit能在不同任务中都发挥作用。
 1. **Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.05171) 提出一种循环结构来提升reasoning能力：类似RNN，循环结构的每一个循环块都接受原始prompt和上一个状态作为输入；循环越多性能越好。
 1. **SoftCoT: Soft Chain-of-Thought for Efficient Reasoning with LLMs** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.12134) 用一个小网络最后一层的隐层表示接上一个projector得到所谓的soft thoughts，将之与问题文本一同输入，后续让做文本CoT。不用像COCONUT那样fine-tune整个LLM，避免了灾难性遗忘导致的掉点。但是提升也比较有限，有点像一个简单的prompt tuning + CoT。
-1. **Mutual Reasoning Makes Smaller LLMs Stronger Problem-Solvers** (ICLR 2025) [[paper]](https://openreview.net/forum?id=6aHUmotXaw) 提出了r-start，training-free MCTS，人工定义action  space，reward是self-consistency：找另一个SLM，如果它和policy SLM的某一推理步的输出一致，那么就认为这是一个好的step（被喷可能存在consistent but wrong的情况）。性能提升巨大。
-1. **rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.04519) self-evolution训练：每一轮让policy mode和一个本文提出的process preference model（PPM）做MCTS产生高质量推理路径，然后再用它们来训练policy model和PPM
+1. **Mutual Reasoning Makes Smaller LLMs Stronger Problem-Solvers** (ICLR 2025) [[paper]](https://openreview.net/forum?id=6aHUmotXaw) 提出了rStar，training-free MCTS，人工定义action  space，reward是self-consistency：找另一个SLM，如果它和policy SLM的某一推理步的输出一致，那么就认为这是一个好的step（被喷可能存在consistent but wrong的情况）。性能提升巨大。
+1. **rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.04519) self-evolution训练：每一轮让policy mode和一个本文提出的process preference model（PPM）做MCTS产生高质量推理路径，然后再用它们来训练policy model和PPM。PPM的提出是由于：很难给一个step打一个衡量好坏的分数，由此训练的PRM可能会不准。因此，提出优化正负样本偏好的方法来训练PPM。正负样本选择方法：每一步选出得分最高的action和最低的action，并强制要求它们分别导向正确和错误的答案，来作为正负样本。
 1. **【综述】Test-time Computing: from System-1 Thinking to System-2 Thinking** [[paper]](https://arxiv.org/pdf/2501.02497) test-time reasoning 综述
 1. **ReasonFlux: Hierarchical LLM Reasoning via Scaling Thought Templates** [[paper]](https://arxiv.org/pdf/2410.02884?) 
 1. **DOTS: Learning to Reason Dynamically in LLMs via Optimal Reasoning Trajectories Search** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.03864) **核心点：**训练模型自动选择最优的推理方案。与rstar有些类似，都是将任务先从更高层次的动作空间进行规划。**方法：**将解决问题的过程分成analysis、solution、verification三个阶段，每个阶段有不同的选择，也可以选择什么都不做。给定问题-答案对，为每个问题按照success rate搜索出最优的推理方案（algo1）。选出最优方案后用gpt4o结合问题给一个对这个推理方案的解释，然后进行SFT，训练LLM预测推理方案、解释和最终答案。
+1. **Don’t Get Lost in the Trees: Streamlining LLM Reasoning by Overcoming Tree Search Exploration Pitfalls** (Arxiv 2025.03) [[paper]](https://arxiv.org/pdf/2502.11183) 发现tree search中会存在大量语义相近的节点，
 
 ### 2024
 
@@ -213,6 +214,17 @@
 3. **Training Large Language Model to Reason in a Continuous Latent Space** (COCONUT Arxiv Dec 2024, ICLR 2025 被拒，主要是因为相比于普通CoT会在GSM8K上掉点) [[paper]](https://openreview.net/forum?id=tG4SgayTtk) 将reasoning step的某些中间步从word embedding 替换为该token的last hidden state。 
 
 4. **Beyond Examples: High-level Automated Reasoning Paradigm in In-Context Learning via MCTS** (Arxiv 2024.11) [[paper]](http://arxiv.org/abs/2411.18478) 用了rStar的self-consistent reward和人工定义的action space，但是加入了thought card的技术。性能和rstar差不多，但是计算代价小了很多，因为测试时不用MCTS了，只需要从seed dataset中找出card即可。
+
+5. **ReST-MCTS*: LLM Self-Training via Process Reward Guided Tree Search** (NeurIPS 2024) [[paper]](https://arxiv.org/pdf/2406.03816) 同时训练policy model和一个process reward model（一个LLM-based打分模型）。第k个推理步的process reward $v_k$的监督信号为：1）如果该步距离最终答案越近，$v_k$越大；2）如果最终答案是错的，$v_k$​为0. 在用MCTS生成推理路径的过程中，也使用value model的打分指导生成，每次只探索得分最高的路径。也就是说，MCTS路径生成和模型训练是交替迭代进行的。
+
+   MCTS的过程为（原文algo2），以下过程重复T次：
+
+   1. 根据UCB选一个节点C_select
+   2. 将C_select用policy model展开成b个子节点（b个推理branch），用value model选出得分最高的C子节点C’
+   3. 从C’开始再推理m步，记录下最高得分并更新V_C’的得分
+   4. 更新从根节点到所选的起始节点C_select这条路上的所有结点的访问次数和得分，每个节点得分的更新方法：eq36，用孩子更新parent
+
+6. 
 
 
 
@@ -297,7 +309,15 @@
 
 
 
-# VLM
+# MLLM
+
+## Survey
+
+### 2024 
+
+1. **A Survey on Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2306.13549) 综述
+
+
 
 ## Evaluation and Understandings of Multimodal Reasoning
 
@@ -326,8 +346,18 @@
 1. **Boosting Multimodal Reasoning with MCTS-Automated Structured Thinking** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.02339) training-free。定义一个动作空间（Visual Parsing、CoT、divide-and-conquer等）在一个500样本的小数据集上产生reasoning path，为每个问题进行MCTS：每一步从动作空间选择一个动作。为每个问题得到最优推理路径后，为每个路径计算Problem Condition Complexity (PCC)，每个问题-路径-PCC称为一个card。测试时，计算测试问题的PCC，并找出与之PCC最接近的card，让其按照这个card的每一步的action选择进行推理。这样避免了测试时进行复杂的搜索。
 1. **Virgo: A Preliminary Exploration on Reproducing o1-like MLLM** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.01904) 用少量（5k）纯文本的long thought数据训练MLLM就能带来显著提升
 1. **URSA: Understanding and Verifying Chain-of-thought Reasoning in Multimodal Mathematics** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2501.04686) 借助Gemini合成CoT做fine-tune。提了两种方法对SFT得到的模型进一步训练得到一个verifier，没太看懂文中提到的MCTS用在哪了以及所提的MIE为什么能增强visual perception能力。
-1. **Introducing Visual Perception Token into Multimodal Large Language Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.17425) 提了两种方法。方法一：fine-tune MLLM使其学会什么时候该输出一个“visual perception token”，其中包含图像关键区域的坐标信息，然后把这部分图片裁下来重新输进去；方法二：ine-tune MLLM使其学会什么时候该输出“re-encode token”，re-encode token是一个hidden rep，不需要要求其有可解码的意义。然后将训练MLLM根据re-encode token预测答案，同时利用re-encode token来筛选DINO的特征作为辅助信息输入MLLM。
+1. **Introducing Visual Perception Token into Multimodal Large Language Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.17425) 提了两种方法。方法一：fine-tune MLLM使其学会什么时候该输出一个“visual perception token”，其中包含图像关键区域的坐标信息，然后把这部分图片裁下来重新输进去；方法二：fine-tune MLLM使其学会什么时候该输出“re-encode token”，re-encode token是一个hidden rep，不需要要求其有可解码的意义。然后将训练MLLM根据re-encode token预测答案，同时利用re-encode token来筛选DINO的特征作为辅助信息输入MLLM。
 1. **Visual-RFT: Visual Reinforcement Fine-Tuning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.01785) 借鉴deepseek-r1的思想，使用RL+verifiable reward来增强MLLM在物体检测和分类上的性能
+1. **Visual Agents as Fast and Slow Thinkers** (ICLR 2025) [[paper]](http://arxiv.org/abs/2408.08862) 让switch adapter（其实是一个MLLM）来判断是否启动对视觉信息的进一步考察。若启动，则switch adapter会输出missing object信息和初步文本clue，输给一个proposal adapter（MLLM）根据missing object信息输出bounding box，或让一个SAM根据missing object信息进一步输出bounding box。最终将原图+初步clue+bounding box或分割的mask一起输给MLLM得到最终回答。
+1. **MM-Eureka: Exploring Visual Aha Moment with Rule-based Large-scale Reinforcement Learning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.07365) 在多模态推理上复现R1，rule-based RL（用的RLOO，和GRPO基本差不多），对internVL-2.5-instruct-8B和internVL-2.5-pretrained-38B做的RL。任务主要是数学视觉推理。
+1. **R1-Zero's "Aha Moment" in Visual Reasoning on a 2B Non-SFT Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2503.05132) 对qwen-2-vl-2B做的GRPO。任务主要是空间推理。
+1. **Vision-R1: Incentivizing Reasoning Capability in Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2503.06749) motivation：sec 3.1发现，直接用随便收集的10k开源数据进行GRPO不work。总体思路：
+   1. （针对多模态感知的优化）先用fig2的框架prompt DS-R1来为现有的多模态问题生成高质量cot以及正确答案，得到vision-R1-cold数据集。
+   2. 然后（sec 3.2.2）在这个数据集上SFT一个qwen2.5VL，但是发现会overthinking（输出很长但是错误的推理过程）。
+   3. 为了解决overthinking，提出PTST（fig4），分成多阶段训练，每一阶段限制输出长度为L_s。
+1. **VisualPRM: An Effective Process Reward Model for Multimodal Reasoning** [[paper]](http://arxiv.org/abs/2503.10291) [[project page]](https://internvl.github.io/blog/2025-03-13-VisualPRM/) 先通过MC采样得到step-wise分数，然后训一个PRM。并且构建了一个基于MC采样的具有process得分的数据集VisualPRM400K
+1. **R1-VL: Learning to Reason with Multimodal Large Language Models via Step-wise Group Relative Policy Optimization** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12937) 提了两种step-wise reward：1）step acc，看policy的推理链上的步骤与GPT-4产生的“key step”的重合度；2）step validity，为1当且仅当completeness和reasoning logic都满足（没讲具体怎么实现的）
+1. 
 
 ### 2024
 
@@ -340,7 +370,6 @@
 7. **Link-Context Learning for Multimodal LLMs** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024/html/Tai_Link-Context_Learning_for_Multimodal_LLMs_CVPR_2024_paper.html) 提出一种新的fine-tune MLLM的方法：让context和query具有一定的causal联系，发现能提升模型通过context学习新概念的能力
 8. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
 9. **Natural Language Inference Improves Compositionality in Vision-Language Models** (ICLR 2025 Ratings 8866) [[paper]](https://openreview.net/forum?id=G3aXjVAJjU) prompt工程。任务是判断caption和图片相不相符。做法是让LLM生成与原始caption相符、不相符的yes or no问题，然后根据VLM在相符/不相符/原始问题上的logit来做出最终判断。
-10. **MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs** （ICLR 2025) [[paper]](https://openreview.net/forum?id=DgaY5mDdmT) 发现MLLM在object identification任务中能够关注到正确的视觉区域，即使回答错误。提出了几个自动化的training-free的裁剪出目标区域的方法。将目标区域的visual token连接到原始图片token后面。
 11. **Interleaved-Modal Chain-of-Thought** (Arxiv 2024.11) [[paper]](https://arxiv.org/pdf/2411.19488) 在每一个reasoning step选出attention最高的visual tokens，保持原图的顺序插入到视觉和文本输入之后、文本rationale开始之前的位置，之后再据此生成rationale。按此方法迭代生成多个reasoning step，然后再在其后生成最终答案。
 12. **Progressive Multimodal Reasoning via Active Retrieval** (Arxiv 2024.12) [[paper]](Progressive Multimodal Reasoning via Active Retrieval) 提出了一个从外部知识库中根据当前推理步搜索相关知识，并通过MCTS来构建CoT的框架，并提出了在生成的CoT数据上进行PRM的方法。推理时根据PRM的打分，选取得分topk高的推理路径。
 13. **Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search** (Arxiv 2024.12) [[paper]](Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search) [[code]](https://github.com/HJYao00/Mulberry) 用MCTS构建CoT，其中每一步打分利用多个模型；同时构建反思链，做法是构建一个“低得分节点-反思prompt-高得分节点”的思维链。然后用生成的总共260K数据进行fine-tune。
@@ -357,11 +386,14 @@
 
 
 
-## Hallucination of VLMs
+## Improving Perception/Mitigating Hallucination
 
 ### 2025
 
 1. **The Hidden Life of Tokens: Reducing Hallucination of Large Vision-Language Models via Visual Information Steering** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.03628) 发现随着生成的进行，图片中真实出现的元素的token在logit中的排名会逐渐下降，而幻觉词的排名会逐渐靠前。提出了一种较为启发式的类似task vector的方法来缓解。实验效果上主要是降低幻觉，而不是增强推理。
+1. **MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs** （ICLR 2025) [[paper]](https://openreview.net/forum?id=DgaY5mDdmT) 发现MLLM在object identification任务中能够关注到正确的视觉区域，即使回答错误。提出了几个自动化的training-free的裁剪出目标区域的方法。将目标区域的visual token连接到原始图片token后面。
+1. **See What You Are Told: Visual Attention Sink in Large Multimodal Models **(ICLR 2025) [[paper]](https://openreview.net/forum?id=7uDI7w5RQA) 发现VLM中存在一些image token被分配的attention score总是很高，称为visual sink token。发现：mask它们造成的性能下降远不如mask等量随机token。提出的方法：先找到对于sink token的attention和non-sink token attention之比较高的head（这些head是关注于图像的head），然后将sink token的attention砍掉一定比例，将这部分score按比例分配到其他vis token上。
+1. **Stop Looking for Important Tokens in Multimodal Language Models:  Duplication Matters More** ()
 
 ### 2024
 
@@ -380,6 +412,7 @@
 13. **Visual Description Grounding Reduces Hallucinations and Boosts Reasoning in LVLMs** (ICLR 2025 Ratings: 8666) [[paper]](https://openreview.net/forum?id=3PRvlT8b1R) 现有的解决幻觉的方法难以提升在视觉推理benchmark上的能力。VLM能识别视觉元素，但难以利用它们进行推理。
 14. **Look Twice Before You Answer: Memory-Space Visual Retracing for Hallucination Mitigation in Multimodal Large Language Models** (ICLR 2025 rejected) [[openreview]](https://openreview.net/forum?id=tkg9XMFo0H) 找output prediction entropy最大的层，然后将visual token作为额外信息，加入到FFN之后
 15. **Self-Correcting Decoding with Generative Feedback for Mitigating Hallucinations in Large Vision-Language Models** (ICLR 2025) [[openreview]](https://openreview.net/forum?id=tTBXePRKSx) idea：生成模型引导VLM以减少幻觉。用LVLMs产生的初始响应生成图像，该图像充当辅助视觉参考，并提供自我反馈。
+16. **Dense Connector for MLLMs** [[paper]](https://arxiv.org/abs/2405.13800) (NeurIPS 2024)
 
 
 
