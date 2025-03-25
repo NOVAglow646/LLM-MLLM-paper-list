@@ -196,14 +196,26 @@
 ### 2025
 
 1. **Benchmarking and Understanding Compositional Relational Reasoning of LLMs** (AAAI 2025) [[paper]](http://arxiv.org/abs/2412.12841) 提出了GAR benchmark来测试模型的Compositional Relational Reasoning能力。发现compositional gap随着模型增大而增大。同时发现了Vicunna-33b存在一些共享的circuit能在不同任务中都发挥作用。
+
 1. **Scaling up Test-Time Compute with Latent Reasoning: A Recurrent Depth Approach** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.05171) 提出一种循环结构来提升reasoning能力：类似RNN，循环结构的每一个循环块都接受原始prompt和上一个状态作为输入；循环越多性能越好。
+
 1. **SoftCoT: Soft Chain-of-Thought for Efficient Reasoning with LLMs** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.12134) 用一个小网络最后一层的隐层表示接上一个projector得到所谓的soft thoughts，将之与问题文本一同输入，后续让做文本CoT。不用像COCONUT那样fine-tune整个LLM，避免了灾难性遗忘导致的掉点。但是提升也比较有限，有点像一个简单的prompt tuning + CoT。
+
 1. **Mutual Reasoning Makes Smaller LLMs Stronger Problem-Solvers** (ICLR 2025) [[paper]](https://openreview.net/forum?id=6aHUmotXaw) 提出了rStar，training-free MCTS，人工定义action  space，reward是self-consistency：找另一个SLM，如果它和policy SLM的某一推理步的输出一致，那么就认为这是一个好的step（被喷可能存在consistent but wrong的情况）。性能提升巨大。
+
 1. **rStar-Math: Small LLMs Can Master Math Reasoning with Self-Evolved Deep Thinking** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.04519) self-evolution训练：每一轮让policy mode和一个本文提出的process preference model（PPM）做MCTS产生高质量推理路径，然后再用它们来训练policy model和PPM。PPM的提出是由于：很难给一个step打一个衡量好坏的分数，由此训练的PRM可能会不准。因此，提出优化正负样本偏好的方法来训练PPM。正负样本选择方法：每一步选出得分最高的action和最低的action，并强制要求它们分别导向正确和错误的答案，来作为正负样本。
+
 1. **【综述】Test-time Computing: from System-1 Thinking to System-2 Thinking** [[paper]](https://arxiv.org/pdf/2501.02497) test-time reasoning 综述
+
 1. **ReasonFlux: Hierarchical LLM Reasoning via Scaling Thought Templates** [[paper]](https://arxiv.org/pdf/2410.02884?) 
+
 1. **DOTS: Learning to Reason Dynamically in LLMs via Optimal Reasoning Trajectories Search** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.03864) **核心点：**训练模型自动选择最优的推理方案。与rstar有些类似，都是将任务先从更高层次的动作空间进行规划。**方法：**将解决问题的过程分成analysis、solution、verification三个阶段，每个阶段有不同的选择，也可以选择什么都不做。给定问题-答案对，为每个问题按照success rate搜索出最优的推理方案（algo1）。选出最优方案后用gpt4o结合问题给一个对这个推理方案的解释，然后进行SFT，训练LLM预测推理方案、解释和最终答案。
-1. **Don’t Get Lost in the Trees: Streamlining LLM Reasoning by Overcoming Tree Search Exploration Pitfalls** (Arxiv 2025.03) [[paper]](https://arxiv.org/pdf/2502.11183) 发现tree search中会存在大量语义相近的节点，
+
+1. **Don’t Get Lost in the Trees: Streamlining LLM Reasoning by Overcoming Tree Search Exploration Pitfalls** (Arxiv 2025.03) [[paper]](https://arxiv.org/pdf/2502.11183) 发现tree search中会存在大量语义相近的节点
+
+1. **Better Process Supervision with Bi-directional Rewarding Signals** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.04618) 发现PRM在靠后的step上不准，基于terminal的MC估计在靠前的step上不准。因此设计了一个双头PRM：一个头的监督信号为从开始到第t步的推理正确与否（通过一个大模型标注得到）；另一个头的监督信号是MC估计得到的。两个头分别在这两个目标上和LLM backbone一起训。
+
+   
 
 ### 2024
 
@@ -224,13 +236,7 @@
    3. 从C’开始再推理m步，记录下最高得分并更新V_C’的得分
    4. 更新从根节点到所选的起始节点C_select这条路上的所有结点的访问次数和得分，每个节点得分的更新方法：eq36，用孩子更新parent
 
-6. 
-
-
-
-### 2024
-
-1. 
+   
 
 
 
@@ -255,14 +261,19 @@
 
 ## Interpretability
 
+### 2025
+
+1. **Latent Space Chain-of-Embedding Enables Output-free LLM Self-Evaluation** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.13640) 定义LLM的从第一层到最后一层的各层的表示为CoE，发现回答正确时CoE相邻状态的magnitude差距较大，角度差距较小；而回答错误时正好相反。由此提出了一个指标用于在无label情况下判断模型输出的对错。
+
 ### 2024
 
 1. **LLMs Know More Than They Show: On the Intrinsic Representation of LLM Hallucinations** (ICLR 2025 Ratings:8666) [[paper]](https://openreview.net/forum?id=KRnsX5Em3W) 用一个线性probe来根据模型中间层表示判断模型输出的正确与否。然后让LLM对同一个问题生成多个答案，并用该分类器筛选出正确概率最高的答案，发现能相比原本的答案正确率更高。
+
 1. **Insights into LLM Long-Context Failures: When Transformers Know but Don't Tell** (EMNLP 2024 Findings) [[paper] ](http://arxiv.org/abs/2406.14673)用一个线性probe来根据模型中间层表示来直接预测问题的答案。发现probe acc比直接生成的acc好。
+
 1. **Does Representation Matter? Exploring Intermediate Layers in Large Language Models** (NeurIPS 2024 workshop) [[paper]](http://arxiv.org/abs/2412.09563) LLM的中间层下游性能比最后一层好。探究了Prompt Entropy、Curvature等representation quality的指标和下游acc的关系。
-1. 
 
-
+   
 
 ## Other
 
@@ -413,6 +424,16 @@
 14. **Look Twice Before You Answer: Memory-Space Visual Retracing for Hallucination Mitigation in Multimodal Large Language Models** (ICLR 2025 rejected) [[openreview]](https://openreview.net/forum?id=tkg9XMFo0H) 找output prediction entropy最大的层，然后将visual token作为额外信息，加入到FFN之后
 15. **Self-Correcting Decoding with Generative Feedback for Mitigating Hallucinations in Large Vision-Language Models** (ICLR 2025) [[openreview]](https://openreview.net/forum?id=tTBXePRKSx) idea：生成模型引导VLM以减少幻觉。用LVLMs产生的初始响应生成图像，该图像充当辅助视觉参考，并提供自我反馈。
 16. **Dense Connector for MLLMs** [[paper]](https://arxiv.org/abs/2405.13800) (NeurIPS 2024)
+
+
+
+## Benchmarks
+
+### 2025
+
+1. **MPBench: A Comprehensive Multimodal Reasoning Benchmark for Process Errors Identification** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12505)  从三个角度评测多模态PRM：1）评估单步正确性的能力 2）从多条推理路径中选出最优的能力 3）从某一步的多个candidate中选出最优的能力
+2. **Multimodal RewardBench: Holistic Evaluation of Reward Models for Vision Language Models** [[paper]](https://arxiv.org/pdf/2502.14191) 所标注的数据为(prompt, chosen response, rejected response)三元组，但标注是trajectory-level的。用来测RM的preference是否准确。
+3. **L-RewardBench: A Challenging Benchmark for Vision-Language Generative Reward Models** [[paper]](https://arxiv.org/pdf/2411.17451)
 
 
 
