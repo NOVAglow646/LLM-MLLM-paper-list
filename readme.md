@@ -215,6 +215,10 @@
 
 1. **Better Process Supervision with Bi-directional Rewarding Signals** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.04618) 发现PRM在靠后的step上不准，基于terminal的MC估计在靠前的step上不准。因此设计了一个双头PRM：一个头的监督信号为从开始到第t步的推理正确与否（通过一个大模型标注得到）；另一个头的监督信号是MC估计得到的。两个头分别在这两个目标上和LLM backbone一起训。
 
+1. **Entropy-based Exploration Conduction for Multi-step Reasoning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.15848) 某一步的不确定性大，则代表问题有更多可能的解，值得进一步探索。反之则说明探索路径应该更确定。方法：计算每个推理步（一个句子）的沿着所有token的熵，以及每个token沿着词汇表的熵在整个句子的方差，根据这两个指标来决定对于某一推理步，接下来是deepen、expand还是stop。
+
+1. **DAPO: An Open-Source LLM Reinforcement Learning System at Scale** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.14476) 
+
    
 
 ### 2024
@@ -236,7 +240,18 @@
    3. 从C’开始再推理m步，记录下最高得分并更新V_C’的得分
    4. 更新从根节点到所选的起始节点C_select这条路上的所有结点的访问次数和得分，每个节点得分的更新方法：eq36，用孩子更新parent
 
-   
+
+6. **Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning** (Arxiv 2024.05) [[paper]](http://arxiv.org/abs/2402.05808) 思想：让模型基于已有的推理链的中间步进行后续推理，降低搜索到正确答案的难度。做法：从T-1开始选择起始步进行policy gradien的计算，逐渐将起始步往前推，慢慢增大学习难度。
+6. **Calibrating Reasoning in Language Models with Internal Consistency** (NeurIPS 2024) [[paper]](https://arxiv.org/pdf/2405.18711) 发现模型在给出错误回答时中间各层的预测一致性较低
+6. **V-STaR: Training Verifiers for Self-Taught Reasoners** (COLM 2024) [[paper]](https://openreview.net/pdf?id=stmqBSW2dV) 用模型生成的正确和错误回答通过DPO训练一个verifier，测试时用这个verifier来给不同回答打分
+
+### 2023
+
+1. **Self-Consistency Improves Chain of Thought Reasoning in Language Models ** (ICLR 2023) [[paper]](https://arxiv.org/pdf/2203.11171) Self-consistency	
+2. **Self-Refine: Iterative Refinement with Self-Feedback** (Arxiv 2023.05) [[paper]](https://arxiv.org/pdf/2303.17651) Self-refine
+3. **Large Language Models Cannot Self-Correct Reasoning Yet** (ICLR 2024) [[paper]](https://arxiv.org/abs/2310.01798) Self-correct 有时会失败
+
+
 
 
 
@@ -324,6 +339,10 @@
 
 ## Survey
 
+#### 2025
+
+1.**Mind with Eyes: from Language Reasoning to Multimodal Reasoning** [[paper]](https://arxiv.org/pdf/2503.18071) 多模态推理综述
+
 ### 2024 
 
 1. **A Survey on Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2306.13549) 综述
@@ -368,7 +387,8 @@
    3. 为了解决overthinking，提出PTST（fig4），分成多阶段训练，每一阶段限制输出长度为L_s。
 1. **VisualPRM: An Effective Process Reward Model for Multimodal Reasoning** [[paper]](http://arxiv.org/abs/2503.10291) [[project page]](https://internvl.github.io/blog/2025-03-13-VisualPRM/) 先通过MC采样得到step-wise分数，然后训一个PRM。并且构建了一个基于MC采样的具有process得分的数据集VisualPRM400K
 1. **R1-VL: Learning to Reason with Multimodal Large Language Models via Step-wise Group Relative Policy Optimization** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12937) 提了两种step-wise reward：1）step acc，看policy的推理链上的步骤与GPT-4产生的“key step”的重合度；2）step validity，为1当且仅当completeness和reasoning logic都满足（没讲具体怎么实现的）
-1. 
+1. **Visual-o1: Understanding ambiguous instructions via multi-modal multi-turn chain-of-thoughts reasoning** (ICLR 2025) [[paper]](https://openreview.net/pdf/e4711feed2e5512d1ff80753981a2c637d597fc7.pdf) training-free, prompt工程，多轮CoT
+1.  **AtomThink: A Slow Thinking Framework for Multimodal Mathematical Reasoning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2411.11930) 
 
 ### 2024
 
@@ -404,7 +424,9 @@
 1. **The Hidden Life of Tokens: Reducing Hallucination of Large Vision-Language Models via Visual Information Steering** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.03628) 发现随着生成的进行，图片中真实出现的元素的token在logit中的排名会逐渐下降，而幻觉词的排名会逐渐靠前。提出了一种较为启发式的类似task vector的方法来缓解。实验效果上主要是降低幻觉，而不是增强推理。
 1. **MLLMs Know Where to Look: Training-free Perception of Small Visual Details with Multimodal LLMs** （ICLR 2025) [[paper]](https://openreview.net/forum?id=DgaY5mDdmT) 发现MLLM在object identification任务中能够关注到正确的视觉区域，即使回答错误。提出了几个自动化的training-free的裁剪出目标区域的方法。将目标区域的visual token连接到原始图片token后面。
 1. **See What You Are Told: Visual Attention Sink in Large Multimodal Models **(ICLR 2025) [[paper]](https://openreview.net/forum?id=7uDI7w5RQA) 发现VLM中存在一些image token被分配的attention score总是很高，称为visual sink token。发现：mask它们造成的性能下降远不如mask等量随机token。提出的方法：先找到对于sink token的attention和non-sink token attention之比较高的head（这些head是关注于图像的head），然后将sink token的attention砍掉一定比例，将这部分score按比例分配到其他vis token上。
-1. **Stop Looking for Important Tokens in Multimodal Language Models:  Duplication Matters More** ()
+1. **Stop Looking for Important Tokens in Multimodal Language Models:  Duplication Matters More** 
+1. **Towards Self-Improving Systematic Cognition for Next-Generation Foundation MLLMs** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12303) 让gpt-4o做chain-of-description，生成高质量perception数据，来做fine-tune
+1. **Socratic Questioning: Learn to Self-guide Multimodal Reasoning in the Wild** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.02964)
 
 ### 2024
 
