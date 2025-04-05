@@ -217,7 +217,9 @@
 
 1. **Entropy-based Exploration Conduction for Multi-step Reasoning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.15848) 某一步的不确定性大，则代表问题有更多可能的解，值得进一步探索。反之则说明探索路径应该更确定。方法：计算每个推理步（一个句子）的沿着所有token的熵，以及每个token沿着词汇表的熵在整个句子的方差，根据这两个指标来决定对于某一推理步，接下来是deepen、expand还是stop。
 
-1. **DAPO: An Open-Source LLM Reinforcement Learning System at Scale** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.14476) 
+1. **DAPO: An Open-Source LLM Reinforcement Learning System at Scale** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.14476) 对GRPO的改进
+
+1. **From Chaos to Order: The Atomic Reasoner Framework for Fine-grained Reasoning in Large Language Models**
 
    
 
@@ -244,6 +246,7 @@
 6. **Training Large Language Models for Reasoning through Reverse Curriculum Reinforcement Learning** (Arxiv 2024.05) [[paper]](http://arxiv.org/abs/2402.05808) 思想：让模型基于已有的推理链的中间步进行后续推理，降低搜索到正确答案的难度。做法：从T-1开始选择起始步进行policy gradien的计算，逐渐将起始步往前推，慢慢增大学习难度。
 6. **Calibrating Reasoning in Language Models with Internal Consistency** (NeurIPS 2024) [[paper]](https://arxiv.org/pdf/2405.18711) 发现模型在给出错误回答时中间各层的预测一致性较低
 6. **V-STaR: Training Verifiers for Self-Taught Reasoners** (COLM 2024) [[paper]](https://openreview.net/pdf?id=stmqBSW2dV) 用模型生成的正确和错误回答通过DPO训练一个verifier，测试时用这个verifier来给不同回答打分
+6. **Mindstar: Enhancing math reasoning in pre-trained llms at inference time** (Arxiv 2024.05) [[paper]](https://arxiv.org/abs/2405.16265) PRM+tree search。LLM as PRM, PRM的输入为当前所有推理步和下一推理步。
 
 ### 2023
 
