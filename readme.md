@@ -445,9 +445,10 @@
 1. **See What You Are Told: Visual Attention Sink in Large Multimodal Models **(ICLR 2025) [[paper]](https://openreview.net/forum?id=7uDI7w5RQA) 发现VLM中存在一些image token被分配的attention score总是很高，称为visual sink token。发现：mask它们造成的性能下降远不如mask等量随机token。提出的方法：先找到对于sink token的attention和non-sink token attention之比较高的head（这些head是关注于图像的head），然后将sink token的attention砍掉一定比例，将这部分score按比例分配到其他vis token上。
 1. **Stop Looking for Important Tokens in Multimodal Language Models:  Duplication Matters More** 
 1. **Towards Self-Improving Systematic Cognition for Next-Generation Foundation MLLMs** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12303) 让gpt-4o做chain-of-description，生成高质量perception数据，来做fine-tune
-1. **Socratic Questioning: Learn to Self-guide Multimodal Reasoning in the Wild** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.02964)
+1. **Socratic Questioning: Learn to Self-guide Multimodal Reasoning in the Wild** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.02964) 让模型自己提出子问题并回答，得到对图片的细致描述，再回答最开始的问题。构造这样的数据集之后用来做Fine-tune
 1. **Perception-R1: Pioneering Perception Policy with Reinforcement Learning** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.07954) 用GRPO训perception任务。一些发现：explicit thinking对于visual grounding、OCR、counting等perception任务不利；RL相比RL+SFT和SFT在复杂感知任务（多物体计数、detection）上提升较大，但在相对不那么复杂的grounding和OCR任务上相比RL+SFT和SFT提升有限。
 1. **Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.06287) 发现存在少量的attn head的attention map对物体的标注很准。找这样的head的方法：考虑最后一个input文本token对全部image token的attention，先从所有head中选出对image attention比较大的，然后从中选出10个spatial entropy最低的（计算方法为eq3）。然后统计每个head被选为top-10低 entropy的频率。选出最被频繁选中的head作为grounding head。取它们的attention map作为grounding的依据。
+1. **【hallucination new SOTA】Generate, but Verify: Reducing Visual Hallucination in Vision-Language Models with Retrospective Resampling** [[blog]](https://reverse-vlm.github.io/) 在生成过程中随时监测幻觉的产生并在产生幻觉时启动回溯，重新生成
 
 ### 2024
 
