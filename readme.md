@@ -23,7 +23,7 @@
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * ⭐[Improving multimodal reasoning](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
-  * [Explainability](#explainability)
+  * [Interpretability and Understanding](#interpretability-and-understanding)
   * [Unifying understanding and generation](#unifying-understanding-and-generation)
   * [Multimodal ICL](#multimodal-icl)
   * [Prompt Learning](#prompt-learning)
@@ -225,7 +225,13 @@
 
 1. **Inference-Time Scaling for Generalist Reward Modeling** [[paper]](http://arxiv.org/abs/2504.02495) 针对所有领域而不是单一领域训练scalable的reward model。方法为GRM （Generate Reward Modeling）通过大量采样critique并以此生成reward score，来实现reward model的test-time scaling。
 
-1. **Heimdall: test-time scaling on the generative verification** [[paper]](http://arxiv.org/abs/2504.10337) 生成式的RM，用PPO训练。
+1. **Heimdall: test-time scaling on the generative verification** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.10337) 生成式的RM，用PPO训练。
+
+1. **Genius: A Generalizable and Purely Unsupervised Self-Training Framework For Advanced Reasoning** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.08672) 完全不依赖任何RM和监督信号，只靠问题进行自监督训练。某一步的奖励信号为从该步开始的剩余步的mean log prob。
+
+1. **Step-by-Step Reasoning for Math Problems via Twisted Sequential Monte Carlo** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.01920) 方法：如何推理：在每个推理步t，让policy model产生N个下一步。利用训练好的value function给N个步打分，然后根据打分重新sample该步（line 18），之后到t+1，再让policy model在经过resample的第t步的基础上再生成下一步；如何训练value function（一个network）：loss function的优化目标为减小value function估计的分布和ground-truth分布之间的KL散度，其实让value function对于不同solution的某一步的打分接近outcome reward（每一步的监督信号相同，都是拟合outcome reward）
+
+1. 
 
    
 
@@ -361,11 +367,16 @@
 
 
 
-## Evaluation and Understandings of Multimodal Reasoning
+## Benchmarks and Evaluation of Multimodal Reasoning
 
 ### 2025
 
 1. **Can MLLMs Reason in Multimodality? EMMA: An Enhanced MultiModal ReAsoning Benchmark** (Arxiv Jan 2025) [[paper]](http://arxiv.org/abs/2501.05444) 一个比较全面的涵盖数学、物理、化学、代码的视觉推理任务的benchmark。发现文本CoT很难提升2D变换这种需要空间想象的任务的性能。
+1. **Does Reinforcement Learning Really Incentivize Reasoning Capacity in LLMs Beyond the Base Model?** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.13837) RL相比base model只是增加了 k较小时候的pass@k acc。当k足够大，base model会反超RL model。在数学、code、visual reasoning任务上都验证了这一现象。
+1. **MPBench: A Comprehensive Multimodal Reasoning Benchmark for Process Errors Identification** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12505)  从三个角度评测多模态PRM：1）评估单步正确性的能力 2）从多条推理路径中选出最优的能力 3）从某一步的多个candidate中选出最优的能力
+4. **Multimodal RewardBench: Holistic Evaluation of Reward Models for Vision Language Models** [[paper]](https://arxiv.org/pdf/2502.14191) 所标注的数据为(prompt, chosen response, rejected response)三元组，但标注是trajectory-level的。用来测RM的preference是否准确。
+5. **L-RewardBench: A Challenging Benchmark for Vision-Language Generative Reward Models** [[paper]](https://arxiv.org/pdf/2411.17451)
+6. **VisuLogic: A Benchmark for Evaluating Visual Reasoning in Multi-modal Large Language Models** [[paper]](http://arxiv.org/abs/2504.15279) 类似公务员题的图形推理benchmark
 
 ### 2024
 
@@ -391,43 +402,66 @@
 1. **Introducing Visual Perception Token into Multimodal Large Language Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.17425) 提了两种方法。方法一：fine-tune MLLM使其学会什么时候该输出一个“visual perception token”，其中包含图像关键区域的坐标信息，然后把这部分图片裁下来重新输进去；方法二：fine-tune MLLM使其学会什么时候该输出“re-encode token”，re-encode token是一个hidden rep，不需要要求其有可解码的意义。然后将训练MLLM根据re-encode token预测答案，同时利用re-encode token来筛选DINO的特征作为辅助信息输入MLLM。
 1. **Visual-RFT: Visual Reinforcement Fine-Tuning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.01785) 借鉴deepseek-r1的思想，使用RL+verifiable reward来增强MLLM在物体检测和分类上的性能
 1. **Visual Agents as Fast and Slow Thinkers** (ICLR 2025) [[paper]](http://arxiv.org/abs/2408.08862) 让switch adapter（其实是一个MLLM）来判断是否启动对视觉信息的进一步考察。若启动，则switch adapter会输出missing object信息和初步文本clue，输给一个proposal adapter（MLLM）根据missing object信息输出bounding box，或让一个SAM根据missing object信息进一步输出bounding box。最终将原图+初步clue+bounding box或分割的mask一起输给MLLM得到最终回答。
-1. **MM-Eureka: Exploring Visual Aha Moment with Rule-based Large-scale Reinforcement Learning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.07365) 在多模态推理上复现R1，rule-based RL（用的RLOO，和GRPO基本差不多），对internVL-2.5-instruct-8B和internVL-2.5-pretrained-38B做的RL。任务主要是数学视觉推理。
-1. **R1-Zero's "Aha Moment" in Visual Reasoning on a 2B Non-SFT Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2503.05132) 对qwen-2-vl-2B做的GRPO。任务主要是空间推理。
-1. **Vision-R1: Incentivizing Reasoning Capability in Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2503.06749) motivation：sec 3.1发现，直接用随便收集的10k开源数据进行GRPO不work。总体思路：
+1. **【:rocket:RL】MM-Eureka: Exploring Visual Aha Moment with Rule-based Large-scale Reinforcement Learning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.07365) 在多模态推理上复现R1，rule-based RL（用的RLOO，和GRPO基本差不多），对internVL-2.5-instruct-8B和internVL-2.5-pretrained-38B做的RL。任务主要是数学视觉推理。
+1. **【:rocket:RL】R1-Zero's "Aha Moment" in Visual Reasoning on a 2B Non-SFT Model** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2503.05132) 对qwen-2-vl-2B做的GRPO。任务主要是空间推理。
+1. **【:rocket:RL】Vision-R1: Incentivizing Reasoning Capability in Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2503.06749) motivation：sec 3.1发现，直接用随便收集的10k开源数据进行GRPO不work。总体思路：
    1. （针对多模态感知的优化）先用fig2的框架prompt DS-R1来为现有的多模态问题生成高质量cot以及正确答案，得到vision-R1-cold数据集。
    2. 然后（sec 3.2.2）在这个数据集上SFT一个qwen2.5VL，但是发现会overthinking（输出很长但是错误的推理过程）。
    3. 为了解决overthinking，提出PTST（fig4），分成多阶段训练，每一阶段限制输出长度为L_s。
 1. **VisualPRM: An Effective Process Reward Model for Multimodal Reasoning** [[paper]](http://arxiv.org/abs/2503.10291) [[project page]](https://internvl.github.io/blog/2025-03-13-VisualPRM/) 先通过MC采样得到step-wise分数，然后训一个PRM。并且构建了一个基于MC采样的具有process得分的数据集VisualPRM400K
-1. **R1-VL: Learning to Reason with Multimodal Large Language Models via Step-wise Group Relative Policy Optimization** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12937) 提了两种step-wise reward：1）step acc，看policy的推理链上的步骤与GPT-4产生的“key step”的重合度；2）step validity，为1当且仅当completeness和reasoning logic都满足（没讲具体怎么实现的）
+1. **【:rocket:RL】R1-VL: Learning to Reason with Multimodal Large Language Models via Step-wise Group Relative Policy Optimization** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12937) 训练时其实还是正常的GRPO，只不过每个回答的reward计算时用到了对于每个step的评估。方法：1）先进行CoT sft warm up； 2）step-wise acc reward：eq2，注意，**是分配给整个solution的，只是这个reward用到了对于每个step的评估，所以称为step-wise。下面的validity reward同理**。当solution包含答案时才给分（正确为1+$\alpha k$，错误为$\alpha*k$），否则为0。k为该链中步骤和关键推理步骤（让GPT4从数据集中的每个cot中提取）；3）step-wise validity reward：包括完整性和逻辑性两个准则。完整性：回答必须包含背景、推理、答案三部分；逻辑性：背景必须在推理步之前，答案必须在推理步之后。同时满足完整性和逻辑性的solution才得到reward 1.
 1. **Visual-o1: Understanding ambiguous instructions via multi-modal multi-turn chain-of-thoughts reasoning** (ICLR 2025) [[paper]](https://openreview.net/pdf/e4711feed2e5512d1ff80753981a2c637d597fc7.pdf) training-free, prompt工程，多轮CoT
 1. **AtomThink: A Slow Thinking Framework for Multimodal Mathematical Reasoning** (CVPR 2025) [[paper]](http://arxiv.org/abs/2411.11930) 通过prompt限制每一步可能的action：一步推理/验证/得出结论，让LLM自己选；每个问题只产生一个探索路径；
-1. **OThink-MR1: Stimulating multimodal generalized reasoning capabilities via dynamic reinforcement learning** [[paper]](http://arxiv.org/abs/2503.16081) 提出根据training step来动态调整KL散度的权重
-1. **Boosting the Generalization and Reasoning of Vision Language Models with Curriculum Reinforcement Learning**  (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.07065) 三阶段从简到难的GRPO训练：判断题、多选题、open-ended generation。
-1. **Benchmarking Multimodal CoT Reward Model Stepwise by Visual Program** (Arxiv 2025.04) [[]] 利用visual programming技术，让code generation model生成解决问题的代码块，其优势在于可验证对错。然后利用MLLM将代码块和运行结果（作为step-wise annotation）转化为COT。以此生成的COT具有step-wise的多角度的annotation，用来训练一个RM（但没讲清楚RM的具体结构）。
-1. **CogCoM: A Visual Language Model with Chain-of-Manipulations Reasoning** (ICLR 2025) [[paper]](http://arxiv.org/abs/2402.04236) 让GPT4生成针对多模态问题的工具调用链，然后将其转为多轮的VQA链，每轮包含子图片、子问题和答案，用这些数据对MLLM做SFT
+1. **【:rocket:RL】OThink-MR1: Stimulating multimodal generalized reasoning capabilities via dynamic reinforcement learning** [[paper]](http://arxiv.org/abs/2503.16081) 提出根据training step来动态调整KL散度的权重
+1. **【:rocket:RL】Boosting the Generalization and Reasoning of Vision Language Models with Curriculum Reinforcement Learning**  (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.07065) 三阶段从简到难的GRPO训练：判断题、多选题、open-ended generation。
+1. **Benchmarking Multimodal CoT Reward Model Stepwise by Visual Program** (Arxiv 2025.04) [[http://arxiv.org/abs/2504.06606]] 利用visual programming技术，让code generation model生成解决问题的代码块，其优势在于可验证对错。然后利用MLLM将代码块和运行结果（作为step-wise annotation）转化为COT。以此生成的COT具有step-wise的多角度的annotation，用来训练一个RM（但没讲清楚RM的具体结构）。
+1. **【:wrench:SFT】CogCoM: A Visual Language Model with Chain-of-Manipulations Reasoning** (ICLR 2025) [[paper]](http://arxiv.org/abs/2402.04236) 让GPT4生成针对多模态问题的工具调用链，然后将其转为多轮的VQA链，每轮包含子图片、子问题和答案，用这些数据对MLLM做SFT
+1. **【:rocket:RL】SoTA with Less: MCTS-Guided Sample Selection for Data-Efficient Visual Reasoning Self-Improvement** [[paper]](http://arxiv.org/abs/2504.07934) 用MCTS筛选出更难的（至少迭代5次才做对的，以及迭代50次都没做对的）样本用来GRPO。是在qwen2.5VL-7B-instruct上做的RL。
+1. **【:wrench:SFT】Do we Really Need Visual Instructions? Towards Visual Instruction-Free Fine-tuning for Large Vision-Language Models** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.11427) 作者认为任务解决能力和感知能力应该是分开的两种能力，分别做纯文本和VL的sft，推理时混合这两种vector。
 
 ### 2024
 
 1. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
+
 2. **Visual Sketchpad: Sketching as a Visual Chain of Thought for Multimodal Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.09403) 让模型生成代码来调用工具根据现有的视觉输入产生新的视觉图像来作为推理的辅助，可以提升在各种视觉相关任务上的能力。
+
 3. **Task Navigator: Decomposing Complex Tasks for Multimodal Large Language Models** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024W/MAR/papers/Ma_Task_Navigator_Decomposing_Complex_Tasks_for_Multimodal_Large_Language_Models_CVPRW_2024_paper.pdf) 工程文章，借助LLM根据历史子问题和模型回答，迭代产生多个子问题，提升MLLM完成复杂视觉理解任务的能力。提出了VersaChallenge benchmark，包括常识推理、物理关系推理、未来预测等。
+
 4. **SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities** (CVPR 2024) [[paper]](https://ieeexplore.ieee.org/document/10658310/) 构建数据集，训了一个spatial-VLM用以解决空间任务
-5. **SpatialRGPT: Grounded Spatial Reasoning in Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.01584) 构建空间位置关系数据集，添加了一个深度图->语言模块，来增强几何推理
+
+5. **【:book:dataset】SpatialRGPT: Grounded Spatial Reasoning in Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.01584) 构建空间位置关系数据集，添加了一个深度图->语言模块，来增强几何推理
+
 6. **Multimodal Chain-of-Thought Reasoning in Language Models** (TMLR 2024) [[paper]](http://arxiv.org/abs/2302.00923) 两阶段训练，第一阶段接受文本和视觉的融合特征输出一个rationale（推理过程的文本描述），第二阶段将生成的rationale和原始文本结合，再与视觉特征融合重新输入模型产生预测。
+
 7. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
+
 8. **Link-Context Learning for Multimodal LLMs** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024/html/Tai_Link-Context_Learning_for_Multimodal_LLMs_CVPR_2024_paper.html) 提出一种新的fine-tune MLLM的方法：让context和query具有一定的causal联系，发现能提升模型通过context学习新概念的能力
+
 9. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
+
 10. **Natural Language Inference Improves Compositionality in Vision-Language Models** (ICLR 2025 Ratings 8866) [[paper]](https://openreview.net/forum?id=G3aXjVAJjU) prompt工程。任务是判断caption和图片相不相符。做法是让LLM生成与原始caption相符、不相符的yes or no问题，然后根据VLM在相符/不相符/原始问题上的logit来做出最终判断。
+
 11. **Interleaved-Modal Chain-of-Thought** (Arxiv 2024.11) [[paper]](https://arxiv.org/pdf/2411.19488) 在每一个reasoning step选出attention最高的visual tokens，保持原图的顺序插入到视觉和文本输入之后、文本rationale开始之前的位置，之后再据此生成rationale。按此方法迭代生成多个reasoning step，然后再在其后生成最终答案。
+
 12. **Progressive Multimodal Reasoning via Active Retrieval** (Arxiv 2024.12) [[paper]](Progressive Multimodal Reasoning via Active Retrieval) 提出了一个从外部知识库中根据当前推理步搜索相关知识，并通过MCTS来构建CoT的框架，并提出了在生成的CoT数据上进行PRM的方法。推理时根据PRM的打分，选取得分topk高的推理路径。
+
 13. **Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search** (Arxiv 2024.12) [[paper]](Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search) [[code]](https://github.com/HJYao00/Mulberry) 用MCTS构建CoT，其中每一步打分利用多个模型；同时构建反思链，做法是构建一个“低得分节点-反思prompt-高得分节点”的思维链。然后用生成的总共260K数据进行fine-tune。
+
 14. **Perception Tokens Enhance Visual Reasoning in Multimodal Language Models** (Arxiv 2024.12) [[paper]](http://arxiv.org/abs/2412.03548) 针对相对深度估计问题或计数问题，将深度图或bounding box转换为MLLM能处理的token来提供更精细的视觉信息，并加入到CoT中，来fine-tune MLLM。
+
 15. **MR-MLLM: Mutual Reinforcement of Multimodal Comprehension and Vision Perception** (Arxiv 2024.06) [[paper]](http://arxiv.org/abs/2406.15768)
-16. **Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
+
+16. **【:book:dataset】Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
+
 17. **Cantor: Inspiring Multimodal Chain-of-Thought of MLLM** (MM 2024) [[paper]](http://arxiv.org/abs/2404.16033) 纯prompt engineering文章。为了增强perception，提示MLLM根据问题找出具体该看什么图片细节，然后问一个MLLM让它专门去看，最后再综合它的输出来做最终回答
+
 18. **Self-Correction is More than Refinement: A Learning Framework for Visual and Language Reasoning Tasks** (Arxiv 2024.10) [[paper] ](https://arxiv.org/pdf/2410.04055) 给MLLM提供Self-correction Prompt，然后选出改对的和改错的样本分别作为正负样本进行DPO。
+
 19. **Beyond Embeddings: The Promise of Visual Table in Visual Reasoning** (EMNLP 2024) [[paper] ](http://arxiv.org/abs/2403.18252) 训练一个visual table generator，来产生对图片的详细描述。训练generator的方法：prompt GPT4V来生成visual table。总共从COCO找了61K数据。三阶段训练：1）caption数据上训练connector 2）在GPT生成的instruction tunning数据集上训练connector和LLM 3）在vis table数据上训练LLM。
-20. **From the Least to the Most: Building a Plug-and-Play Visual Reasoner via Data Synthesis** (Arxiv 2024.06) [[paper]](https://arxiv.org/pdf/2406.19934)
+
+20. **From the Least to the Most: Building a Plug-and-Play Visual Reasoner via Data Synthesis** (EMNLP 2024) [[paper]](https://arxiv.org/pdf/2406.19934) 先用grounding DINO检测图中物体获得一系列节点（单物体/多物体/整张图），让GPT4根据这些节点反推每一步回答什么样的子问题、怎样调用工具，才能从前一步的图片节点得到下一步的图片节点。最后让GPT4把子图、GPT4生成的子问题和工具调用参数合成一个推理链。让gpt4生成10k这样的数据用来训练llama3-8b做提提问题和合成的任务。之后让这个sft之后的llama3-8b生成50k推理链，用来sft一个llava-1.5-7b作为reasoner，其具备提出子问题和调用工具的能力。
+
+    
 
  ### 2023
 
@@ -449,6 +483,8 @@
 1. **Perception-R1: Pioneering Perception Policy with Reinforcement Learning** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.07954) 用GRPO训perception任务。一些发现：explicit thinking对于visual grounding、OCR、counting等perception任务不利；RL相比RL+SFT和SFT在复杂感知任务（多物体计数、detection）上提升较大，但在相对不那么复杂的grounding和OCR任务上相比RL+SFT和SFT提升有限。
 1. **Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.06287) 发现存在少量的attn head的attention map对物体的标注很准。找这样的head的方法：考虑最后一个input文本token对全部image token的attention，先从所有head中选出对image attention比较大的，然后从中选出10个spatial entropy最低的（计算方法为eq3）。然后统计每个head被选为top-10低 entropy的频率。选出最被频繁选中的head作为grounding head。取它们的attention map作为grounding的依据。
 1. **【hallucination new SOTA】Generate, but Verify: Reducing Visual Hallucination in Vision-Language Models with Retrospective Resampling** [[blog]](https://reverse-vlm.github.io/) 在生成过程中随时监测幻觉的产生并在产生幻觉时启动回溯，重新生成
+1. **【:book:dataset】Weaving Context Across Images: Improving Vision-Language Models through Focus-Centric Visual Chains** (Arxiv 2025.04) [[paper]](https://www.arxiv.org/pdf/2504.20199) 解决多图片任务，提了一个多图问题数据集，每个样本包含一个推理路径，每一步包含应该看哪一张图片。
+1. **【❄training-free】DyFo: A Training-Free Dynamic Focus Visual Search for Enhancing LMMs in Fine-Grained Visual Understanding** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.14920) 1）MCTS的reward：每一个节点表示一个子图，该节点的reward为：如果该节点的子图片和该节点的文本一致，则为1乘以子图占全图的面积比（？）2）根据树搜索结果获取最终预测的方法：每个节点对应于一个prediciton，权重为节点的reward。然后进行reweighted majority vote得出最终预测。3）根据文本获取子图的方法：让一个expert（“Lang-Segment-Anything”）来做，expert接受focus文本、action（focus或scatter），crop出一个子图4）提出下一个观测对象的过程：让MLLM基于当前的子图和文本，提出一个新的文本，用以提供给vision expert crop子图。
 
 ### 2024
 
@@ -470,16 +506,6 @@
 
 
 
-## Benchmarks
-
-### 2025
-
-1. **MPBench: A Comprehensive Multimodal Reasoning Benchmark for Process Errors Identification** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12505)  从三个角度评测多模态PRM：1）评估单步正确性的能力 2）从多条推理路径中选出最优的能力 3）从某一步的多个candidate中选出最优的能力
-2. **Multimodal RewardBench: Holistic Evaluation of Reward Models for Vision Language Models** [[paper]](https://arxiv.org/pdf/2502.14191) 所标注的数据为(prompt, chosen response, rejected response)三元组，但标注是trajectory-level的。用来测RM的preference是否准确。
-3. **L-RewardBench: A Challenging Benchmark for Vision-Language Generative Reward Models** [[paper]](https://arxiv.org/pdf/2411.17451)
-
-
-
 ## Alignment
 
 ### 2025
@@ -488,11 +514,13 @@
 
 
 
-## Interpretability
+## Interpretability and Understanding
 
 ### 2025
 
-1.**Towards Understanding How Knowledge Evolves in Large Vision-Language Models** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.02862)
+1.**Towards Understanding How Knowledge Evolves in Large Vision-Language Models** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.02862) 
+
+**Rethinking Visual Layer Selection in Multimodal LLMs** (Arxiv 2025.04) [[paper]]()
 
 ### 2024 
 
