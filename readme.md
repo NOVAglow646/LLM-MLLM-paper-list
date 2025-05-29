@@ -30,7 +30,7 @@
 
 # LLM
 
-## In-Context Learning
+## ⭐In-Context Learning
 
 ### 2024
 
@@ -191,7 +191,7 @@
 
 
 
-## Reasoning and Test-time compute
+## ⭐Reasoning and Test-time compute
 
 ### 2025
 
@@ -231,7 +231,11 @@
 
 1. **Step-by-Step Reasoning for Math Problems via Twisted Sequential Monte Carlo** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.01920) 方法：如何推理：在每个推理步t，让policy model产生N个下一步。利用训练好的value function给N个步打分，然后根据打分重新sample该步（line 18），之后到t+1，再让policy model在经过resample的第t步的基础上再生成下一步；如何训练value function（一个network）：loss function的优化目标为减小value function估计的分布和ground-truth分布之间的KL散度，其实让value function对于不同solution的某一步的打分接近outcome reward（每一步的监督信号相同，都是拟合outcome reward）
 
-1. 
+1. **Understanding R1-Zero-Like Training: A Critical Perspective** (Arxiv 2025.03) [[paper]](https://www.alphaxiv.org/abs/2503.20783) base model已经有aha moment。由于normalization，GRPO训练会倾向于输出更短的正确回答和更长的错误回答。
+
+1. **【🚀RL】Group-in-Group Policy Optimization for LLM Agent Training** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.10978) agent领域的文章。setting是每一步和环境交互之后都能立即得到环境给该step的score反馈。方法：在不额外增加GRPO rollout的情况下，合并相同的状态（对于agent领域，状态可能指所位于的网页页面，因此可以通过hash直接很快地合并），并把相同状态的下一步组成一个group进行GRPO训练。group内每个下一步的reward就是它们各自后续的的step-wise环境reward的累加。
+
+1. **S-GRPO: Early Exit via Reinforcement Learning in Reasoning Models** (Arxiv 2025.05) [[paper] ](https://arxiv.org/pdf/2505.07686) 主要解决GRPO导致大量无用思考的问题。RL 时每次只生成一条链，然后随机从中间步开始，停止思考，直接给出答案。对于正确的response，退出思考的位置越晚，reward越低，从而鼓励简洁的思考。
 
    
 
@@ -391,7 +395,7 @@
 
 
 
-## Improving Multimodal Reasoning
+## ⭐Improving Multimodal Reasoning
 
 ### 2025
 
@@ -418,7 +422,11 @@
 1. **【🔧SFT】CogCoM: A Visual Language Model with Chain-of-Manipulations Reasoning** (ICLR 2025) [[paper]](http://arxiv.org/abs/2402.04236) 让GPT4生成针对多模态问题的工具调用链，然后将其转为多轮的VQA链，每轮包含子图片、子问题和答案，用这些数据对MLLM做SFT
 1. **【🚀RL】SoTA with Less: MCTS-Guided Sample Selection for Data-Efficient Visual Reasoning Self-Improvement** [[paper]](http://arxiv.org/abs/2504.07934) 用MCTS筛选出更难的（至少迭代5次才做对的，以及迭代50次都没做对的）样本用来GRPO。是在qwen2.5VL-7B-instruct上做的RL。
 1. **【🔧SFT】Do we Really Need Visual Instructions? Towards Visual Instruction-Free Fine-tuning for Large Vision-Language Models** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.11427) 作者认为任务解决能力和感知能力应该是分开的两种能力，分别做纯文本和VL的sft，推理时混合这两种vector。
-1. **【🚀RL】VL-Rethinker: Incentivizing Self-Reflection of Vision-Language Models with Reinforcement Learning** (Arxiv 2025.05)
+1. **【🚀RL】VL-Rethinker: Incentivizing Self-Reflection of Vision-Language Models with Reinforcement Learning** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2504.08837) 提了两个技术：1）保存一些（问题，回答，advantage）对，将adv的数值作为概率重新sample，来强调非常对或者非常错的样本；2）Forecd rethinking: 由于发现常规的RL不一定能带来rethinking的pattern，提出在RL rollout时强者让模型进行self-verification/self-correction/self-questioning
+1. **【❄training-free】VisuoThink: Empowering LVLM Reasoning with Multimodal Tree Search** (Arxiv 2025.05)  [[paper]](http://arxiv.org/abs/2504.09130) tree-search + vision-text interleaved reasoning。需要借助外部工具来获得视觉辅助信息，所以最终预测由majority vote得出。
+1. 【**🚀RL**】**SophiaVL-R1: Reinforcing MLLMs Reasoning with Thinking Reward** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.17018) 除了GRPO之外，还训练了一个3B的reward model（训练数据来自QwenVL-72B对于QwenVL-7B的rollout数据的打分），用来作为thinking的reward（但是并不是step-wise的，而是对整个thinking的reward）。最终reward是outcome reward和thinking reward的和。
+1. **【🔧SFT+🚀RL】Pixel Reasoner: Incentivizing Pixel-Space Reasoning with Curiosity-Driven Reinforcement Learning** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15966) 两阶段训练，第一阶段通过SFT让MLLM初步具备输出bounding box的能力（训练数据构建：自带visual cues的数据集，或者是gpt4o生成）；第二阶段curiosity-driven RL，强制模型用bounding box辅助推理的比例不能低于某个阈值
+1. **【】Don't Look Only Once: Towards Multimodal Interactive Reasoning with Selective Visual Revisitation**
 
 ### 2024
 
@@ -471,7 +479,7 @@
 
 
 
-## Improving Perception/Mitigating Hallucination
+## ⭐Improving Perception/Mitigating Hallucination
 
 ### 2025
 
@@ -482,10 +490,11 @@
 1. **Towards Self-Improving Systematic Cognition for Next-Generation Foundation MLLMs** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.12303) 让gpt-4o做chain-of-description，生成高质量perception数据，来做fine-tune
 1. **Socratic Questioning: Learn to Self-guide Multimodal Reasoning in the Wild** (Arxiv 2025.01) [[paper]](http://arxiv.org/abs/2501.02964) 让模型自己提出子问题并回答，得到对图片的细致描述，再回答最开始的问题。构造这样的数据集之后用来做Fine-tune
 1. **Perception-R1: Pioneering Perception Policy with Reinforcement Learning** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.07954) 用GRPO训perception任务。一些发现：explicit thinking对于visual grounding、OCR、counting等perception任务不利；RL相比RL+SFT和SFT在复杂感知任务（多物体计数、detection）上提升较大，但在相对不那么复杂的grounding和OCR任务上相比RL+SFT和SFT提升有限。
-1. **Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.06287) 发现存在少量的attn head的attention map对物体的标注很准。找这样的head的方法：考虑最后一个input文本token对全部image token的attention，先从所有head中选出对image attention比较大的，然后从中选出10个spatial entropy最低的（计算方法为eq3）。然后统计每个head被选为top-10低 entropy的频率。选出最被频繁选中的head作为grounding head。取它们的attention map作为grounding的依据。
-1. **【hallucination new SOTA】Generate, but Verify: Reducing Visual Hallucination in Vision-Language Models with Retrospective Resampling** [[blog]](https://reverse-vlm.github.io/) 在生成过程中随时监测幻觉的产生并在产生幻觉时启动回溯，重新生成
+1. **【❄training-free】Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.06287) 发现存在少量的attn head的attention map对物体的标注很准。找这样的head的方法：考虑最后一个input文本token对全部image token的attention，先从所有head中选出对image attention比较大的，然后从中选出10个spatial entropy最低的（计算方法为eq3）。然后统计每个head被选为top-10低 entropy的频率。选出最被频繁选中的head作为grounding head。取它们的attention map作为grounding的依据。
+1. **【🔧SFT，hallucination new SOTA】Generate, but Verify: Reducing Visual Hallucination in Vision-Language Models with Retrospective Resampling** [[blog]](https://reverse-vlm.github.io/) 在生成过程中随时监测幻觉的产生并在产生幻觉时启动回溯，重新生成
 1. **【📊dataset】Weaving Context Across Images: Improving Vision-Language Models through Focus-Centric Visual Chains** (Arxiv 2025.04) [[paper]](https://www.arxiv.org/pdf/2504.20199) 解决多图片任务，提了一个多图问题数据集，每个样本包含一个推理路径，每一步包含应该看哪一张图片。
 1. **【❄training-free】DyFo: A Training-Free Dynamic Focus Visual Search for Enhancing LMMs in Fine-Grained Visual Understanding** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.14920) 1）MCTS的reward：每一个节点表示一个子图，该节点的reward为：如果该节点的子图片和该节点的文本一致，则为1乘以子图占全图的面积比（？）2）根据树搜索结果获取最终预测的方法：每个节点对应于一个prediciton，权重为节点的reward。然后进行reweighted majority vote得出最终预测。3）根据文本获取子图的方法：让一个expert（“Lang-Segment-Anything”）来做，expert接受focus文本、action（focus或scatter），crop出一个子图4）提出下一个观测对象的过程：让MLLM基于当前的子图和文本，提出一个新的文本，用以提供给vision expert crop子图。
+1. **【⚖DPO】 Unsupervised Visual Chain-of-Thought Reasoning via Preference Optimization** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.18397)
 
 ### 2024
 
