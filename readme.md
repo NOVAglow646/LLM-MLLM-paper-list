@@ -237,6 +237,10 @@
 
 1. **S-GRPO: Early Exit via Reinforcement Learning in Reasoning Models** (Arxiv 2025.05) [[paper] ](https://arxiv.org/pdf/2505.07686) 主要解决GRPO导致大量无用思考的问题。RL 时每次只生成一条链，然后随机从中间步开始，停止思考，直接给出答案。对于正确的response，退出思考的位置越晚，reward越低，从而鼓励简洁的思考。
 
+1. **Spurious Rewards: Rethinking Training Signals in RLVR** (Arxiv 2025.05) [[paper]](Spurious Rewards: Rethinking Training Signals in RLVR) 核心发现：对于qwen系列模型，使用随机/错误的reward进行RLVR也能带来显著提升；对于其他模型基本不行；原因分析（fig6、7）：对于code本身很强的模型如qwen2.5-math，虚假reward能带来推理模式的转变：anguage->code，从而导致性能提升）；对于code不行的如qwen2.5，wrong reward会导致language->code，从而带来提升。即，虚假reward能鼓励模型用自己擅长的方式推理从而获得提升。
+
+1. **Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.01939) 少量的high-entropy token上训练是获得多样的推理路径的关键，且有不错的scalability。还发现在其余大量的low-entropy token上训会导致性能下降。
+
    
 
 ### 2024 
@@ -426,7 +430,11 @@
 1. **【❄training-free】VisuoThink: Empowering LVLM Reasoning with Multimodal Tree Search** (Arxiv 2025.05)  [[paper]](http://arxiv.org/abs/2504.09130) tree-search + vision-text interleaved reasoning。需要借助外部工具来获得视觉辅助信息，所以最终预测由majority vote得出。
 1. 【**🚀RL**】**SophiaVL-R1: Reinforcing MLLMs Reasoning with Thinking Reward** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.17018) 除了GRPO之外，还训练了一个3B的reward model（训练数据来自QwenVL-72B对于QwenVL-7B的rollout数据的打分），用来作为thinking的reward（但是并不是step-wise的，而是对整个thinking的reward）。最终reward是outcome reward和thinking reward的和。
 1. **【🔧SFT+🚀RL】Pixel Reasoner: Incentivizing Pixel-Space Reasoning with Curiosity-Driven Reinforcement Learning** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15966) 两阶段训练，第一阶段通过SFT让MLLM初步具备输出bounding box的能力（训练数据构建：自带visual cues的数据集，或者是gpt4o生成）；第二阶段curiosity-driven RL，强制模型用bounding box辅助推理的比例不能低于某个阈值
-1. **【】Don't Look Only Once: Towards Multimodal Interactive Reasoning with Selective Visual Revisitation**
+1. **【🔧SFT】Don't Look Only Once: Towards Multimodal Interactive Reasoning with Selective Visual Revisitation** (Arxiv 2025.05) [[paper]]() 训一个linear head，输出input token positions的概率分布。最终输出的logit包含原始词汇空间和图片的position空间。训练数据构建方法：取QvQ的文本推理链，用Gemini提取视觉query，输给Qwen用relative attn机制（ICLR那篇）获取bounding box
+1. **【🔧SFT+🚀RL】Chain-of-Focus: Adaptive Visual Search and Zooming for Multimodal Reasoning via RL** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15436) SFT+RL两阶段训练。SFT数据构造过程：让gpt4.1生成问题和回答，回答正确性由qwen-vl-72b校对；让qwen-vl-72b判断问题是否可以回答还是需要更高的分辨率（zoom-in）；gpt4.1作为agent，调用detection、bbox adjusting、mm understanding等工具完成问题（工具其实就是qwen-vl-max），中间依靠ds-v3作为verifier进行反馈。
+1. **【🚀RL】GRIT: Teaching MLLMs to Think with Images** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15879) 不需要SFT或bbox标注。只需要20个训练数据。reward包括：1）format：包括think、bbox（有bbox就给分）、rethink；2）counting：bbox数量和gt数量一致就给分；3）acc：gpt-4o + BELU-1相似度给分；当输出了bbox，并不需要把crop下来的小图作为新的image输入，而是直接让模型依据bounding box进行推理（后续实验发现输出bbox能提升对image的attention）
+1. **【🔧SFT+🚀RL】SRPO: Enhancing Multimodal LLM Reasoning via Reflection-Aware Reinforcement Learning** 两阶段训练。1）SFT：为了注入新知识，先让模型产生回答，然后让gpt4o-mini照着gt cot，进行简化或者改正；2）RL：GRPO+reflection reward：根据reflection前后的正确性给不同的得分
+1. **【🚀RL】DeepEyes: Incentivizing "Thinking with Images" via Reinforcement Learning** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.14362)  不需要SFT和外部模型蒸馏，只通过outcome reward就能激发出grounding能力。RL reward: acc+format+tool，其中tool reward是回答正确且至少调用一次perception时给分. 在高分辨率、grounding、多模态推理上都有提升，在高分辨率任务上提升尤其显著（V*bench 91.3）.
 
 ### 2024
 
@@ -528,9 +536,9 @@
 
 ### 2025
 
-1.**Towards Understanding How Knowledge Evolves in Large Vision-Language Models** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.02862) 
-
-**Rethinking Visual Layer Selection in Multimodal LLMs** (Arxiv 2025.04) [[paper]]()
+1. **Towards Understanding How Knowledge Evolves in Large Vision-Language Models** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.02862) 
+1. **Rethinking Visual Layer Selection in Multimodal LLMs** (Arxiv 2025.04) [[paper]]()
+1. **SFT or RL? An Early Investigation into Training R1-Like Reasoning Large Vision-Language Models** (Arxiv 2025.05) [[paepr]](http://arxiv.org/abs/2504.11468) （还没细看）主要结论：先SFT会影响后续RL的性能；提了一个适用于多模态的GRPO：包括math输出准确性、bounding box的IoU等、开放式问题上的来自LLM as reward model的打分的多种奖励信号。
 
 ### 2024 
 
