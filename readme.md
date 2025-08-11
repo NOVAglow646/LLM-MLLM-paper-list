@@ -21,6 +21,7 @@
   * [Other](#other)
 * [MLLM](#mllm)
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
+  * ⭐[Think with Images](#think-with-images)
   * ⭐[Improving multimodal reasoning](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
   * [Interpretability and Understanding](#interpretability-and-understanding)
@@ -191,6 +192,10 @@
 
 
 
+
+
+
+
 ## ⭐Reasoning and Test-time compute
 
 ### 2025
@@ -244,6 +249,10 @@
 1. **【🚀RL】The Surprising Effectiveness of Negative Reinforcement in LLM Reasoning** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2506.01347) 发现在RL中，单独抑制错误回复能在pass@k up to 256都超过base，达到或赶超GRPO；而只强化正确回复能提升pass@1，但是pass@k会降低。
 
 1. **【🚀RL】The Hallucination Dilemma: Factuality-Aware Reinforcement Learning for Large Reasoning Models** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.24630)
+
+1. **【Latent CoT】CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2502.21074) 性能堪比正常cot的latent cot，做法是对齐teacher model（正常cot）的"The answer is:"的":"与student（latent）cot的":"的hidden states，而不对latent cot做额外的限制。
+
+1. **【Latent CoT】Think Silently, Think Fast: Dynamic Latent Compression of LLM Reasoning Chains** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2505.16552v4)
 
    
 
@@ -444,6 +453,7 @@
 1. **【🔧SFT+🚀RL】Reinforcing Spatial Reasoning in Vision-Language Models with Interwoven Thinking and Visual Drawing** (Arxiv 2025.05) [[paper]](https://arxiv.org/pdf/2505.23678) Qwen2.5 VL-72B蒸馏SFT+RL
 1. **【🔧SFT+🚀RL】Grounded Reinforcement Learning for Visual Reasoning** (Arxiv 2025.05) [[paper]](https://arxiv.org/pdf/2505.23678) 方法：1）构建SFT data：用qwen2.5-VL-72B做MCTS，要求每一步都输出grounding的坐标，选出答案正确的路径和corrected路径用于SFT；2）SFT+RL，RL reward中包含format reward，要求按照think-tool call-observation-answer的顺序输出
 1. **【🚀RL】Advancing Multimodal Reasoning Capabilities of Multimodal Large Language Models via Visual Perception Reward** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.07218) 不需要SFT，只需要从现有的mm cot里用一个LLM提取视觉相关的步骤作为gt，之后在这些问题上GRPO时加入perception reward：让一个LLM判断在RL rollout中是否存在gt中的视觉信息，按照出现的比例给分，出现0个就是0分，出现全部就是1分。只需要1.4K数据就能达到很好的性能。
+1. **【❄Training-free】PyVision: Agentic Vision with Dynamic Tooling** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.07998) prompt engineering，让advanced closed-source MLLM获得“合成新工具”的能力
 
 ### 2024
 
@@ -455,7 +465,7 @@
 
 4. **SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities** (CVPR 2024) [[paper]](https://ieeexplore.ieee.org/document/10658310/) 构建数据集，训了一个spatial-VLM用以解决空间任务
 
-5. **【📊:dataset】SpatialRGPT: Grounded Spatial Reasoning in Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.01584) 构建空间位置关系数据集，添加了一个深度图->语言模块，来增强几何推理
+5. **【📊dataset】SpatialRGPT: Grounded Spatial Reasoning in Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.01584) 构建空间位置关系数据集，添加了一个深度图->语言模块，来增强几何推理
 
 6. **Multimodal Chain-of-Thought Reasoning in Language Models** (TMLR 2024) [[paper]](http://arxiv.org/abs/2302.00923) 两阶段训练，第一阶段接受文本和视觉的融合特征输出一个rationale（推理过程的文本描述），第二阶段将生成的rationale和原始文本结合，再与视觉特征融合重新输入模型产生预测。
 
@@ -487,14 +497,32 @@
 
 20. **From the Least to the Most: Building a Plug-and-Play Visual Reasoner via Data Synthesis** (EMNLP 2024) [[paper]](https://arxiv.org/pdf/2406.19934) 先用grounding DINO检测图中物体获得一系列节点（单物体/多物体/整张图），让GPT4根据这些节点反推每一步回答什么样的子问题、怎样调用工具，才能从前一步的图片节点得到下一步的图片节点。最后让GPT4把子图、GPT4生成的子问题和工具调用参数合成一个推理链。让gpt4生成10k这样的数据用来训练llama3-8b做提提问题和合成的任务。之后让这个sft之后的llama3-8b生成50k推理链，用来sft一个llava-1.5-7b作为reasoner，其具备提出子问题和调用工具的能力。
 
-    
-
-    
-
  ### 2023
 
 1. **Multi-modal Latent Space Learning for Chain-of-Thought Reasoning in Language Models** (Arxiv 2023.12) [[paper]](http://arxiv.org/abs/2312.08762) 认为CLIP的视觉特征不利于CoT推理。训练一个diffusion model来获取视觉特征。
 2. **DDCoT: Duty-Distinct Chain-of-Thought Prompting for Multimodal Reasoning in Language Models** (NeurIPS 2023) [[paper]](http://arxiv.org/abs/2310.16436) 方法流程：1）让LLM拆解问题并判断哪些子问题不需要视觉信息就能回答；2）对于LLM回答不了的、需要视觉信息的子问题，调用现成的的VQA模型； 3）将子问题和它们的回答（包含视觉信息的文本描述）作为rationale让LLM推理。
+
+
+
+## ⭐Think with Images
+
+### Survey/dataset/understanding
+
+#### 2025
+
+1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
+1. **【Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
+1. **【Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
+
+
+
+### Methods
+
+#### 2025
+
+1. **【🔧SFT】Thinking with Generated Images** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.22525) 主要目标是更好地生成。构建SFT数据：包含反思和设定中间目标。
+2. **【🚀RL】Visual Planning: Let's Think Only with Images** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.11409) 主要解决grid-based navigation问题。纯视觉CoT.
+3. **ReFocus: Visual Editing as a Chain of Thought for Structured Image Understanding** (ICML 2025) [[paper]](https://openreview.net/forum?id=a7qFlPOTix)
 
 
 
@@ -552,6 +580,7 @@
 1. **SFT or RL? An Early Investigation into Training R1-Like Reasoning Large Vision-Language Models** (Arxiv 2025.05) [[paepr]](http://arxiv.org/abs/2504.11468) （还没细看）主要结论：先SFT会影响后续RL的性能；提了一个适用于多模态的GRPO：包括math输出准确性、bounding box的IoU等、开放式问题上的来自LLM as reward model的打分的多种奖励信号。
 1. **More Thinking, Less Seeing? Assessing Amplified Hallucination in Multimodal Reasoning Models** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2505.21523) 主要结论：1）base、RL、 SFT+RL的perception越来越差。2）reasoning会导致perception变差的原因包括对visual tk的attn降低；3）SFT+RL相比纯RL，RH-AUC更低，即perception和reasoning无法同时更好。
 1. **Hidden in plain sight: VLMs overlook their visual representations** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.08008) 对于视觉中心任务，标准的视觉评估策略（只采用视觉特征）的效果往往远比转向VLM评估策略后效果好；视觉信息在逐层中并没有发生明显的衰减现象，但是在最后一层中会倾向于发生性能的大幅度下降；对比微调视觉编码器和微调视觉连接器，微调底座LLM的提升最为明显，但仍然对比视觉本身存在一定差距；LLM微调显著提升了模型在关键区域定位并利用视觉表征的能力。
+1. **Pixels, Patterns, but No Poetry: To See The World like Humans** (Arxiv 2025.07) [[paper] ](https://www.alphaxiv.org/abs/2507.16863) 提了一个benchmark（TET），包含一些像识别验证码之类的perception任务。对于这些任务，SFT vision encoder是关键，只训LLM几乎没用。
 
 ### 2024 
 
