@@ -18,9 +18,11 @@
   * ⭐[Think with Images](#think-with-images)
   * ⭐[Improving multimodal reasoning](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
+  * [Vision-language Alignment](#vision-language-alignment)
   * [Interpretability and Understanding](#interpretability-and-understanding)
   * [Unifying understanding and generation](#unifying-understanding-and-generation)
   * [Multimodal ICL](#multimodal-icl)
+  * [Reward Model](#reward-model)
   * [Prompt Learning](#prompt-learning)
   
 * [LLM](#llm) 
@@ -202,6 +204,8 @@
 13. **【🔧SFT+🚀RL】OpenThinkIMG: Learning to Think with Images via Visual Tool Reinforcement Learning** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.08617) 合成了工具调用的CoT。SFT+GRPO。
 14. **【🚀RL】Learning Only with Images: Visual Reinforcement Learning with Reasoning, Rendering, and Visual Feedback** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.20766) 应用场景很局限，解决的是image-to-code任务（从chart或webpage生成图片）。提了一个仅需要图片数据的RL框架：让模型调用工具渲染图片，然后比较渲染出来的图片和原始图片的相似度作为reward。
 15. **【🔧SFT+🚀RL】Thyme: Think Beyond Images** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.11630) SFT+RL训练模型生成code来操作图片进行推理的能力。构建了SFT和RL数据集。提出了一种dynamic temperature的策略：生成代码时temperature=0，生成文本推理时temperature=1.0
+16. **【🔧SFT+🚀RL】Reinforced Visual Perception with Tools ** (Arxiv 2025.09) [[paper]](https://arxiv.org/pdf/2509.01656)
+17. **【🔧SFT+🚀RL】Mini-o3: Scaling Up Reasoning Patterns and Interaction Turns for Visual Search** (Arxiv 2025.09) [[paper] ](https://arxiv.org/pdf/2509.07969)构建了一个多轮visual search的SFT数据集。针对RL rollout时回复过长导致超出context从而无法判断对错的问题，提出将这部分回复mask掉，不计算reward。
 
 
 
@@ -243,11 +247,11 @@
 
 
 
-## Alignment
+## Vision-language Alignment
 
 ### 2025
 
-1. **MM-RLHF: The Next Step Forward in Multimodal LLM Alignment** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.10391) 提出Critique-Based Reward Model, 以及一整套从收集数据到laligenmt的pipeline。
+1. **Visual Representation Alignment for Multimodal Large Language Models** [[paper]](https://arxiv.org/pdf/2509.07979) 发现MLLM随着层数加深，视觉表示离CLIP encoder的输出越来越远。提出对齐模型中间某一层表示和visual encoder的输出。（发现32层中，第16层效果最好）。
 
 
 
@@ -297,7 +301,11 @@
 
 
 
+## Reward Model
 
+### 2025
+
+1. **MM-RLHF: The Next Step Forward in Multimodal LLM Alignment** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.10391) 提出Critique-Based Reward Model, 以及一整套从收集数据到laligenmt的pipeline。
 
 
 
