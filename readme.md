@@ -62,6 +62,8 @@
 4. **Multimodal RewardBench: Holistic Evaluation of Reward Models for Vision Language Models** [[paper]](https://arxiv.org/pdf/2502.14191) 所标注的数据为(prompt, chosen response, rejected response)三元组，但标注是trajectory-level的。用来测RM的preference是否准确。
 5. **L-RewardBench: A Challenging Benchmark for Vision-Language Generative Reward Models** [[paper]](https://arxiv.org/pdf/2411.17451)
 6. **VisuLogic: A Benchmark for Evaluating Visual Reasoning in Multi-modal Large Language Models** [[paper]](http://arxiv.org/abs/2504.15279) 类似公务员题的图形推理benchmark
+7. **GeoLaux: A Benchmark for Evaluating MLLMs’ Geometry Performance**
+   **on Long-Step Problems Requiring Auxiliary Lines** [[paper]](https://arxiv.org/pdf/2508.06226v1) 几何题benchmark，平均所需推理步数为6.51。包含41.8%的需要辅助线才能做的题。
 
 ### 2024
 
@@ -123,8 +125,9 @@
 1. **【🔧SFT+🚀RL】Open Vision Reasoner: Transferring Linguistic Cognitive Behavior for Visual Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.05255) 1）language only SFT；2）language/multimodal PPO，verifiable 0/1 reward
 1. **【🔧SFT+🚀RL】OpenThinkIMG: Learning to Think with Images via Visual Tool Reinforcement Learning** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.08617) 合成了工具调用的CoT。SFT+GRPO。
 1. **【🚀RL】Learning Only with Images: Visual Reinforcement Learning with Reasoning, Rendering, and Visual Feedback** [[paper]](http://arxiv.org/abs/2507.20766) 应用场景很局限，解决的是image-to-code任务（从chart或webpage生成图片）。提了一个仅需要图片数据的RL框架：让模型调用工具渲染图片，然后比较渲染出来的图片和原始图片的相似度作为reward。
+1. **【🔧SFT+🚀RL】Look Again, Think Slowly: Enhancing Visual Reflection in Vision-Language Models** (EMNLP 2025) [[paper]](https://arxiv.org/pdf/2509.12132) 发现随着生成的进行，对vision token的注意力下降。提出在RL中将对vision token的attn加入reward。
 
-### 2024
+### **2024**
 
 1. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
 
@@ -182,6 +185,7 @@
 1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
 1. **【Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
 1. **【Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
+1. **【Survey】Explain Before You Answer: A Survey on Compositional Visual Reasoning** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.17298)
 
 
 
@@ -274,6 +278,10 @@
 
 
 ## Unifying Understanding and Generation
+
+### 2025
+
+1. **OneCAT: Decoder-Only Auto-Regressive Model for Unified Understanding and Generation** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.03498) 将图像理解、生成、编辑用一个统一的transformer实现。每个transformer block中的FFN有三个，分别处理image、text和discrete visual token。
 
 ### 2024
 
@@ -543,6 +551,10 @@
 1. **【Latent CoT】LLMs are Single-threaded Reasoners: Demystifying the Working Mechanism of Soft Thinking** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.16552) 实验上发现soft thinking的性能、模型输出概率分布、logit lens的解码词汇都很像greedy。提出采用Gumbel-softmax，将模型原先的输出概率进行扰动，然后再soft thinking，性能就能超过vanilla cot。
 
 1. **【🔧SFT+🚀RL】On-Policy RL Meets Off-Policy Experts: Harmonizing Supervised Fine-Tuning and Reinforcement Learning via Dynamic Weighting** 发现SFT时模型的性能变化趋势：性能下降-性能恢复-过拟合。提出了RL和SFT同时进行的策略：1）通过一个总的、慢慢decay的weight从SFT逐步过渡到RL；2）对SFT的loss进行token-wise reweighting：模型预测概率过高和过低的都会降低weight（概率过低的会导致policy shift太严重；概率过高的会限制RL探索）
+
+1. **【Latent CoT】Soft Tokens, Hard Truths** (Arxiv 2025.09) 用RL来训Latent thinking，不需要discrete cot监督
+
+1. **【Latent CoT】SIM-CoT: Supervised Implicit Chain-of-Thought** (Arxiv 2025.09) 对每个latent token直接加监督：单独将第k个latent作为prefix输入进一个独立的支路（仍然是LLM作为backbone）去预测第k步的CoT文本。
 
    
 
