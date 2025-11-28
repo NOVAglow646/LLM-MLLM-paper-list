@@ -2,7 +2,7 @@
 
 本仓库记录关于LLM (large language models)和Multimodal LLM的文章。看过的文章会至少用一句话概括内容，有些还会有notes。只有标题的就是还没看过的，只是先存档到这里。
 
-有关OOD generalization的paper list请移步：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
+有关OOD generalization的paper list请移步（OOD list 已停止维护）：[link](https://github.com/NOVAglow646/OOD-Generalization-Paper-Reading-Notes)
 
 ###  🔥 Updates
 
@@ -210,6 +210,7 @@
 15. **【🔧SFT+🚀RL】Thyme: Think Beyond Images** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.11630) SFT+RL训练模型生成code来操作图片进行推理的能力。构建了SFT和RL数据集。提出了一种dynamic temperature的策略：生成代码时temperature=0，生成文本推理时temperature=1.0
 16. **【🔧SFT+🚀RL】Reinforced Visual Perception with Tools ** (Arxiv 2025.09) [[paper]](https://arxiv.org/pdf/2509.01656)
 17. **【🔧SFT+🚀RL】Mini-o3: Scaling Up Reasoning Patterns and Interaction Turns for Visual Search** (Arxiv 2025.09) [[paper] ](https://arxiv.org/pdf/2509.07969)构建了一个多轮visual search的SFT数据集。针对RL rollout时回复过长导致超出context从而无法判断对错的问题，提出将这部分回复mask掉，不计算reward。
+18. **【🔧SFT+🚀RL】DeepeyesV2: Toward Agentic Multimodal Model** [[paper]](http://arxiv.org/abs/2511.05271) 比较接近真正agent MLLM的形态，能产生code调用工具并联网搜索。
 
 
 
@@ -229,7 +230,7 @@
 1. **【📊dataset】Weaving Context Across Images: Improving Vision-Language Models through Focus-Centric Visual Chains** (Arxiv 2025.04) [[paper]](https://www.arxiv.org/pdf/2504.20199) 解决多图片任务，提了一个多图问题数据集，每个样本包含一个推理路径，每一步包含应该看哪一张图片。
 1. **【❄training-free】DyFo: A Training-Free Dynamic Focus Visual Search for Enhancing LMMs in Fine-Grained Visual Understanding** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.14920) 1）MCTS的reward：每一个节点表示一个子图，该节点的reward为：如果该节点的子图片和该节点的文本一致，则为1乘以子图占全图的面积比（？）2）根据树搜索结果获取最终预测的方法：每个节点对应于一个prediciton，权重为节点的reward。然后进行reweighted majority vote得出最终预测。3）根据文本获取子图的方法：让一个expert（“Lang-Segment-Anything”）来做，expert接受focus文本、action（focus或scatter），crop出一个子图4）提出下一个观测对象的过程：让MLLM基于当前的子图和文本，提出一个新的文本，用以提供给vision expert crop子图。
 1. **【⚖DPO】 Unsupervised Visual Chain-of-Thought Reasoning via Preference Optimization** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.18397)
-1. 【🔧SFT 】Analyzing and Mitigating Object Hallucination: A Training Bias Perspectiv (Arxiv 2025.08) [[paper]](https://www.alphaxiv.org/abs/2508.04567) 构建了一个benchmark发现MLLM更容易在训练见过的图片上出现幻觉，且用一个probe发现lm_head的输出相比其他MLLM模块的输出导致幻觉。提出了只SFT lm head的一种做法。
+1. **【🔧SFT 】Analyzing and Mitigating Object Hallucination: A Training Bias Perspectiv (Arxiv 2025.08)** [[paper]](https://www.alphaxiv.org/abs/2508.04567) 构建了一个benchmark发现MLLM更容易在训练见过的图片上出现幻觉，且用一个probe发现lm_head的输出相比其他MLLM模块的输出导致幻觉。提出了只SFT lm head的一种做法。
 
 ### 2024
 
@@ -269,6 +270,7 @@
 1. **More Thinking, Less Seeing? Assessing Amplified Hallucination in Multimodal Reasoning Models** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2505.21523) 主要结论：1）base、RL、 SFT+RL的perception越来越差。2）reasoning会导致perception变差的原因包括对visual tk的attn降低；3）SFT+RL相比纯RL，RH-AUC更低，即perception和reasoning无法同时更好。
 1. **Hidden in plain sight: VLMs overlook their visual representations** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.08008) 对于视觉中心任务，标准的视觉评估策略（只采用视觉特征）的效果往往远比转向VLM评估策略后效果好；视觉信息在逐层中并没有发生明显的衰减现象，但是在最后一层中会倾向于发生性能的大幅度下降；对比微调视觉编码器和微调视觉连接器，微调底座LLM的提升最为明显，但仍然对比视觉本身存在一定差距；LLM微调显著提升了模型在关键区域定位并利用视觉表征的能力。
 1. **Pixels, Patterns, but No Poetry: To See The World like Humans** (Arxiv 2025.07) [[paper] ](https://www.alphaxiv.org/abs/2507.16863) 提了一个benchmark（TET），包含一些像识别验证码之类的perception任务。对于这些任务，SFT vision encoder是关键，只训LLM几乎没用。
+1. **SEEING BUT NOT BELIEVING: PROBING THE DISCONNECT BETWEEN VISUAL ATTENTION AND ANSWER CORRECTNESS IN VLMS** (Arxiv 2025.10) [[paper]](https://www.arxiv.org/pdf/2510.17771) 在qwen、llava、gemma上都发现了：浅层attn关注文本，深层attn关注局部视觉区域；发现了seeing but not believing现象，提出了一个training free的方法让模型关注深层区域：在大约100个样本上找出定位能力最强的top 10%的层，然后用这些层的attn来强调关键的视觉区域。
 
 ### 2024 
 
@@ -282,6 +284,8 @@
 ### 2025
 
 1. **OneCAT: Decoder-Only Auto-Regressive Model for Unified Understanding and Generation** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.03498) 将图像理解、生成、编辑用一个统一的transformer实现。每个transformer block中的FFN有三个，分别处理image、text和discrete visual token。
+1. **FutureSightDrive: Thinking Visually with Spatio-Temporal CoT for Autonomous Driving** (NeurIPS 2025) [[paper]](http://arxiv.org/abs/2505.17685) 将VQGAN的词汇表和原本的文本词汇表拼到一起，Qwen-VL学会生成图片，来实现自动驾驶规划。
+1. **MathCanvas: Intrinsic Visual Chain-of-Thought for Multimodal Mathematical Reasoning** (Arxiv 2025.10) [[paper]](http://arxiv.org/abs/2510.14958) 训BAGEL去学会如何在几何题上做辅助线。两阶段训练，第一阶段用5.2M数据训BAGEL的generation expert怎么根据instruction生成编辑后的图像，第二阶段用219K数据做SFT，让模型学会
 
 ### 2024
 
@@ -555,6 +559,8 @@
 1. **【Latent CoT】Soft Tokens, Hard Truths** (Arxiv 2025.09) 用RL来训Latent thinking，不需要discrete cot监督
 
 1. **【Latent CoT】SIM-CoT: Supervised Implicit Chain-of-Thought** (Arxiv 2025.09) 对每个latent token直接加监督：单独将第k个latent作为prefix输入进一个独立的支路（仍然是LLM作为backbone）去预测第k步的CoT文本。
+
+1. **【🔧SFT，实验效果显著】On the Generalization of SFT: a Reinforcement Learning Perspective with Reward Rectification** [[paper]](https://www.alphaxiv.org/abs/2508.05629) 将SFT的loss写成RL的形式后，SFT可以视作：当模型输出严格=专家序列时reward才为1（奖励稀疏）、且乘以了 $\frac{1}{\pi_\theta(y^*|x)}$ 因子（会导致policy当对专家action给出低概率时，policy grad被放大，作者认为这会导致过拟合）。方法：对每个token的loss乘以 $\pi_\theta(y^*_t|y^*_{t-1},x)$
 
    
 
