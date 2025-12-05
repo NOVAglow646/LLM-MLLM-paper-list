@@ -214,6 +214,7 @@
 19. **【🔧SFT+🚀RL】V-Thinker: Interactive Thinking with Images** [[paper]](http://arxiv.org/abs/2511.04460) (Arxiv 2025.11) 生成code编辑图片。设计了一种数据生成策略，借助GPT5，从一个知识集和和一个工具集和出发，让GPT5生成问题以及cot的同时不断对它们进行扩充。cot中包含代码以及渲染出的图片（V-Interaction-400K）。perception SFT + cold start SFT + GRPO RL。
 20. **【🔧SFT】DeepSketcher: Internalizing Visual Manipulation for Multimodal Reasoning** (Arxiv 2025.09, ICLR26 withdrawn) [[paper]](http://arxiv.org/abs/2511.04460) 给MLLM加了一个image embedding editing模块，输入为原始图片emb和模型自己生成的action embedding，输出为编辑后的图片（但是没给可视化）。监督信号为code渲染出的中间步图片。还构建了一个用code渲染图片的cot数据集。
 21. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
+22. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
 
 
 
@@ -565,7 +566,11 @@
 
 1. **【🔧SFT，实验效果显著】On the Generalization of SFT: a Reinforcement Learning Perspective with Reward Rectification** [[paper]](https://www.alphaxiv.org/abs/2508.05629) 将SFT的loss写成RL的形式后，SFT可以视作：当模型输出严格=专家序列时reward才为1（奖励稀疏）、且乘以了 $\frac{1}{\pi_\theta(y^*|x)}$ 因子（会导致policy当对专家action给出低概率时，policy grad被放大，作者认为这会导致过拟合）。方法：对每个token的loss乘以 $\pi_\theta(y^*_t|y^*_{t-1},x)$
 
-   
+1. **【🚀RL】Group Sequence Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出GSPO：将重要性采样ratio从token-wise计算改为整个sequence的log sum exp，同一序列内所有token使用相同的权重，避免了token-wise的ratio的高方差。
+
+1. **【🚀RL】Soft Adaptive Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出SRPO：
+
+1. **【Latent CoT】Seek in the Dark: Reasoning via Test-Time Instance-Level Policy Gradient in Latent Space** [[paper]](http://arxiv.org/abs/2505.13308) 用self-reward作为奖励信号，在测试时通过REINFORCE算法迭代优化生成的latent，取得了相比discrete CoT的显著提升。
 
 ### 2024 
 
