@@ -6,7 +6,8 @@
 
 ###  🔥 Updates
 
-- 2025-03 接下来主要关注MLLM的reasoning和perception的问题，以及LLM的reasoning、test-time scaling
+- 2025-11 接下来主要关注agentic MLLM，latent visual reasoning，unified model，world model等。
+- 2025-03 接下来主要关注MLLM的reasoning和perception的问题，以及LLM的reasoning、test-time scaling。
 - 2024-12 接下来主要关注VLM的hallucination、reasoning问题。同时也会follow ICL的最新进展。
 - 2024-05 接下来主要关注探究ICL机制的相关工作
 
@@ -16,11 +17,13 @@
   
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * ⭐[Think with Images](#think-with-images)
-  * ⭐[Improving multimodal reasoning](#improving-multimodal-reasoning)
+  * [Latent Reasoning](#latent-reasoning)
+  * ⭐[Improving Multimodal Reasoning](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
+  * [Video models](#video-models)
   * [Vision-language Alignment](#vision-language-alignment)
   * [Interpretability and Understanding](#interpretability-and-understanding)
-  * [Unifying understanding and generation](#unifying-understanding-and-generation)
+  * [Unifying Understanding and Generation](#unifying-understanding-and-generation)
   * [Multimodal ICL](#multimodal-icl)
   * [Reward Model](#reward-model)
   * [Prompt Learning](#prompt-learning)
@@ -42,7 +45,7 @@
 
 ## Survey
 
-#### 2025
+### 2025
 
 1.**Mind with Eyes: from Language Reasoning to Multimodal Reasoning** [[paper]](https://arxiv.org/pdf/2503.18071) 多模态推理综述
 
@@ -75,6 +78,14 @@
 5. **DOES SPATIAL COGNITION EMERGE IN FRONTIER MODELS? ** (Arxiv Oct 2024) [[paper]](http://arxiv.org/abs/2410.06468) 提出了空间理解任务 SPACE benchmark。发现目前最强的模型在简单的空间任务上性能很差
 6. **Towards Interpreting Visual Information Processing in Vision-Language Models** (ICLR 2025 886) 检查物体信息是否编码在了特定的vision token里。发现object token去掉之后模型掉点最严重。高gradient token影响也挺大。
 7. **Zero-Shot Visual Reasoning by Vision-Language Models: Benchmarking and Analysis**
+
+
+
+## Latent Reasoning
+
+### 2025
+
+1. **Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
 
 
 
@@ -178,7 +189,7 @@
 
 ## ⭐Think with Images
 
-### Survey/dataset/understanding
+### Survey/Benchmark/Dataset/Understanding
 
 #### 2025
 
@@ -186,6 +197,7 @@
 1. **【Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
 1. **【Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
 1. **【Survey】Explain Before You Answer: A Survey on Compositional Visual Reasoning** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.17298)
+1. **【Benchmark】TIR-Bench: A Comprehensive Benchmark for Agentic Thinking-with-Images Reasoning** [[paper]](http://arxiv.org/abs/2511.01833) 构建了一些强烈依赖于工具调用才能做对的任务。一些takeaway：1）在一些复杂任务（比如给出拼图顺序，fig 5）上，单纯的perception（o3展现出的”understanding the images as a whole”）没用，必须得借助code。2）在rotationOCR任务上，单纯增加text-based COT的数据进行SFT几乎没有提升
 
 
 
@@ -215,6 +227,8 @@
 20. **【🔧SFT】DeepSketcher: Internalizing Visual Manipulation for Multimodal Reasoning** (Arxiv 2025.09, ICLR26 withdrawn) [[paper]](http://arxiv.org/abs/2511.04460) 给MLLM加了一个image embedding editing模块，输入为原始图片emb和模型自己生成的action embedding，输出为编辑后的图片（但是没给可视化）。监督信号为code渲染出的中间步图片。还构建了一个用code渲染图片的cot数据集。
 21. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
 22. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
+23. **【🔧SFT+🚀RL】Thinking with Programming Vision: Towards a Unified View for Thinking with Images** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.03746) 在构造数据时，通过对原图做增强扰动来保证工具调用的必要性。RL时候通过给问题预先标注好标准工具的元数据，实现了dense reward：奖励使用预先定义的工具、crop的IoU、以及对使用超出定义的有用工具的奖励。同时还使用了多种惩罚reward以避免reward hacking等行为。
+24. **【🚀RL】Thinking with Images via Self-Calling Agent** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08511)
 
 
 
@@ -253,6 +267,14 @@
 13. **Look Twice Before You Answer: Memory-Space Visual Retracing for Hallucination Mitigation in Multimodal Large Language Models** (ICLR 2025 rejected) [[openreview]](https://openreview.net/forum?id=tkg9XMFo0H) 找output prediction entropy最大的层，然后将visual token作为额外信息，加入到FFN之后
 14. **Self-Correcting Decoding with Generative Feedback for Mitigating Hallucinations in Large Vision-Language Models** (ICLR 2025) [[openreview]](https://openreview.net/forum?id=tTBXePRKSx) idea：生成模型引导VLM以减少幻觉。用LVLMs产生的初始响应生成图像，该图像充当辅助视觉参考，并提供自我反馈。
 15. **Dense Connector for MLLMs** [[paper]](https://arxiv.org/abs/2405.13800) (NeurIPS 2024)
+
+
+
+## Video models
+
+### 2025
+
+**Thinking with Video: Video Generation as a Promising Multimodal Reasoning Paradigm** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2511.04570) 发现在视觉中心任务上，视频生成模型（sora2）性能逼近顶尖闭源vlm（gpt5、gemini2.5pro等）。但在文本中心任务上性能差距较大。可以通过Self-consistency和ICL来提升sora做推理任务的能力。
 
 
 
@@ -571,6 +593,8 @@
 1. **【🚀RL】Soft Adaptive Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出SRPO：
 
 1. **【Latent CoT】Seek in the Dark: Reasoning via Test-Time Instance-Level Policy Gradient in Latent Space** [[paper]](http://arxiv.org/abs/2505.13308) 用self-reward作为奖励信号，在测试时通过REINFORCE算法迭代优化生成的latent，取得了相比discrete CoT的显著提升。
+
+1. **【🚀RL, step-wise reward】Segment Policy Optimization: Effective Segment-Level Credit Assignment in RL for Large Language Models** [[paper]](http://arxiv.org/abs/2505.23564) 
 
 ### 2024 
 
