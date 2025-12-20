@@ -67,6 +67,7 @@
 6. **VisuLogic: A Benchmark for Evaluating Visual Reasoning in Multi-modal Large Language Models** [[paper]](http://arxiv.org/abs/2504.15279) 类似公务员题的图形推理benchmark
 7. **GeoLaux: A Benchmark for Evaluating MLLMs’ Geometry Performance**
    **on Long-Step Problems Requiring Auxiliary Lines** [[paper]](https://arxiv.org/pdf/2508.06226v1) 几何题benchmark，平均所需推理步数为6.51。包含41.8%的需要辅助线才能做的题。
+8. **MM-CoT:A Benchmark for Probing Visual Chain-of-Thought Reasoning in Multimodal Models** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08228) 任务是让模型选出视觉正确、逻辑连贯的cot。发现主要错误类型为（比例从高到低）：重复已有context内容而无法做出实质性的下一步推理、被其他视觉信息干扰、依赖文本先验而没有正确利用视觉信息
 
 ### 2024
 
@@ -81,11 +82,17 @@
 
 
 
-## Latent Reasoning
+## Latent Multimodal Reasoning
 
 ### 2025
 
-1. **Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
+1. **【🔧SFT+🚀RL】Machine Mental Imagery: Empower Multimodal Reasoning with Latent Visual Tokens** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2506.17218) 让模型生成latent token辅助推理。两阶段SFT+RL。SFT阶段一对齐MLLM生成的latent和gt helper image；SFT阶段二将生成的latent作为input，进行SFT。RL为GRPO，loss只加在text上（因为生成的latent
+2. **【🔧SFT+🚀RL】Latent Visual Reasoning** (Arxiv 2025.10) [[paper]](https://openreview.net/forum?id=j84WR5ORsC) 只在visual cot（带crop图）上SFT + GRPO，SFT阶段对齐latent和gt img embedding。
+3. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
+4. **【🔧SFT+🚀RL】Monet: Reasoning in Latent Visual Space Beyond Images and Language** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2511.21395) 提出了一种新的latent visual reasoning SFT方法，和一种针对latent thinking的强化学习算法VLPO。在分布内和分布外任务上取得了提升。
+5. **Mull-Tokens: Modality-Agnostic Latent Thinking** (Arxiv 2025.12)
+6. **【Test-time training】Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** (Arxiv 2025.12) [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
+7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
 
 
 
@@ -225,10 +232,9 @@
 18. **【🔧SFT+🚀RL】DeepeyesV2: Toward Agentic Multimodal Model** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.05271) 比较接近真正agent MLLM的形态，能产生code调用工具并联网搜索。
 19. **【🔧SFT+🚀RL】V-Thinker: Interactive Thinking with Images** [[paper]](http://arxiv.org/abs/2511.04460) (Arxiv 2025.11) 生成code编辑图片。设计了一种数据生成策略，借助GPT5，从一个知识集和和一个工具集和出发，让GPT5生成问题以及cot的同时不断对它们进行扩充。cot中包含代码以及渲染出的图片（V-Interaction-400K）。perception SFT + cold start SFT + GRPO RL。
 20. **【🔧SFT】DeepSketcher: Internalizing Visual Manipulation for Multimodal Reasoning** (Arxiv 2025.09, ICLR26 withdrawn) [[paper]](http://arxiv.org/abs/2511.04460) 给MLLM加了一个image embedding editing模块，输入为原始图片emb和模型自己生成的action embedding，输出为编辑后的图片（但是没给可视化）。监督信号为code渲染出的中间步图片。还构建了一个用code渲染图片的cot数据集。
-21. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
-22. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
-23. **【🔧SFT+🚀RL】Thinking with Programming Vision: Towards a Unified View for Thinking with Images** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.03746) 在构造数据时，通过对原图做增强扰动来保证工具调用的必要性。RL时候通过给问题预先标注好标准工具的元数据，实现了dense reward：奖励使用预先定义的工具、crop的IoU、以及对使用超出定义的有用工具的奖励。同时还使用了多种惩罚reward以避免reward hacking等行为。
-24. **【🚀RL】Thinking with Images via Self-Calling Agent** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08511)
+21. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
+22. **【🔧SFT+🚀RL】Thinking with Programming Vision: Towards a Unified View for Thinking with Images** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.03746) 在构造数据时，通过对原图做增强扰动来保证工具调用的必要性。RL时候通过给问题预先标注好标准工具的元数据，实现了dense reward：奖励使用预先定义的工具、crop的IoU、以及对使用超出定义的有用工具的奖励。同时还使用了多种惩罚reward以避免reward hacking等行为。
+23. **【🚀RL】Thinking with Images via Self-Calling Agent** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08511)
 
 
 
@@ -594,7 +600,13 @@
 
 1. **【Latent CoT】Seek in the Dark: Reasoning via Test-Time Instance-Level Policy Gradient in Latent Space** [[paper]](http://arxiv.org/abs/2505.13308) 用self-reward作为奖励信号，在测试时通过REINFORCE算法迭代优化生成的latent，取得了相比discrete CoT的显著提升。
 
-1. **【🚀RL, step-wise reward】Segment Policy Optimization: Effective Segment-Level Credit Assignment in RL for Large Language Models** [[paper]](http://arxiv.org/abs/2505.23564) 
+1. **【🚀RL, step-wise reward】Segment Policy Optimization: Effective Segment-Level Credit Assignment in RL for Large Language Models** (NeurIPS 2025)[[paper]](http://arxiv.org/abs/2505.23564) 
+
+1. **【Analysis】On the Interplay of Pre-Training, Mid-Training, and RL on Reasoning Language Models** (Arxiv 2025.12) [[paper]](https://arxiv.org/abs/2512.07783v1) 构建合成任务训练集，探究了不同难度的数据上进行RL的影响。发现：对于OOD任务，仅有ID边缘（能答对部分）进行RL才能获得提升；当基模型没有OOD能力时，RL没用，但混入至少1%的数据时，RL就能提升OOD了；引入过程奖励能提升OOD能力。
+
+1. **RLAR: ** (Arxiv 2025.12) [[paper]]()
+
+1. 
 
 ### 2024 
 
