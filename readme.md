@@ -37,7 +37,7 @@
   * [Interpretability](#interpretability)
   * [Other](#other)
   
-  
+* [Agents](#agents)
 
 
 
@@ -606,7 +606,7 @@
 
 1. **RLAR: ** (Arxiv 2025.12) [[paper]]()
 
-1. 
+1. **【🚀RL, step-wise reward】Supervised Reinforcement Learning: From Expert Trajectories to Step-wise Reasoning** (Arxiv 2025.10) [[paper]](http://arxiv.org/abs/2510.25992) 提出SRL，RL rollout时让policy基于专家序列的前k-1步开始，生成下一步k，计算policy生成的第k步与专家第k步的相似度作为reward。
 
 ### 2024 
 
@@ -763,3 +763,12 @@
 1. **VisionLLaMA: A Unified LLaMA Interface for Vision Tasks** (Arxiv Mar 2024) [[paper]](https://arxiv.org/pdf/2403.00522) Vision LLaMa
 1. **Are We on the Right Way for Evaluating Large Vision-Language Models?** (Arxiv April 2024) [[paper]](http://arxiv.org/abs/2403.20330) 现有的vision-language数据集质量不够好，很多问题都是只看语言部分就能解决，或者问题在类似的训练语料中见过，根本不需要图片；构建了一个高质量的vision-language数据集。
    1. **Visual Instruction Tuning** (NeurIPS 2023) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2023/file/6dcf277ea32ce3288914faf369fe6de0-Paper-Conference.pdf) LLaVA
+
+
+
+# Agents
+
+### 2025
+
+1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
+2. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
