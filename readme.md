@@ -33,6 +33,7 @@
   * ⭐[In-Context Learning](#in-context-learning)
   * [ICL Theories](#icl-theories)
   * ⭐[Reasoning and Test-time compute](#reasoning-and-test-time-compute)
+  * [Distillation](#distillation)
   * [Alignment](#alignment)
   * [Interpretability](#interpretability)
   * [Other](#other)
@@ -68,6 +69,7 @@
 7. **GeoLaux: A Benchmark for Evaluating MLLMs’ Geometry Performance**
    **on Long-Step Problems Requiring Auxiliary Lines** [[paper]](https://arxiv.org/pdf/2508.06226v1) 几何题benchmark，平均所需推理步数为6.51。包含41.8%的需要辅助线才能做的题。
 8. **MM-CoT:A Benchmark for Probing Visual Chain-of-Thought Reasoning in Multimodal Models** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08228) 任务是让模型选出视觉正确、逻辑连贯的cot。发现主要错误类型为（比例从高到低）：重复已有context内容而无法做出实质性的下一步推理、被其他视觉信息干扰、依赖文本先验而没有正确利用视觉信息
+9. **SpatialTree: How Spatial Abilities Branch Out in MLLMs** (Arxiv 2025.12) [[paper]](https://arxiv.org/abs/2512.20617) 将MLLM的能力划分为perception、mental mapping（与语言对齐）、mental simulation（推理和规划）、agentic（根据上一步状态产生下一步动作）。低难度正交，但对难度大的任务有用；简单任务上RL会overthinking，导致简单任务上提升不大；auto think（自适应RL长度）有用。
 
 ### 2024
 
@@ -93,6 +95,8 @@
 5. **Mull-Tokens: Modality-Agnostic Latent Thinking** (Arxiv 2025.12)
 6. **【Test-time training】Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** (Arxiv 2025.12) [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
 7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
+8. **VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
+9. **Latent Implicit Visual Reasonin** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
 
 
 
@@ -235,6 +239,11 @@
 21. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
 22. **【🔧SFT+🚀RL】Thinking with Programming Vision: Towards a Unified View for Thinking with Images** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.03746) 在构造数据时，通过对原图做增强扰动来保证工具调用的必要性。RL时候通过给问题预先标注好标准工具的元数据，实现了dense reward：奖励使用预先定义的工具、crop的IoU、以及对使用超出定义的有用工具的奖励。同时还使用了多种惩罚reward以避免reward hacking等行为。
 23. **【🚀RL】Thinking with Images via Self-Calling Agent** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08511)
+24. **【🚀RL】Figure It Out: Improve the Frontier of Reasoning with Active Visual Thinking** [[paper]](https://www.alphaxiv.org/abs/2512.24297?chatId=019b7d9d-3028-76a9-9b9f-a0b17bc39c79) RL中用了一个adaptive reward：当问题依赖辅助图片时用了工具做对给1.0，不依赖时用了工具给0.2，否则0。测的是纯文本数学任务（AIME、AMC）等。让qwen3-vl-32b用code渲染图像，能超过qwen3-32b-thinking。
+25. **【🔧SFT+🚀RL】SenseNova-MARS: Empowering Multimodal Agentic Reasoning and Search via Reinforcement Learnin** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.24330?chatId=019b7da4-9112-7df0-beb3-ab57204a2b4c)  
+    * 工具：crop +（txt/img）search。
+    * 数据合成：先选出qwen2.5-vl-7b 8次回答中答对少于1次的难样本，用gemini2.5-pro-flash合成trajectory，用gpt4o校验格式、逻辑和答案正确性（3000条SFT数据）。
+    * RL设计：针对多模态工具调用回复之间长度、reward差异大的问题，提出BN-GSPO，在GSPO的基础上，算出group relative adv之后，再在batch之内将各group的adv进行normalization。
 
 
 
@@ -643,6 +652,12 @@
 3. **Large Language Models Cannot Self-Correct Reasoning Yet** (ICLR 2024) [[paper]](https://arxiv.org/abs/2310.01798) Self-correct 有时会失败
 
 
+
+## Distillation
+
+### 2024
+
+1. **On-Policy Distillation of Language Models** (ICLR 2024) [[paper]](https://proceedings.iclr.cc/paper_files/paper/2024/file/5be69a584901a26c521c2b51e40a4c20-Paper-Conference.pdf?utm_source=chatgpt.com) 提出了on-policy distillation
 
 
 
