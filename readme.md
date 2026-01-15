@@ -86,6 +86,10 @@
 
 ## Latent Multimodal Reasoning
 
+### 2026
+
+1. **【🔧SFT】Forest Before Trees: Latent Superposition for Efficient Visual Reasoning** [[paper]](http://arxiv.org/abs/2601.06803) 方法很简洁：将SFT的next-token label（比如位置t）替换为soft label（位置t开始到结尾T的每个位置的logits的沿窗口的softmax）。
+
 ### 2025
 
 1. **【🔧SFT+🚀RL】Machine Mental Imagery: Empower Multimodal Reasoning with Latent Visual Tokens** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2506.17218) 让模型生成latent token辅助推理。两阶段SFT+RL。SFT阶段一对齐MLLM生成的latent和gt helper image；SFT阶段二将生成的latent作为input，进行SFT。RL为GRPO，loss只加在text上（因为生成的latent
@@ -142,12 +146,13 @@
 1. **【🔧SFT+🚀RL】Grounded Reinforcement Learning for Visual Reasoning** (Arxiv 2025.05) [[paper]](https://arxiv.org/pdf/2505.23678) 方法：1）构建SFT data：用qwen2.5-VL-72B做MCTS，要求每一步都输出grounding的坐标，选出答案正确的路径和corrected路径用于SFT；2）SFT+RL，RL reward中包含format reward，要求按照think-tool call-observation-answer的顺序输出
 1. **【🚀RL】Advancing Multimodal Reasoning Capabilities of Multimodal Large Language Models via Visual Perception Reward** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.07218) 不需要SFT，只需要从现有的mm cot里用一个LLM提取视觉相关的步骤作为gt，之后在这些问题上GRPO时加入perception reward：让一个LLM判断在RL rollout中是否存在gt中的视觉信息，按照出现的比例给分，出现0个就是0分，出现全部就是1分。只需要1.4K数据就能达到很好的性能。
 1. **【❄Training-free】PyVision: Agentic Vision with Dynamic Tooling** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.07998) prompt engineering，让advanced closed-source MLLM获得“合成新工具”的能力
-1. **【🚀RL】Perception-Aware Policy Optimization for Multimodal Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.06448) 提出PAPO，将corrupted image、question和正常GRPO rollout得到的response一起重新输给模型，得到corrupted response。最大化corrupted response和原始response的KL散度。为了解决最大化KL距离导致的collpase，还引入了一个entropy loss，同时降低原始和corrupted的entropy
+1. **【🚀RL】Perception-Aware Policy Optimization for Multimodal Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.06448) 实验上发现perception error占了MLLM推理错误的大多数情况。提出PAPO，将corrupted image、question和正常GRPO rollout得到的response一起重新输给模型，得到corrupted response。最大化corrupted response和原始response的KL散度。为了解决最大化KL距离导致的collpase，还引入了一个entropy loss，同时降低原始和corrupted的entropy
 1. **【🔧SFT+🚀RL】M2-Reasoning: Empowering MLLMs with Unified General and Spatial Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.08306) **数据：**构建了pure-text cot和RLVR的数据，包含general reasoning和spatial reasoning，用MLLM筛出了不同难度和推理质量较高的数据。**训练：**tricks包括：1）data sampling时每个batch任务一样，每个step从所有任务均匀采（但没有对此的ablation）；2）训练过程中online acc为0.5的会被分配最高的权重（eq 6），权重向acc=0和acc=1递减；3）空间推理问题，因为有些问题需要估计大小和距离，提出了一种连续reward
 1. **【🔧SFT+🚀RL】Open Vision Reasoner: Transferring Linguistic Cognitive Behavior for Visual Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.05255) 1）language only SFT；2）language/multimodal PPO，verifiable 0/1 reward
 1. **【🔧SFT+🚀RL】OpenThinkIMG: Learning to Think with Images via Visual Tool Reinforcement Learning** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.08617) 合成了工具调用的CoT。SFT+GRPO。
 1. **【🚀RL】Learning Only with Images: Visual Reinforcement Learning with Reasoning, Rendering, and Visual Feedback** [[paper]](http://arxiv.org/abs/2507.20766) 应用场景很局限，解决的是image-to-code任务（从chart或webpage生成图片）。提了一个仅需要图片数据的RL框架：让模型调用工具渲染图片，然后比较渲染出来的图片和原始图片的相似度作为reward。
 1. **【🔧SFT+🚀RL】Look Again, Think Slowly: Enhancing Visual Reflection in Vision-Language Models** (EMNLP 2025) [[paper]](https://arxiv.org/pdf/2509.12132) 发现随着生成的进行，对vision token的注意力下降。提出在RL中将对vision token的attn加入reward。
+1. **More Thought, Less Accuracy? On the Dual Nature of Reasoning in Vision-Language Models** [[paper]](https://arxiv.org/pdf/2509.25848) 有趣的实验发现：1）perception error为主 2）随着cot变长，立即让其输出答案时acc先上升后下降；3）提前终止回答可减少perception error比例。方法：用GPT5生成一堆针对图片的正误描述，插到RL的推理链中并立即让模型判断对错，作为perception reward，与正常的outcome acc reward一起使用。
 
 ### **2024**
 
@@ -239,8 +244,8 @@
 21. **【🔧SFT】Skywork-R1V4: Toward Agentic Multimodal Intelligence through Interleaved Thinking with Images and DeepResearch** (Arxiv 2025.12) [[paper]](https://arxiv.org/pdf/2512.02395) 能think with images和web search的agent MLLM。数据构建流程是关键。纯SFT训练。
 22. **【🔧SFT+🚀RL】Thinking with Programming Vision: Towards a Unified View for Thinking with Images** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.03746) 在构造数据时，通过对原图做增强扰动来保证工具调用的必要性。RL时候通过给问题预先标注好标准工具的元数据，实现了dense reward：奖励使用预先定义的工具、crop的IoU、以及对使用超出定义的有用工具的奖励。同时还使用了多种惩罚reward以避免reward hacking等行为。
 23. **【🚀RL】Thinking with Images via Self-Calling Agent** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.08511)
-24. **【🚀RL】Figure It Out: Improve the Frontier of Reasoning with Active Visual Thinking** [[paper]](https://www.alphaxiv.org/abs/2512.24297?chatId=019b7d9d-3028-76a9-9b9f-a0b17bc39c79) RL中用了一个adaptive reward：当问题依赖辅助图片时用了工具做对给1.0，不依赖时用了工具给0.2，否则0。测的是纯文本数学任务（AIME、AMC）等。让qwen3-vl-32b用code渲染图像，能超过qwen3-32b-thinking。
-25. **【🔧SFT+🚀RL】SenseNova-MARS: Empowering Multimodal Agentic Reasoning and Search via Reinforcement Learnin** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.24330?chatId=019b7da4-9112-7df0-beb3-ab57204a2b4c)  
+24. **【🚀RL】Figure It Out: Improve the Frontier of Reasoning with Active Visual Thinking** [[paper]](https://www.alphaxiv.org/abs/2512.24297?chatId=019b7d9d-3028-76a9-9b9f-a0b17bc39c79) 提出FIGR。RL中用了一个adaptive reward：当问题依赖辅助图片时用了工具做对给1.0，不依赖时用了工具给0.2，否则0。测的是纯文本数学任务（AIME、AMC）等。让qwen3-vl-32b用code渲染图像，能超过qwen3-32b-thinking。
+25. **【🔧SFT+🚀RL】SenseNova-MARS: Empowering Multimodal Agentic Reasoning and Search via Reinforcement Learning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.24330?chatId=019b7da4-9112-7df0-beb3-ab57204a2b4c)  
     * 工具：crop +（txt/img）search。
     * 数据合成：先选出qwen2.5-vl-7b 8次回答中答对少于1次的难样本，用gemini2.5-pro-flash合成trajectory，用gpt4o校验格式、逻辑和答案正确性（3000条SFT数据）。
     * RL设计：针对多模态工具调用回复之间长度、reward差异大的问题，提出BN-GSPO，在GSPO的基础上，算出group relative adv之后，再在batch之内将各group的adv进行normalization。
