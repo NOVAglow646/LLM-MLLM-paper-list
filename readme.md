@@ -88,7 +88,7 @@
 
 ### 2026
 
-1. **【🔧SFT】Forest Before Trees: Latent Superposition for Efficient Visual Reasoning** [[paper]](http://arxiv.org/abs/2601.06803) 方法很简洁：将SFT的next-token label（比如位置t）替换为soft label（位置t开始到结尾T的每个位置的logits的沿窗口的softmax）。
+1. **【🔧SFT】Forest Before Trees: Latent Superposition for Efficient Visual Reasoning** [[paper]](http://arxiv.org/abs/2601.06803) (Arxiv 2026.01) 方法很简洁：将SFT的next-token label（比如位置t）替换为soft label（位置t开始到结尾T的每个位置的logits的沿窗口的softmax）。
 
 ### 2025
 
@@ -207,6 +207,10 @@
 
 ### Survey/Benchmark/Dataset/Understanding
 
+### 2026
+
+1. **What, Whether and How? Unveiling Process Reward Models for Thinking with Images Reasoning** [[paper]](http://arxiv.org/abs/2602.08346) 首个用于评测VLM在TWI推理任务重的PRM能力的benchmark；将TWI推理过程中的错误类型归为7类
+
 #### 2025
 
 1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
@@ -218,6 +222,10 @@
 
 
 ### Methods
+
+### 2026
+
+1. **Reliable Thinking with Images** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.12916) 提出了reliability metric来衡量TWI推理过程的可靠性：计算高熵token的平均熵作为reliability。实验发现reliability与acc负相关，且视觉证据阶段到后续推理阶段的reliability上升越多，则acc越高。据此提出了一种先筛选高reliability traces再以reliability加权做majority voting的方法。
 
 #### 2025
 
@@ -253,6 +261,10 @@
 
 
 ## ⭐Improving Perception/Mitigating Hallucination
+
+### 2026
+
+1. **【🚀RL】Zooming without Zooming: Region-to-Image Distillation for Fine-Grained Multimodal Perception** (Arxiv 2026.02) [[paper]](https://www.alphaxiv.org/abs/2602.11858) 针对细粒度感知任务，提出了无需在测试时调用工具的方法：让教师模型基于原始图片I和问题Q找出关键区域B，然后在关键区域上加bbox，得到I‘，同时对原始问题Q加一个“关注bounding box区域“的prompt。直接在这个数据上直接RL，感知能力提升显著。
 
 ### 2025
 
@@ -295,6 +307,18 @@
 ### 2025
 
 **Thinking with Video: Video Generation as a Promising Multimodal Reasoning Paradigm** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2511.04570) 发现在视觉中心任务上，视频生成模型（sora2）性能逼近顶尖闭源vlm（gpt5、gemini2.5pro等）。但在文本中心任务上性能差距较大。可以通过Self-consistency和ICL来提升sora做推理任务的能力。
+
+
+
+## Think with Videos
+
+### 2026
+
+1. **Video-Thinker: Sparking "Thinking with Videos" via Reinforcement Learning** (Arxiv 2025.10) [[paper]](https://www.arxiv.org/abs/2510.23473) SFT+GRPO教会模型先输出<time>定位关键片段，再输出<caption>来描述，最后<think>的结构化思维方式。数据合成策略：
+   * 针对 “有描述无推理” 的数据：这类数据具备精确的时间段标注和详尽的动作描述，但缺乏深度的逻辑问答。利用 DeepSeek-R1 强大的逻辑推理能力，以原有的细粒度片段描述为上下文，合成出需要跨越多个时间片段进行综合分析的复杂多跳问题，将感知任务升级为逻辑推理任务。
+   * 针对 “有问答无细节” 的数据（如 STAR、ScaleLong、LVBench）：这类数据虽然包含极具挑战性的推理问答，却往往缺失了支撑答案的具体视觉描述。团队借助 Gemini-2.5-Flash-Lite 的长窗口视觉理解能力，以标准答案为锚点进行反向推导，为关键时间窗口生成了与答案强相关的精细化视觉描述（Answer-Conditioned Captions），填补了推理过程中视觉证据的空白。
+
+
 
 
 
@@ -787,6 +811,18 @@
 
 
 # Agents
+
+### 2026
+
+1. **AI Agent Systems: Architectures, Applications, and Evaluation** [[paper]](http://arxiv.org/abs/2601.01743) 综述
+2. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
+   1. **粗筛：**从原始文本筛选出带有多步操作的；
+   2. **提取：**模型从中提取工作流和工具定义；
+   3. **序列合成：**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
+   4. **提高序列复杂度（见A.4）：** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
+
+
+
 
 ### 2025
 
