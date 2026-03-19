@@ -100,7 +100,7 @@
 6. **【Test-time training】Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** (Arxiv 2025.12) [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
 7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
 8. **VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
-9. **Latent Implicit Visual Reasonin** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
+9. **Latent Implicit Visual Reasoning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
 
 
 
@@ -210,6 +210,10 @@
 ### 2026
 
 1. **What, Whether and How? Unveiling Process Reward Models for Thinking with Images Reasoning** [[paper]](http://arxiv.org/abs/2602.08346) 首个用于评测VLM在TWI推理任务重的PRM能力的benchmark；将TWI推理过程中的错误类型归为7类
+2. **VTC-Bench: Evaluating Agentic Multimodal Models via Compositional Visual Tool Chaining** [[paper]](https://arxiv.org/abs/2603.15030) 合成了long-horizon（其实长程的构造主要也还是人工刻意扰动为主，如加噪、旋转，加一些任务用来测试开源和闭源模型visual tool-use的能力。测了opencv支持的32种工具（相比常见的，多了如颜色变换、二值化、边缘检测、调整亮度、计算连通区域等传统CV操作）。一些比较novel的发现:
+   * 相比任务的GT tool-chain（工具调用次数平均3~7次，不过肉眼看case发现有些工具调用比较牵强，并非必需），绝大部分情况下模型会倾向于调用更少次数的tool（大部分是1次或两次）
+   * 从7B到gemini，system prompt都是越详细越好；给出GT tool时更好
+   * 闭源模型中，gemini3.0（code 51.2/interface 51.0）最强，显著强于gpt5.2（code 44.6/interface 40.7）
 
 #### 2025
 
