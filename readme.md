@@ -13,12 +13,14 @@
 
 ## Directory
 
+⭐ 表示文章较多；🔥表示当前主要关注并更新
+
 * [MLLM](#mllm)
   
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
-  * ⭐[Think with Images](#think-with-images)
-  * [Latent Reasoning](#latent-reasoning)
-  * ⭐[Improving Multimodal Reasoning](#improving-multimodal-reasoning)
+  * ⭐🔥[Think with Images (Methods&Understanding&Benchmarks)](#think-with-images)
+  * [Latent Multimodal Reasoning](#latent-multimodal-reasoning)
+  * ⭐[Improving Multimodal Reasoning (pure-text reasoning mainly)](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
   * [Video models](#video-models)
   * [Vision-language Alignment](#vision-language-alignment)
@@ -89,6 +91,7 @@
 ### 2026
 
 1. **【🔧SFT】Forest Before Trees: Latent Superposition for Efficient Visual Reasoning** [[paper]](http://arxiv.org/abs/2601.06803) (Arxiv 2026.01) 方法很简洁：将SFT的next-token label（比如位置t）替换为soft label（位置t开始到结尾T的每个位置的logits的沿窗口的softmax）。
+1. **Imagination Helps Visual Reasoning, But Not Yet in Latent Space** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.22766) 分析发现目前的latent visual reasoning方法存在latent token同质化的问题，提出了将中间步图像中的信息以文字形式描述出来的推理范式
 
 ### 2025
 
@@ -99,8 +102,8 @@
 5. **Mull-Tokens: Modality-Agnostic Latent Thinking** (Arxiv 2025.12)
 6. **【Test-time training】Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** (Arxiv 2025.12) [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
 7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
-8. **VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
-9. **Latent Implicit Visual Reasoning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
+8. **【🚀RL】VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
+9. **【🔧SFT】Latent Implicit Visual Reasoning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
 
 
 
