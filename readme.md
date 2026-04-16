@@ -215,14 +215,31 @@
    * 从7B到gemini，system prompt都是越详细越好；给出GT tool时更好
    * 闭源模型中，gemini3.0（code 51.2/interface 51.0）最强，显著强于gpt5.2（code 44.6/interface 40.7）
 3. **HopChain: Multi-Hop Data Synthesis for Generalizable Vision-Language Reasoning** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.17024)
+4. **【Understanding】What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.01334) 分析了qwen2.5-vl和qwen3-vl，做crop，用GRPO训
+   1. outcome based tool RL主要提升模型内在能力，而不是tool能力
+   2. tool能力变化导致总体性能提升主要体现在降低将一开始不用tool会做的题在RL后改错的比例
+   3. RL过程中，用tool在某一ckpt不用tool不会做的难题集上的性能基本不变，甚至略有下降，说明tool并不能突破模型的能力边界
+
 
 #### 2025
 
 1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
+
 1. **【Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
+
 1. **【Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
+
 1. **【Survey】Explain Before You Answer: A Survey on Compositional Visual Reasoning** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.17298)
+
 1. **【Benchmark】TIR-Bench: A Comprehensive Benchmark for Agentic Thinking-with-Images Reasoning** [[paper]](http://arxiv.org/abs/2511.01833) 构建了一些强烈依赖于工具调用才能做对的任务。一些takeaway：1）在一些复杂任务（比如给出拼图顺序，fig 5）上，单纯的perception（o3展现出的”understanding the images as a whole”）没用，必须得借助code。2）在rotationOCR任务上，单纯增加text-based COT的数据进行SFT几乎没有提升
+
+1. **【Understanding】Revisiting the Necessity of Lengthy Chain-of-Thought in Vision-centric Reasoning Generalization** [[paper]](http://arxiv.org/abs/2511.22586) insight：（至少在迷宫、Vstar、HRBench上）SFT时学习使用crop工具并不是泛化最好的推理模式。TWI SFT可能导致过拟合。
+
+   1. L-CoT (纯文本cot), G-CoT (输出bbox文字的cot，但不重新插入图片), V-CoT (插入crop图片的cot)SFT后的RL性能上限接近（RL训练了1000步，远大于大部分文章的setting），只是收敛速度上V-CoT>G-CoT>L-CoT；
+
+   1. ②“最小”CoT上做SFT，再RL，泛化能力最强（迷宫size泛化、Vstar → Vstar/HRBench），显著优于V-CoT+RL。“最小“CoT是指只包含答案的cot。
+
+      
 
 
 
@@ -262,7 +279,16 @@
     * 工具：crop +（txt/img）search。
     * 数据合成：先选出qwen2.5-vl-7b 8次回答中答对少于1次的难样本，用gemini2.5-pro-flash合成trajectory，用gpt4o校验格式、逻辑和答案正确性（3000条SFT数据）。
     * RL设计：针对多模态工具调用回复之间长度、reward差异大的问题，提出BN-GSPO，在GSPO的基础上，算出group relative adv之后，再在batch之内将各group的adv进行normalization。
-26. **CodeDance: A Dynamic Tool-integrated MLLM for Executable Visual Reasoning** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.17312) 
+26. **CodeDance: A Dynamic Tool-integrated MLLM for Executable Visual Reasoning** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.17312) SFT数据：简单样本鼓励直接输出答案；RL reward设计：鼓励在动态选出的难样本上用tool，否则不鼓励tool；惩罚code执行失败
+27. **HiDe: Rethinking The Zoom-IN method in High Resolution MLLMs via Hierarchical Decoupling** (Arxiv 2025.10) [[paper]](https://arxiv.org/pdf/2510.00054) 
+    1. 揭示了zoom-in（crop+scale up分辨率）对细粒度perception有用的原因：zoom-in有用的原因主要是crop有用，且crop有用是因为①移除了背景中的semantic distractors②减少了无关context长度；scale up用处不大。
+    2. 发现相比first answer token，question中的semantic token对于img的attb更能精确定位物体
+    3. 获取关键区域token之后，将其按照原始相对位置组成新的图片（非关键区域0填充）效果最好
+
+28. **CodeV: Code with Images for Faithful Visual Reasoning via Tool-Aware Policy Optimization** (CVPR 2026) [[paper]](https://arxiv.org/pdf/2511.19661) 也发现了DeepEyes、PixelReasoner等模型会依赖错误的工具调用得高分。提出了过程监督RL，来解决工具调用的faithfulness的问题：用qwen2.5-VL-32B做judge，给出原始问题和工具返回结果，让judge回答“does this piece of evidence help with this question?”。一些insight：
+    1. outcome reward训出来的模型存在unfaithfulness：工具错误，答案正确
+    2. 过程监督能有效缓解工具使用的unfaithfulness
+
 
 
 
