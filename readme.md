@@ -214,6 +214,7 @@
    * 相比任务的GT tool-chain（工具调用次数平均3~7次，不过肉眼看case发现有些工具调用比较牵强，并非必需），绝大部分情况下模型会倾向于调用更少次数的tool（大部分是1次或两次）
    * 从7B到gemini，system prompt都是越详细越好；给出GT tool时更好
    * 闭源模型中，gemini3.0（code 51.2/interface 51.0）最强，显著强于gpt5.2（code 44.6/interface 40.7）
+3. **HopChain: Multi-Hop Data Synthesis for Generalizable Vision-Language Reasoning** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.17024)
 
 #### 2025
 
@@ -261,6 +262,7 @@
     * 工具：crop +（txt/img）search。
     * 数据合成：先选出qwen2.5-vl-7b 8次回答中答对少于1次的难样本，用gemini2.5-pro-flash合成trajectory，用gpt4o校验格式、逻辑和答案正确性（3000条SFT数据）。
     * RL设计：针对多模态工具调用回复之间长度、reward差异大的问题，提出BN-GSPO，在GSPO的基础上，算出group relative adv之后，再在batch之内将各group的adv进行normalization。
+26. **CodeDance: A Dynamic Tool-integrated MLLM for Executable Visual Reasoning** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.17312) 
 
 
 
@@ -566,6 +568,10 @@
 
 ## ⭐Reasoning and Test-time compute
 
+## 2026
+
+1. **SRFT: A SINGLE-STAGE METHOD WITH SUPERVISED AND REINFORCEMENT FINE-TUNING FOR REASONING** (ICLR 2026) [[paper]](https://openreview.net/pdf?id=n6E0r6kQWQ) 实验上发现先RL再SFT性能会崩，性能突降伴随熵陡增；提出将SFT loss 和 RL loss混合，进行单阶段训练：SFT loss（减少高熵数据的weight以防止off-policy导致的性能崩塌） + 将SFT数据混入RL rollout数据算adv + RL loss（增加高熵rollout的weight以防止策略坍缩）。qwen2.5-7b性能可以显著超过SFT+RL
+
 ### 2025
 
 1. **Benchmarking and Understanding Compositional Relational Reasoning of LLMs** (AAAI 2025) [[paper]](http://arxiv.org/abs/2412.12841) 提出了GAR benchmark来测试模型的Compositional Relational Reasoning能力。发现compositional gap随着模型增大而增大。同时发现了Vicunna-33b存在一些共享的circuit能在不同任务中都发挥作用。
@@ -818,12 +824,21 @@
 
 ### 2026
 
-1. **AI Agent Systems: Architectures, Applications, and Evaluation** [[paper]](http://arxiv.org/abs/2601.01743) 综述
-2. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
+1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
+2. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
    1. **粗筛：**从原始文本筛选出带有多步操作的；
    2. **提取：**模型从中提取工作流和工具定义；
    3. **序列合成：**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
    4. **提高序列复杂度（见A.4）：** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
+3. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
+   1. 用gemini2.5pro给定任务描述，通过ICL生成subgoal
+   2. RL w/ dense process reward：利用标好的subgoal，训练一个potential critic（LLM），给定state和final goal，输出[0,1]得分来评价当前state距离最终goal的完成程度；该reward和outcome reward加到一起
+
+4. **Adaptive Milestone Reward for GUI Agents** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.11524) 
+   1. 在线提取milestone：在人类rollout时，用LLM基于success轨迹提取；
+   2. process reward给法：每个step reward不一样，对于正确轨迹，如果某个token属于milestone，则给reward，否则0；对错误轨迹，所有token会给一个基础得分，计算方法为看该轨迹命中了多少milestone，对于处于milestone内的token会额外给分。
+   3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
+
 
 
 
@@ -832,3 +847,4 @@
 
 1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
 2. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
+3. **Planner-R1: Reward Shaping Enables Efficient Agentic RL with Smaller LLMs** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.25779) agent场景，拆成很多reward，直接加到一起，GRPO，效果显著
