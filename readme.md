@@ -34,13 +34,14 @@
   
   * ⭐[In-Context Learning](#in-context-learning)
   * [ICL Theories](#icl-theories)
-  * ⭐[Reasoning and Test-time compute](#reasoning-and-test-time-compute)
+  * [⭐🔥Reinforcement Learning](#reinforcement-learning)
+  * ⭐[Test-time Scaling](#test-time-scaling)
   * [Distillation](#distillation)
   * [Alignment](#alignment)
   * [Interpretability](#interpretability)
   * [Other](#other)
   
-* [Agents](#agents)
+* [🔥Agents](#agents)
 
 
 
@@ -206,7 +207,7 @@
 
 
 
-## ⭐Think with Images
+## ⭐🔥Think with Images
 
 ### Survey/Benchmark/Dataset/Understanding
 
@@ -250,7 +251,15 @@
 
 ### 2026
 
-1. **Reliable Thinking with Images** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.12916) 提出了reliability metric来衡量TWI推理过程的可靠性：计算高熵token的平均熵作为reliability。实验发现reliability与acc负相关，且视觉证据阶段到后续推理阶段的reliability上升越多，则acc越高。据此提出了一种先筛选高reliability traces再以reliability加权做majority voting的方法。
+1. **【❄training-free】Reliable Thinking with Images** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.12916) 提出了reliability metric来衡量TWI推理过程的可靠性：计算高熵token的平均熵作为reliability。实验发现reliability与acc负相关，且视觉证据阶段到后续推理阶段的reliability上升越多，则acc越高。据此提出了一种先筛选高reliability traces再以reliability加权做majority voting的方法。
+2. **【🔧SFT+🚀RL】Act Wisely: Cultivating Meta-Cognitive Tool Use in Agentic Multimodal Models** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.08545) 发现现有TWI模型无脑call tool，主要关注解决efficiency的问题
+   1. SFT数据：curation（DeepEyesV2 [8], V-Interaction [22], and Thyme），不是自己合：扔掉code会报错的；只保留8次都做不对的；用gemini3.1-pro剔除掉存在无意义工具调用的case；还保留了Open MMReasoner的tool-free cot
+   2. RL efficiency reward：简单粗暴，正确的话，为1/(T+1)，否则0，T是工具调用轮数
+   3. RL算法：为了避免单纯将reward相加会merge掉acc reward和efficiency reward，提出分别单独计算这两个维度的adv、loss，再把loss相加
+
+3. **【🔧SFT+🚀RL】Walk the Talk: Bridging the Reasoning-Action Gap for Thinking with Images via Multimodal Agentic Policy Optimization** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.06777) 用CLIP算工具结果图像和observation的相似度作为reward。只测了3个perception的benchmark（vstar、HR、MME-RW-lite）
+4. **【❄training-free】Let’s Think with Images Efficiently! An Interleaved-Modal Chain-of-Thought**
+   **Reasoning Framework with Dynamic and Precise Visual Thoughts** (Arxiv 2026.03) [[paper]](https://arxiv.org/pdf/2603.21754) 认为现有crop经常会crop不准、滥用crop；提出在confidence低的时候才crop，并借助SAM2来获取比较准的crop （测得居然还是llava和qwen2）
 
 #### 2025
 
@@ -591,15 +600,66 @@
 
 
 
-
-
-
-
-## ⭐Reasoning and Test-time compute
+## 🔥Reinforcement Learning
 
 ## 2026
 
 1. **SRFT: A SINGLE-STAGE METHOD WITH SUPERVISED AND REINFORCEMENT FINE-TUNING FOR REASONING** (ICLR 2026) [[paper]](https://openreview.net/pdf?id=n6E0r6kQWQ) 实验上发现先RL再SFT性能会崩，性能突降伴随熵陡增；提出将SFT loss 和 RL loss混合，进行单阶段训练：SFT loss（减少高熵数据的weight以防止off-policy导致的性能崩塌） + 将SFT数据混入RL rollout数据算adv + RL loss（增加高熵rollout的weight以防止策略坍缩）。qwen2.5-7b性能可以显著超过SFT+RL
+
+### 2025
+
+1. **DAPO: An Open-Source LLM Reinforcement Learning System at Scale** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.14476) 对GRPO的改进
+2. **Understanding R1-Zero-Like Training: A Critical Perspective** (Arxiv 2025.03) [[paper]](https://www.alphaxiv.org/abs/2503.20783) base model已经有aha moment。由于normalization，GRPO训练会倾向于输出更短的正确回答和更长的错误回答。
+3. **【🚀RL】Group-in-Group Policy Optimization for LLM Agent Training** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.10978) agent领域的文章。setting是每一步和环境交互之后都能立即得到环境给该step的score反馈。方法：在不额外增加GRPO rollout的情况下，合并相同的状态（对于agent领域，状态可能指所位于的网页页面，因此可以通过hash直接很快地合并），并把相同状态的下一步组成一个group进行GRPO训练。group内每个下一步的reward就是它们各自后续的的step-wise环境reward的累加。
+4. **【🚀RL】S-GRPO: Early Exit via Reinforcement Learning in Reasoning Models** (Arxiv 2025.05) [[paper] ](https://arxiv.org/pdf/2505.07686) 主要解决GRPO导致大量无用思考的问题。RL 时每次只生成一条链，然后随机从中间步开始，停止思考，直接给出答案。对于正确的response，退出思考的位置越晚，reward越低，从而鼓励简洁的思考。
+
+5. **【🚀RL】Spurious Rewards: Rethinking Training Signals in RLVR** (Arxiv 2025.05) [[paper]](Spurious Rewards: Rethinking Training Signals in RLVR) 核心发现：对于qwen系列模型，使用随机/错误的reward进行RLVR也能带来显著提升；对于其他模型基本不行；原因分析（fig6、7）：对于code本身很强的模型如qwen2.5-math，虚假reward能带来推理模式的转变：anguage->code，从而导致性能提升）；对于code不行的如qwen2.5，wrong reward会导致language->code，从而带来提升。即，虚假reward能鼓励模型用自己擅长的方式推理从而获得提升。
+
+6. **【🚀RL】Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.01939) 少量的high-entropy token上训练是获得多样的推理路径的关键，且有不错的scalability。还发现在其余大量的low-entropy token上训会导致性能下降。
+
+7. **【🚀RL】The Surprising Effectiveness of Negative Reinforcement in LLM Reasoning** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2506.01347) 发现在RL中，单独抑制错误回复能在pass@k up to 256都超过base，达到或赶超GRPO；而只强化正确回复能提升pass@1，但是pass@k会降低。
+
+8. **【🚀RL】The Hallucination Dilemma: Factuality-Aware Reinforcement Learning for Large Reasoning Models** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.24630)
+
+9. **【Latent CoT】CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2502.21074) 性能堪比正常cot的latent cot，做法是对齐teacher model（正常cot）的"The answer is:"的":"与student（latent）cot的":"的hidden states，而不对latent cot做额外的限制。
+
+10. **【Latent CoT】Think Silently, Think Fast: Dynamic Latent Compression of LLM Reasoning Chains** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2505.16552v4)
+
+11. **【Understanding】Part I: Tricks or Traps? A Deep Dive into RL for LLM Reasoning** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2508.08221) 在Qwen3 4B/8B、base/aligned上验证了batch/group normalization、sequence/token-level loss aggregation、clip-higher等因素在不同组合下对RL训练的dynamic和performance的影响
+
+12. **【Latent CoT】Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15778) 提出了一种training-free的soft thinking：用模型预测的next-token概率分布去加权input embedding，作为下一位置的输入（这是针对7B以上模型input embedding layer 和 lm_head的不share weight的问题：说明input embedding和last hidden state不在同一空间，像COCONUT那样直接输入回去会导致输入OOD）。性能可以超过token CoT.
+
+13. **【Latent CoT】LLMs are Single-threaded Reasoners: Demystifying the Working Mechanism of Soft Thinking** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.16552) 实验上发现soft thinking的性能、模型输出概率分布、logit lens的解码词汇都很像greedy。提出采用Gumbel-softmax，将模型原先的输出概率进行扰动，然后再soft thinking，性能就能超过vanilla cot。
+
+14. **【🔧SFT+🚀RL】On-Policy RL Meets Off-Policy Experts: Harmonizing Supervised Fine-Tuning and Reinforcement Learning via Dynamic Weighting** 发现SFT时模型的性能变化趋势：性能下降-性能恢复-过拟合。提出了RL和SFT同时进行的策略：1）通过一个总的、慢慢decay的weight从SFT逐步过渡到RL；2）对SFT的loss进行token-wise reweighting：模型预测概率过高和过低的都会降低weight（概率过低的会导致policy shift太严重；概率过高的会限制RL探索）
+
+15. **【Latent CoT】Soft Tokens, Hard Truths** (Arxiv 2025.09) 用RL来训Latent thinking，不需要discrete cot监督
+
+16. **【Latent CoT】SIM-CoT: Supervised Implicit Chain-of-Thought** (Arxiv 2025.09) 对每个latent token直接加监督：单独将第k个latent作为prefix输入进一个独立的支路（仍然是LLM作为backbone）去预测第k步的CoT文本。
+
+17. **【🔧SFT，实验效果显著】On the Generalization of SFT: a Reinforcement Learning Perspective with Reward Rectification** [[paper]](https://www.alphaxiv.org/abs/2508.05629) 将SFT的loss写成RL的形式后，SFT可以视作：当模型输出严格=专家序列时reward才为1（奖励稀疏）、且乘以了 $\frac{1}{\pi_\theta(y^*|x)}$ 因子（会导致policy当对专家action给出低概率时，policy grad被放大，作者认为这会导致过拟合）。方法：对每个token的loss乘以 $\pi_\theta(y^*_t|y^*_{t-1},x)$
+
+18. **【🚀RL】Group Sequence Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出GSPO：将重要性采样ratio从token-wise计算改为整个sequence的log sum exp，同一序列内所有token使用相同的权重，避免了token-wise的ratio的高方差。
+
+19. **【🚀RL】Soft Adaptive Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出SRPO：
+
+20. **【Latent CoT】Seek in the Dark: Reasoning via Test-Time Instance-Level Policy Gradient in Latent Space** [[paper]](http://arxiv.org/abs/2505.13308) 用self-reward作为奖励信号，在测试时通过REINFORCE算法迭代优化生成的latent，取得了相比discrete CoT的显著提升。
+
+21. **【🚀RL, step-wise reward】Segment Policy Optimization: Effective Segment-Level Credit Assignment in RL for Large Language Models** (NeurIPS 2025)[[paper]](http://arxiv.org/abs/2505.23564) 
+
+22. **【Analysis】On the Interplay of Pre-Training, Mid-Training, and RL on Reasoning Language Models** (Arxiv 2025.12) [[paper]](https://arxiv.org/abs/2512.07783v1) 构建合成任务训练集，探究了不同难度的数据上进行RL的影响。发现：对于OOD任务，仅有ID边缘（能答对部分）进行RL才能获得提升；当基模型没有OOD能力时，RL没用，但混入至少1%的数据时，RL就能提升OOD了；引入过程奖励能提升OOD能力。
+
+23. **RLAR ** (Arxiv 2025.12) [[paper]]()
+
+24. **【🚀RL, step-wise reward】Supervised Reinforcement Learning: From Expert Trajectories to Step-wise Reasoning** (Arxiv 2025.10) [[paper]](http://arxiv.org/abs/2510.25992) 提出SRL，RL rollout时让policy基于专家序列的前k-1步开始，生成下一步k，计算policy生成的第k步与专家第k步的相似度作为reward。
+
+25. **BREAD: Branched Rollouts from Expert Anchors Bridge SFT & RL for Reasoning**
+
+
+
+## ⭐Test-time Scaling
+
+
 
 ### 2025
 
@@ -625,8 +685,6 @@
 
 1. **Entropy-based Exploration Conduction for Multi-step Reasoning** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.15848) 某一步的不确定性大，则代表问题有更多可能的解，值得进一步探索。反之则说明探索路径应该更确定。方法：计算每个推理步（一个句子）的沿着所有token的熵，以及每个token沿着词汇表的熵在整个句子的方差，根据这两个指标来决定对于某一推理步，接下来是deepen、expand还是stop。
 
-1. **DAPO: An Open-Source LLM Reinforcement Learning System at Scale** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.14476) 对GRPO的改进
-
 1. **From Chaos to Order: The Atomic Reasoner Framework for Fine-grained Reasoning in Large Language Models** (Arxiv 2025.03) [[paper]](http://arxiv.org/abs/2503.15944) 参考o1的推理特征，定义macro-action：分析前提条件和问题/进行推理（假设生成和验证）/终止，让模型自己选这些macro-action。同时设计了一个让一个check对多种细粒度的错误类型进行分别检测。    
 
 1. **【benchmark】Prmbench: A fine-grained and challenging benchmark for process-level reward models** [[paper]](https://www.google.com/search?q=Prmbench%3A+A+fine-grained+and+challenging+benchmark+for+process-level+reward+models&oq=Prmbench%3A+A+fine-grained+and+challenging+benchmark+for+process-level+reward+models&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRg60gEHNDAyajBqN6gCCLACAfEFC2miFWHXxNE&sourceid=chrome&ie=UTF-8) 将PRM对于reasoning step的评价能力划分为：评价推理过程是否冗余、推理过程是否错误、鲁棒性（是否能察觉到关键前提的丢失、陈述中的陷阱、对于多个正确的解答能否保持评价一致）。
@@ -639,51 +697,7 @@
 
 1. **Step-by-Step Reasoning for Math Problems via Twisted Sequential Monte Carlo** (ICLR 2025) [[paper]](http://arxiv.org/abs/2410.01920) 方法：如何推理：在每个推理步t，让policy model产生N个下一步。利用训练好的value function给N个步打分，然后根据打分重新sample该步（line 18），之后到t+1，再让policy model在经过resample的第t步的基础上再生成下一步；如何训练value function（一个network）：loss function的优化目标为减小value function估计的分布和ground-truth分布之间的KL散度，其实让value function对于不同solution的某一步的打分接近outcome reward（每一步的监督信号相同，都是拟合outcome reward）
 
-1. **Understanding R1-Zero-Like Training: A Critical Perspective** (Arxiv 2025.03) [[paper]](https://www.alphaxiv.org/abs/2503.20783) base model已经有aha moment。由于normalization，GRPO训练会倾向于输出更短的正确回答和更长的错误回答。
-
-1. **【🚀RL】Group-in-Group Policy Optimization for LLM Agent Training** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.10978) agent领域的文章。setting是每一步和环境交互之后都能立即得到环境给该step的score反馈。方法：在不额外增加GRPO rollout的情况下，合并相同的状态（对于agent领域，状态可能指所位于的网页页面，因此可以通过hash直接很快地合并），并把相同状态的下一步组成一个group进行GRPO训练。group内每个下一步的reward就是它们各自后续的的step-wise环境reward的累加。
-
-1. **【🚀RL】S-GRPO: Early Exit via Reinforcement Learning in Reasoning Models** (Arxiv 2025.05) [[paper] ](https://arxiv.org/pdf/2505.07686) 主要解决GRPO导致大量无用思考的问题。RL 时每次只生成一条链，然后随机从中间步开始，停止思考，直接给出答案。对于正确的response，退出思考的位置越晚，reward越低，从而鼓励简洁的思考。
-
-1. **【🚀RL】Spurious Rewards: Rethinking Training Signals in RLVR** (Arxiv 2025.05) [[paper]](Spurious Rewards: Rethinking Training Signals in RLVR) 核心发现：对于qwen系列模型，使用随机/错误的reward进行RLVR也能带来显著提升；对于其他模型基本不行；原因分析（fig6、7）：对于code本身很强的模型如qwen2.5-math，虚假reward能带来推理模式的转变：anguage->code，从而导致性能提升）；对于code不行的如qwen2.5，wrong reward会导致language->code，从而带来提升。即，虚假reward能鼓励模型用自己擅长的方式推理从而获得提升。
-
-1. **【🚀RL】Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.01939) 少量的high-entropy token上训练是获得多样的推理路径的关键，且有不错的scalability。还发现在其余大量的low-entropy token上训会导致性能下降。
-
-1. **【🚀RL】The Surprising Effectiveness of Negative Reinforcement in LLM Reasoning** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2506.01347) 发现在RL中，单独抑制错误回复能在pass@k up to 256都超过base，达到或赶超GRPO；而只强化正确回复能提升pass@1，但是pass@k会降低。
-
-1. **【🚀RL】The Hallucination Dilemma: Factuality-Aware Reinforcement Learning for Large Reasoning Models** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.24630)
-
-1. **【Latent CoT】CODI: Compressing Chain-of-Thought into Continuous Space via Self-Distillation** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2502.21074) 性能堪比正常cot的latent cot，做法是对齐teacher model（正常cot）的"The answer is:"的":"与student（latent）cot的":"的hidden states，而不对latent cot做额外的限制。
-
-1. **【Latent CoT】Think Silently, Think Fast: Dynamic Latent Compression of LLM Reasoning Chains** (Arxiv 2025.06) [[paper]](https://www.alphaxiv.org/abs/2505.16552v4)
-
-1. **【Understanding】Part I: Tricks or Traps? A Deep Dive into RL for LLM Reasoning** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2508.08221) 在Qwen3 4B/8B、base/aligned上验证了batch/group normalization、sequence/token-level loss aggregation、clip-higher等因素在不同组合下对RL训练的dynamic和performance的影响
-
-1. **【Latent CoT】Soft Thinking: Unlocking the Reasoning Potential of LLMs in Continuous Concept Space** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15778) 提出了一种training-free的soft thinking：用模型预测的next-token概率分布去加权input embedding，作为下一位置的输入（这是针对7B以上模型input embedding layer 和 lm_head的不share weight的问题：说明input embedding和last hidden state不在同一空间，像COCONUT那样直接输入回去会导致输入OOD）。性能可以超过token CoT.
-
-1. **【Latent CoT】LLMs are Single-threaded Reasoners: Demystifying the Working Mechanism of Soft Thinking** (Arxiv 2025.08) [[paper]](http://arxiv.org/abs/2505.16552) 实验上发现soft thinking的性能、模型输出概率分布、logit lens的解码词汇都很像greedy。提出采用Gumbel-softmax，将模型原先的输出概率进行扰动，然后再soft thinking，性能就能超过vanilla cot。
-
-1. **【🔧SFT+🚀RL】On-Policy RL Meets Off-Policy Experts: Harmonizing Supervised Fine-Tuning and Reinforcement Learning via Dynamic Weighting** 发现SFT时模型的性能变化趋势：性能下降-性能恢复-过拟合。提出了RL和SFT同时进行的策略：1）通过一个总的、慢慢decay的weight从SFT逐步过渡到RL；2）对SFT的loss进行token-wise reweighting：模型预测概率过高和过低的都会降低weight（概率过低的会导致policy shift太严重；概率过高的会限制RL探索）
-
-1. **【Latent CoT】Soft Tokens, Hard Truths** (Arxiv 2025.09) 用RL来训Latent thinking，不需要discrete cot监督
-
-1. **【Latent CoT】SIM-CoT: Supervised Implicit Chain-of-Thought** (Arxiv 2025.09) 对每个latent token直接加监督：单独将第k个latent作为prefix输入进一个独立的支路（仍然是LLM作为backbone）去预测第k步的CoT文本。
-
-1. **【🔧SFT，实验效果显著】On the Generalization of SFT: a Reinforcement Learning Perspective with Reward Rectification** [[paper]](https://www.alphaxiv.org/abs/2508.05629) 将SFT的loss写成RL的形式后，SFT可以视作：当模型输出严格=专家序列时reward才为1（奖励稀疏）、且乘以了 $\frac{1}{\pi_\theta(y^*|x)}$ 因子（会导致policy当对专家action给出低概率时，policy grad被放大，作者认为这会导致过拟合）。方法：对每个token的loss乘以 $\pi_\theta(y^*_t|y^*_{t-1},x)$
-
-1. **【🚀RL】Group Sequence Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出GSPO：将重要性采样ratio从token-wise计算改为整个sequence的log sum exp，同一序列内所有token使用相同的权重，避免了token-wise的ratio的高方差。
-
-1. **【🚀RL】Soft Adaptive Policy Optimization** (Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.20347) 提出SRPO：
-
-1. **【Latent CoT】Seek in the Dark: Reasoning via Test-Time Instance-Level Policy Gradient in Latent Space** [[paper]](http://arxiv.org/abs/2505.13308) 用self-reward作为奖励信号，在测试时通过REINFORCE算法迭代优化生成的latent，取得了相比discrete CoT的显著提升。
-
-1. **【🚀RL, step-wise reward】Segment Policy Optimization: Effective Segment-Level Credit Assignment in RL for Large Language Models** (NeurIPS 2025)[[paper]](http://arxiv.org/abs/2505.23564) 
-
-1. **【Analysis】On the Interplay of Pre-Training, Mid-Training, and RL on Reasoning Language Models** (Arxiv 2025.12) [[paper]](https://arxiv.org/abs/2512.07783v1) 构建合成任务训练集，探究了不同难度的数据上进行RL的影响。发现：对于OOD任务，仅有ID边缘（能答对部分）进行RL才能获得提升；当基模型没有OOD能力时，RL没用，但混入至少1%的数据时，RL就能提升OOD了；引入过程奖励能提升OOD能力。
-
-1. **RLAR: ** (Arxiv 2025.12) [[paper]]()
-
-1. **【🚀RL, step-wise reward】Supervised Reinforcement Learning: From Expert Trajectories to Step-wise Reasoning** (Arxiv 2025.10) [[paper]](http://arxiv.org/abs/2510.25992) 提出SRL，RL rollout时让policy基于专家序列的前k-1步开始，生成下一步k，计算policy生成的第k步与专家第k步的相似度作为reward。
+   
 
 ### 2024 
 
