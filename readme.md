@@ -87,6 +87,8 @@
 
 
 
+
+
 ## Latent Multimodal Reasoning
 
 ### 2026
@@ -105,6 +107,8 @@
 7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
 8. **【🚀RL】VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
 9. **【🔧SFT】Latent Implicit Visual Reasoning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
+
+
 
 
 
@@ -207,6 +211,8 @@
 
 
 
+
+
 ## ⭐🔥Think with Images
 
 ### Survey/Benchmark/Dataset/Understanding
@@ -245,8 +251,6 @@
 
       
 
-
-
 ### Methods
 
 ### 2026
@@ -256,10 +260,10 @@
    1. SFT数据：curation（DeepEyesV2 [8], V-Interaction [22], and Thyme），不是自己合：扔掉code会报错的；只保留8次都做不对的；用gemini3.1-pro剔除掉存在无意义工具调用的case；还保留了Open MMReasoner的tool-free cot
    2. RL efficiency reward：简单粗暴，正确的话，为1/(T+1)，否则0，T是工具调用轮数
    3. RL算法：为了避免单纯将reward相加会merge掉acc reward和efficiency reward，提出分别单独计算这两个维度的adv、loss，再把loss相加
-
 3. **【🔧SFT+🚀RL】Walk the Talk: Bridging the Reasoning-Action Gap for Thinking with Images via Multimodal Agentic Policy Optimization** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.06777) 用CLIP算工具结果图像和observation的相似度作为reward。只测了3个perception的benchmark（vstar、HR、MME-RW-lite）
 4. **【❄training-free】Let’s Think with Images Efficiently! An Interleaved-Modal Chain-of-Thought**
    **Reasoning Framework with Dynamic and Precise Visual Thoughts** (Arxiv 2026.03) [[paper]](https://arxiv.org/pdf/2603.21754) 认为现有crop经常会crop不准、滥用crop；提出在confidence低的时候才crop，并借助SAM2来获取比较准的crop （测得居然还是llava和qwen2）
+5. **【🔧SFT+🚀RL】AdaReasoner: Dynamic Tool Orchestration for Iterative Visual Reasoning** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.18631) interface tool而非code。RL reward：format+acc+tool reward。tool reward其实就是检查有效性，不检查正确性；比较创新的点是adaptive learning：训练时候(SFT/RL)把tool和参数的名字换成无意义代号，把tool的描述进行rephrase，发现能提升在测试时使用训练时没见过的工具的能力。
 
 #### 2025
 
@@ -300,6 +304,8 @@
 28. **CodeV: Code with Images for Faithful Visual Reasoning via Tool-Aware Policy Optimization** (CVPR 2026) [[paper]](https://arxiv.org/pdf/2511.19661) 也发现了DeepEyes、PixelReasoner等模型会依赖错误的工具调用得高分。提出了过程监督RL，来解决工具调用的faithfulness的问题：用qwen2.5-VL-32B做judge，给出原始问题和工具返回结果，让judge回答“does this piece of evidence help with this question?”。一些insight：
     1. outcome reward训出来的模型存在unfaithfulness：工具错误，答案正确
     2. 过程监督能有效缓解工具使用的unfaithfulness
+
+
 
 
 
@@ -346,11 +352,15 @@
 
 
 
+
+
 ## Video models
 
 ### 2025
 
 **Thinking with Video: Video Generation as a Promising Multimodal Reasoning Paradigm** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2511.04570) 发现在视觉中心任务上，视频生成模型（sora2）性能逼近顶尖闭源vlm（gpt5、gemini2.5pro等）。但在文本中心任务上性能差距较大。可以通过Self-consistency和ICL来提升sora做推理任务的能力。
+
+
 
 
 
@@ -374,6 +384,8 @@
 
 
 
+
+
 ## Interpretability and Understanding
 
 ### 2025
@@ -393,6 +405,8 @@
 
 
 
+
+
 ## Unifying Understanding and Generation
 
 ### 2025
@@ -405,6 +419,8 @@
 
 1. **Emu3: Next-Token Prediction is All You Need** (Arxiv September 2024) [[paper]](http://arxiv.org/abs/2409.18869) 将文本、图片、视频都转化为token，进行next-token prediction的预训练。能同时做图片视频的生成、视觉-语言理解。训练模型：包含文本encoder（T5）、视觉encoder（ViT-large）和文本decoder（T5，输入为视觉-文本融合特征，输出为文本）。训练资源：8*32G V100。
 2. **Janus: Decoupling Visual Encoding for Unified Multimodal Understanding and Generation** (Arxiv Oct 2024) [[paper]](http://arxiv.org/abs/2410.13848) 用一个自回归transformer统一实现多模态的理解和生成任务
+
+
 
 
 
@@ -427,11 +443,17 @@
 
 
 
+
+
 ## Reward Model
 
 ### 2025
 
 1. **MM-RLHF: The Next Step Forward in Multimodal LLM Alignment** (Arxiv 2025.02) [[paper]](http://arxiv.org/abs/2502.10391) 提出Critique-Based Reward Model, 以及一整套从收集数据到laligenmt的pipeline。
+
+
+
+
 
 
 
@@ -533,8 +555,6 @@
 
     
 
-
-
 ### 2023
 
 1. **Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?** [[paper]](https://arxiv.org/abs/2202.12837) 做了一系列消融实验来对ICL进行解释。主要结论：即使input和label不是一一对应，只要label的分布合理，那么ICL同样能给出较为正确的答案.
@@ -561,6 +581,8 @@
 1. **What Can Transformers Learn In-Context? A Case Study of Simple Function Classes** (NeurIPS 2022) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2022/hash/c529dba08a146ea8d6cf715ae8930cbe-Abstract-Conference.html) 实验发现：1)linear function是能通过transformer学到的（性能能逼近最小二乘估计）2)ICL有一定的OOD泛化能力（train -> test, context -> test）3)ICL也能学到更复杂的函数，比如sparse linear functions、ReLU NNs、decision trees。
 2. **Rethinking the Role of Demonstrations: What Makes In-Context Learning Work?** (EMNLP 2022) [[paper]](http://arxiv.org/abs/2202.12837) 探究ICL work的因素。
 3. **On the Compositional Generalization Gap of In-Context Learning** (Arxiv 2022) [[paper]](http://arxiv.org/abs/2211.08473) 在CFQ等组合泛化任务上测，发现大模型的OOD（query和context不一致）和ID之间的组合泛化能力的gap相比小模型更小。
+
+
 
 
 
@@ -597,6 +619,8 @@
 ### 2022
 
 1. **An Explanation of In-context Learning as Implicit Bayesian Inference** (Arxiv 2022) [[paper]](https://arxiv.org/pdf/2111.02080) 早期经典之作，隐马尔可夫模型，证明ICL能实现bayesian-optimal prediction。
+
+
 
 
 
@@ -653,13 +677,15 @@
 
 24. **【🚀RL, step-wise reward】Supervised Reinforcement Learning: From Expert Trajectories to Step-wise Reasoning** (Arxiv 2025.10) [[paper]](http://arxiv.org/abs/2510.25992) 提出SRL，RL rollout时让policy基于专家序列的前k-1步开始，生成下一步k，计算policy生成的第k步与专家第k步的相似度作为reward。
 
-25. **BREAD: Branched Rollouts from Expert Anchors Bridge SFT & RL for Reasoning**
+25. **【🚀RL, expert hint】BREAD: Branched Rollouts from Expert Anchors Bridge SFT & RL for Reasoning** (NeurIPS 2025) [[paper]](https://arxiv.org/pdf/2506.17211) rollout时如果一个group全答错，则插入一段expert hint；插入后再rollout如果全对/全错，则缩短/增长hint。
+
+26. **【🚀RL, on/off-policy mixed】Learning to Reason under Off-Policy Guidance** (NeurIPS 2025) [[paper]](https://openreview.net/forum?id=vO8LLoNWWk) 提出LUFFY，直接把专家序列混入一个rollout group中做GRPO（注意对于这部分专家序列需要把importance ratio改为 r=policy概率/专家模型概率）。问题：会倾向于快速地学习专家序列中的policy的高概率token，而忽略低概率token的学习（这部分token往往是policy不会的重要token）。为此，提出将r套一个reshape函数，增加专家序列中policy低概率token的权重。
+
+
 
 
 
 ## ⭐Test-time Scaling
-
-
 
 ### 2025
 
@@ -869,10 +895,10 @@
 
 1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
 2. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
-   1. **粗筛：**从原始文本筛选出带有多步操作的；
-   2. **提取：**模型从中提取工作流和工具定义；
-   3. **序列合成：**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
-   4. **提高序列复杂度（见A.4）：** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
+   1. **粗筛:**从原始文本筛选出带有多步操作的；
+   2. **提取:**模型从中提取工作流和工具定义；
+   3. **序列合成:**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
+   4.  **提高序列复杂度 (见A.4): ** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
 3. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
    1. 用gemini2.5pro给定任务描述，通过ICL生成subgoal
    2. RL w/ dense process reward：利用标好的subgoal，训练一个potential critic（LLM），给定state和final goal，输出[0,1]得分来评价当前state距离最终goal的完成程度；该reward和outcome reward加到一起
@@ -881,8 +907,10 @@
    1. 在线提取milestone：在人类rollout时，用LLM基于success轨迹提取；
    2. process reward给法：每个step reward不一样，对于正确轨迹，如果某个token属于milestone，则给reward，否则0；对错误轨迹，所有token会给一个基础得分，计算方法为看该轨迹命中了多少milestone，对于处于milestone内的token会额外给分。
    3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
+5. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
+6. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了关于agentic RL的CA一系列挑战。
 
-
+ 
 
 
 
