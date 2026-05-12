@@ -16,7 +16,7 @@
 ⭐ 表示文章较多；🔥表示当前主要关注并更新
 
 * [MLLM](#mllm)
-  
+  * [Technical Reports](#technical-reports)
   * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * ⭐🔥[Think with Images (Methods&Understanding&Benchmarks)](#think-with-images)
   * [Latent Multimodal Reasoning](#latent-multimodal-reasoning)
@@ -29,7 +29,6 @@
   * [Multimodal ICL](#multimodal-icl)
   * [Reward Model](#reward-model)
   * [Prompt Learning](#prompt-learning)
-  
 * [LLM](#llm) 
   
   * ⭐[In-Context Learning](#in-context-learning)
@@ -40,12 +39,19 @@
   * [Alignment](#alignment)
   * [Interpretability](#interpretability)
   * [Other](#other)
-  
 * [🔥Agents](#agents)
 
 
 
 # MLLM
+
+
+
+## Technical Reports
+
+### 2026
+
+
 
 ## Survey
 
@@ -59,7 +65,7 @@
 
 
 
-## Benchmarks and Evaluation of Multimodal Reasoning
+## Evaluation and Understanding of Multimodal Reasoning
 
 ### 2025
 
@@ -230,8 +236,7 @@
    2. tool能力变化导致总体性能提升主要体现在降低将一开始不用tool会做的题在RL后改错的比例
    3. RL过程中，用tool在某一ckpt不用tool不会做的难题集上的性能基本不变，甚至略有下降，说明tool并不能突破模型的能力边界
 
-
-#### 2025
+### 2025
 
 1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
 
@@ -301,7 +306,7 @@
     2. 发现相比first answer token，question中的semantic token对于img的attb更能精确定位物体
     3. 获取关键区域token之后，将其按照原始相对位置组成新的图片（非关键区域0填充）效果最好
 
-28. **CodeV: Code with Images for Faithful Visual Reasoning via Tool-Aware Policy Optimization** (CVPR 2026) [[paper]](https://arxiv.org/pdf/2511.19661) 也发现了DeepEyes、PixelReasoner等模型会依赖错误的工具调用得高分。提出了过程监督RL，来解决工具调用的faithfulness的问题：用qwen2.5-VL-32B做judge，给出原始问题和工具返回结果，让judge回答“does this piece of evidence help with this question?”。一些insight：
+28. **CodeV: Code with Images for Faithful Visual Reasoning via Tool-Aware Policy Optimization** (CVPR 2026 Oral) [[paper]](https://arxiv.org/pdf/2511.19661) 也发现了DeepEyes、PixelReasoner等模型会依赖错误的工具调用得高分。提出了过程监督RL，来解决工具调用的faithfulness的问题：用qwen2.5-VL-32B做judge，给出原始问题和工具返回结果，让judge回答“does this piece of evidence help with this question?”。一些insight：
     1. outcome reward训出来的模型存在unfaithfulness：工具错误，答案正确
     2. 过程监督能有效缓解工具使用的unfaithfulness
 
@@ -626,9 +631,10 @@
 
 ## 🔥Reinforcement Learning
 
-## 2026
+### 2026
 
 1. **SRFT: A SINGLE-STAGE METHOD WITH SUPERVISED AND REINFORCEMENT FINE-TUNING FOR REASONING** (ICLR 2026) [[paper]](https://openreview.net/pdf?id=n6E0r6kQWQ) 实验上发现先RL再SFT性能会崩，性能突降伴随熵陡增；提出将SFT loss 和 RL loss混合，进行单阶段训练：SFT loss（减少高熵数据的weight以防止off-policy导致的性能崩塌） + 将SFT数据混入RL rollout数据算adv + RL loss（增加高熵rollout的weight以防止策略坍缩）。qwen2.5-7b性能可以显著超过SFT+RL
+1. **Learning to Hint for Reinforcement Learning** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.00698) 针对hint的改进：① hint的产生是基于错误轨迹的，这样可以针对性产生 ②提出了一个指标hint reliance来衡量改对的轨迹有多大程度依赖于hint，reliance越低说明成功轨迹越容易迁移到测试时的no-hint场景，以此来给容易迁移的训练样本更高的权重
 
 ### 2025
 
@@ -680,6 +686,8 @@
 25. **【🚀RL, expert hint】BREAD: Branched Rollouts from Expert Anchors Bridge SFT & RL for Reasoning** (NeurIPS 2025) [[paper]](https://arxiv.org/pdf/2506.17211) rollout时如果一个group全答错，则插入一段expert hint；插入后再rollout如果全对/全错，则缩短/增长hint。
 
 26. **【🚀RL, on/off-policy mixed】Learning to Reason under Off-Policy Guidance** (NeurIPS 2025) [[paper]](https://openreview.net/forum?id=vO8LLoNWWk) 提出LUFFY，直接把专家序列混入一个rollout group中做GRPO（注意对于这部分专家序列需要把importance ratio改为 r=policy概率/专家模型概率）。问题：会倾向于快速地学习专家序列中的policy的高概率token，而忽略低概率token的学习（这部分token往往是policy不会的重要token）。为此，提出将r套一个reshape函数，增加专家序列中policy低概率token的权重。
+
+27. **【🚀RL, expert hint】Adaptive Guidance Accelerates Reinforcement Learning of Reasoning Models** (Arxiv 2025.06) [[paper]](10.48550/arXiv.2506.13923) group rollout全错时用hint，hint序列上ratio分母为hint在context中的输出概率，分子是没有hint的。分子和分母都是在有hint时生成的回复上计算概率。
 
 
 
@@ -762,6 +770,10 @@
 
 
 ## Distillation
+
+### 2026
+
+1. **Unifying Group-Relative and Self-Distillation Policy Optimization via Sample Routing** [[paper]](https://arxiv.org/pdf/2604.02288) 正确样本做GRPO，错误样本做OPD。
 
 ### 2024
 
@@ -889,7 +901,7 @@
 
 
 
-# Agents
+# 🔥Agents
 
 ### 2026
 
@@ -909,6 +921,8 @@
    3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
 5. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
 6. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了关于agentic RL的CA一系列挑战。
+7. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
+8. 
 
  
 
