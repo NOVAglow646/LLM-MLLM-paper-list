@@ -17,13 +17,14 @@
 
 * [MLLM](#mllm)
   * [Technical Reports](#technical-reports)
-  * [Evaluation and understandings of multimodal reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
+  * [Evaluation and Understandings of Multimodal Reasoning](#evaluation-and-understandings-of-multimodal-reasoning)
   * ⭐🔥[Think with Images (Methods&Understanding&Benchmarks)](#think-with-images)
   * 🔥[Latent Multimodal Reasoning](#latent-multimodal-reasoning)
   * ⭐[Improving Multimodal Reasoning (pure-text reasoning mainly)](#improving-multimodal-reasoning)
   * ⭐[Improving Perception/Mitigating Hallucination](#improving-perception-mitigating-hallucination)
-  * [Video models](#video-models)
-  * [Video Understanding](#video-understanding)
+  * [Video Models](#video-models)
+  * 🔥[Video Understanding](#video-understanding)
+  * 🔥[Spatial Intelligence](#spatial-intelligence)
   * [Vision-language Alignment](#vision-language-alignment)
   * [Interpretability and Understanding](#interpretability-and-understanding)
   * [Unifying Understanding and Generation](#unifying-understanding-and-generation)
@@ -102,18 +103,20 @@
 1. **【🔧SFT】Forest Before Trees: Latent Superposition for Efficient Visual Reasoning** [[paper]](http://arxiv.org/abs/2601.06803) (Arxiv 2026.01) 方法很简洁：将SFT的next-token label（比如位置t）替换为soft label（位置t开始到结尾T的每个位置的logits的沿窗口的softmax）。
 1. **Imagination Helps Visual Reasoning, But Not Yet in Latent Space** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.22766) 分析发现目前的latent visual reasoning方法存在latent token同质化的问题，提出了将中间步图像中的信息以文字形式描述出来的推理范式
 1. **【🔧SFT+🚀RL】ATLAS: Agentic or Latent Visual Reasoning? One Word is Enough for Both** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2605.15198) 把latent token用一个特殊text token表示（<|line|>、<|text|>、<|shape|>等）。无需中间步图像作为标注，直接next token prediction特殊token。效果不是特别强。
+1. **【🔧SFT】SwimBird: Eliciting Switchable Reasoning Mode in Hybrid Autoregressive MLLMs** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.06040) 注重训adaptive能力，重推理的任务（比如math）不需要latent reasoning，重视觉的任务（比如迷宫）才用。方法是SFT数据看base model用和不用aux img时的通过率：如果用aux img通过率高于不用，则标记为需要用aux img。否则不需要。在需要aux img的情况下，如果用aux img的acc>=0.75，则纯用latent，否则用text-latent交替。其他新设计：模型自己预测<latent_end>；根据图片分辨率动态调整latent token数量。**insight：实验效果比较好，最简单的对齐sft+adaptive就有用。**
 
 ### 2025
 
 1. **【🔧SFT+🚀RL】Machine Mental Imagery: Empower Multimodal Reasoning with Latent Visual Tokens** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2506.17218) 让模型生成latent token辅助推理。两阶段SFT+RL。SFT阶段一对齐MLLM生成的latent和gt helper image；SFT阶段二将生成的latent作为input，进行SFT。RL为GRPO，loss只加在text上（因为生成的latent
 2. **【🔧SFT+🚀RL】Latent Visual Reasoning** (Arxiv 2025.10) [[paper]](https://openreview.net/forum?id=j84WR5ORsC) 只在visual cot（带crop图）上SFT + GRPO，SFT阶段对齐latent和gt img embedding。
-3. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
+3. **【🔧SFT】Chain-of-Visual-Thought: Teaching VLMs to See and Think Better with Continuous Visual Tokens **(Arxiv 2025.11) [[paper]](http://arxiv.org/abs/2511.19418) 思路：借助视觉模型（SAM、DepthAnything、PIDINet和DINO）提供监督来让模型生成visual token。latent token分为segmentation、depth、edge、dino等。训练过程循序渐进，分为四阶段：理解visual token、生成、用visual token推理、随机drop一些种类的visual token用于增强对所有token的利用。
 4. **【🔧SFT+🚀RL】Monet: Reasoning in Latent Visual Space Beyond Images and Language** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2511.21395) 提出了一种新的latent visual reasoning SFT方法，和一种针对latent thinking的强化学习算法VLPO。在分布内和分布外任务上取得了提升。
-5. **Mull-Tokens: Modality-Agnostic Latent Thinking** (Arxiv 2025.12)
+5. **【🔧SFT+🚀RL】Mull-Tokens: Modality-Agnostic Latent Thinking** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.10941) 没有什么很特别的设计，SFT是用cos sim对齐gt image embedding，GRPO就是常规的，没有针对latent的优化
 6. **【Test-time training】Reasoning Within the Mind: Dynamic Multimodal Interleaving in Latent Space ** (Arxiv 2025.12) [[page]](https://mllm-dmlr.github.io/) [[paper]](https://arxiv.org/pdf/2512.12623) 用confidence作为奖励信号，对latent进行test-time梯度更新。性能提升一般。
 7. **【🔧SFT】Interleaved Latent Visual Reasoning with Selective Perceptual Modeling** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.05665) 两阶段SFT。第一阶段用一个额外的MLLM从aux img中选出部分emb用于和latent对齐；第二阶段纯文本CE loss。
 8. **【🚀RL】VisMem: Latent Vision Memory Unlocks Potential of Vision-Language Models** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2511.11007) 增加了一个查询生成器（输入context输出query）用于生成记忆query Q，然后将Q与context X、可学习的memory token M 一起送入记忆生成器（长期和短期各一个，分别attach在vision encoder和LLM上）来生成最终的latent token。实验比较硬核，测的benchmark和复现的baseline很多。
 9. **【🔧SFT】Latent Implicit Visual Reasoning** (Arxiv 2025.12) [[paper]](https://www.alphaxiv.org/abs/2512.21218) 两阶段SFT。第一阶段用了一个visual bottleneck机制：让answer token只能看到latent而看不到原始输入图像。第二阶段用正常attention。和Monet提出的机制类似。
+10. **【🔧SFT】Sketch-in-Latents: Eliciting Unified Reasoning in MLLMs** (Arxiv 2025.12) [[paper]](http://arxiv.org/abs/2512.16584) 用一个额外的encoder（siglip2+projector）+pooling 把aux img映射为gt visual embedding，和latent对齐；此外还有一个text的NTP loss。方法简单但work的benchmark比较多。
 
 
 
@@ -231,25 +234,30 @@
    * 相比任务的GT tool-chain（工具调用次数平均3~7次，不过肉眼看case发现有些工具调用比较牵强，并非必需），绝大部分情况下模型会倾向于调用更少次数的tool（大部分是1次或两次）
    * 从7B到gemini，system prompt都是越详细越好；给出GT tool时更好
    * 闭源模型中，gemini3.0（code 51.2/interface 51.0）最强，显著强于gpt5.2（code 44.6/interface 40.7）
-3. **HopChain: Multi-Hop Data Synthesis for Generalizable Vision-Language Reasoning** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.17024)
-4. **【Understanding】What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.01334) 分析了qwen2.5-vl和qwen3-vl，做crop，用GRPO训
-   1. outcome based tool RL主要提升模型内在能力，而不是tool能力
+3. **【📚Dataset】HopChain: Multi-Hop Data Synthesis for Generalizable Vision-Language Reasoning** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.17024) 多跳任务，可用于RLVR，但没开源
+4. **【💡Understanding】What Does Vision Tool-Use Reinforcement Learning Really Learn? Disentangling Tool-Induced and Intrinsic Effects for Crop-and-Zoom** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.01334) 分析了qwen2.5-vl和qwen3-vl，做crop，用GRPO训
+   1. outcome-based tool RL主要提升模型内在能力，而不是tool能力
    2. tool能力变化导致总体性能提升主要体现在降低将一开始不用tool会做的题在RL后改错的比例
    3. RL过程中，用tool在某一ckpt不用tool不会做的难题集上的性能基本不变，甚至略有下降，说明tool并不能突破模型的能力边界
+5. **【💡Understanding】Do Multimodal Agents Really Benefit from Tool Use? A Systematic Study of Capability Gains** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.02357) 测了deepeyesv2和thyme。对于纯文本推理，选了两种reference：①用prompt让deepeyes和thyme做纯文本推理；②训了一个pure-text reasonin模型作为reference。一些insight：
+   1. 只有很小一部分题（大约小于10%）是两种纯文本做不对，但code能做对的
+   2. code把纯文本改对（tool-gain）和改错（tool-harm）的比例都很低
+   3. 对deepeyesv2，仅保留code content相比仅保留code result，与完整code模式下样本的正误分布更像；对thyme，结论相反。（这部分没有一致结论）
+
 
 #### 2025
 
-1. **【Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
+1. **【🔍Survey】Thinking with Images for Multimodal Reasoning: Foundations, Methods, and Future Frontiers** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2506.23918)
 
-1. **【Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
+1. **【📚Dataset】Zebra-CoT: A Dataset for Interleaved Vision Language Reasoning** (Arxiv 2025.07) [[paper]](http://arxiv.org/abs/2507.16746)
 
-1. **【Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
+1. **【💡Understanding】Visual Thoughts: A Unified Perspective of Understanding Multimodal Chain-of-Thought** (Arxiv 2025.05) [[paper]](http://arxiv.org/abs/2505.15510) 理解不同类型的visual thought（pure-text、edited-image、generated-image等）的性能、适用场景、内在机制
 
-1. **【Survey】Explain Before You Answer: A Survey on Compositional Visual Reasoning** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.17298)
+1. **【🔍Survey】Explain Before You Answer: A Survey on Compositional Visual Reasoning** (Arxiv 2025.08) [[paper]](https://arxiv.org/pdf/2508.17298)
 
-1. **【Benchmark】TIR-Bench: A Comprehensive Benchmark for Agentic Thinking-with-Images Reasoning** [[paper]](http://arxiv.org/abs/2511.01833) 构建了一些强烈依赖于工具调用才能做对的任务。一些takeaway：1）在一些复杂任务（比如给出拼图顺序，fig 5）上，单纯的perception（o3展现出的”understanding the images as a whole”）没用，必须得借助code。2）在rotationOCR任务上，单纯增加text-based COT的数据进行SFT几乎没有提升
+1. **【⚖Benchmark】TIR-Bench: A Comprehensive Benchmark for Agentic Thinking-with-Images Reasoning** [[paper]](http://arxiv.org/abs/2511.01833) 构建了一些强烈依赖于工具调用才能做对的任务。一些takeaway：1）在一些复杂任务（比如给出拼图顺序，fig 5）上，单纯的perception（o3展现出的”understanding the images as a whole”）没用，必须得借助code。2）在rotationOCR任务上，单纯增加text-based COT的数据进行SFT几乎没有提升
 
-1. **【Understanding】Revisiting the Necessity of Lengthy Chain-of-Thought in Vision-centric Reasoning Generalization** [[paper]](http://arxiv.org/abs/2511.22586) insight：（至少在迷宫、Vstar、HRBench上）SFT时学习使用crop工具并不是泛化最好的推理模式。TWI SFT可能导致过拟合。
+1. **【💡Understanding】Revisiting the Necessity of Lengthy Chain-of-Thought in Vision-centric Reasoning Generalization** [[paper]](http://arxiv.org/abs/2511.22586) insight：（至少在迷宫、Vstar、HRBench上）SFT时学习使用crop工具并不是泛化最好的推理模式。TWI SFT可能导致过拟合。
 
    1. L-CoT (纯文本cot), G-CoT (输出bbox文字的cot，但不重新插入图片), V-CoT (插入crop图片的cot)SFT后的RL性能上限接近（RL训练了1000步，远大于大部分文章的setting），只是收敛速度上V-CoT>G-CoT>L-CoT；
 
@@ -267,10 +275,10 @@
    2. RL efficiency reward：简单粗暴，正确的话，为1/(T+1)，否则0，T是工具调用轮数
    3. RL算法：为了避免单纯将reward相加会merge掉acc reward和efficiency reward，提出分别单独计算这两个维度的adv、loss，再把loss相加
 3. **【🔧SFT+🚀RL】Walk the Talk: Bridging the Reasoning-Action Gap for Thinking with Images via Multimodal Agentic Policy Optimization** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.06777) 用CLIP算工具结果图像和observation的相似度作为reward。只测了3个perception的benchmark（vstar、HR、MME-RW-lite）
-4. **【❄training-free】Let’s Think with Images Efficiently! An Interleaved-Modal Chain-of-Thought**
-   **Reasoning Framework with Dynamic and Precise Visual Thoughts** (Arxiv 2026.03) [[paper]](https://arxiv.org/pdf/2603.21754) 认为现有crop经常会crop不准、滥用crop；提出在confidence低的时候才crop，并借助SAM2来获取比较准的crop （测得居然还是llava和qwen2）
+4. **【❄training-free】Let’s Think with Images Efficiently! An Interleaved-Modal Chain-of-Thought Reasoning Framework with Dynamic and Precise Visual Thoughts** (Arxiv 2026.03) [[paper]](https://arxiv.org/pdf/2603.21754) 认为现有crop经常会crop不准、滥用crop；提出在confidence低的时候才crop，并借助SAM2来获取比较准的crop （测得居然还是llava和qwen2）
 5. **【🔧SFT+🚀RL】AdaReasoner: Dynamic Tool Orchestration for Iterative Visual Reasoning** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.18631) interface tool而非code。RL reward：format+acc+tool reward。tool reward其实就是检查有效性，不检查正确性；比较创新的点是adaptive learning：训练时候(SFT/RL)把tool和参数的名字换成无意义代号，把tool的描述进行rephrase，发现能提升在测试时使用训练时没见过的工具的能力。
 6. **【🔧SFT+🚀RL】Agent Explorative Policy Optimization for Multimodal Agentic Reasoning** [[paper]](http://arxiv.org/abs/2605.28774) (Arxiv 2026.05) 一些motivation观察：①tool-RL时tool group很容易全错；②在tool节点进行多次sample，很容易采样出多样性很高的结果。由此提出AXPO在tool call节点进行resample以提高tool多样性和成功率来解决tool rollout全错的问题
+7. **【🔧SFT+🚀RL】Thinking with Imagination: Agentic Visual Spatial Reasoning with World Simulators** [[paper]](https://arxiv.org/pdf/2606.06476v1) RL训一个vlm作为policy，用一个Bagel当world simulator（SFT训）。
 
 #### 2025
 
@@ -334,9 +342,9 @@
 1. **Perception-R1: Pioneering Perception Policy with Reinforcement Learning** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.07954) 用GRPO训perception任务。一些发现：explicit thinking对于visual grounding、OCR、counting等perception任务不利；RL相比RL+SFT和SFT在复杂感知任务（多物体计数、detection）上提升较大，但在相对不那么复杂的grounding和OCR任务上相比RL+SFT和SFT提升有限。
 1. **【❄training-free】Your Large Vision-Language Model Only Needs A Few Attention Heads For Visual Grounding** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2503.06287) 发现存在少量的attn head的attention map对物体的标注很准。找这样的head的方法：考虑最后一个input文本token对全部image token的attention，先从所有head中选出对image attention比较大的，然后从中选出10个spatial entropy最低的（计算方法为eq3）。然后统计每个head被选为top-10低 entropy的频率。选出最被频繁选中的head作为grounding head。取它们的attention map作为grounding的依据。
 1. **【🔧SFT，hallucination new SOTA】Generate, but Verify: Reducing Visual Hallucination in Vision-Language Models with Retrospective Resampling** [[blog]](https://reverse-vlm.github.io/) 在生成过程中随时监测幻觉的产生并在产生幻觉时启动回溯，重新生成
-1. **【📊dataset】Weaving Context Across Images: Improving Vision-Language Models through Focus-Centric Visual Chains** (Arxiv 2025.04) [[paper]](https://www.arxiv.org/pdf/2504.20199) 解决多图片任务，提了一个多图问题数据集，每个样本包含一个推理路径，每一步包含应该看哪一张图片。
+1. **【📚dataset】Weaving Context Across Images: Improving Vision-Language Models through Focus-Centric Visual Chains** (Arxiv 2025.04) [[paper]](https://www.arxiv.org/pdf/2504.20199) 解决多图片任务，提了一个多图问题数据集，每个样本包含一个推理路径，每一步包含应该看哪一张图片。
 1. **【❄training-free】DyFo: A Training-Free Dynamic Focus Visual Search for Enhancing LMMs in Fine-Grained Visual Understanding** (CVPR 2025) [[paper]](https://arxiv.org/pdf/2504.14920) 1）MCTS的reward：每一个节点表示一个子图，该节点的reward为：如果该节点的子图片和该节点的文本一致，则为1乘以子图占全图的面积比（？）2）根据树搜索结果获取最终预测的方法：每个节点对应于一个prediciton，权重为节点的reward。然后进行reweighted majority vote得出最终预测。3）根据文本获取子图的方法：让一个expert（“Lang-Segment-Anything”）来做，expert接受focus文本、action（focus或scatter），crop出一个子图4）提出下一个观测对象的过程：让MLLM基于当前的子图和文本，提出一个新的文本，用以提供给vision expert crop子图。
-1. **【⚖DPO】 Unsupervised Visual Chain-of-Thought Reasoning via Preference Optimization** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.18397)
+1. **【DPO】 Unsupervised Visual Chain-of-Thought Reasoning via Preference Optimization** (Arxiv 2025.04) [[paper]](http://arxiv.org/abs/2504.18397)
 1. **【🔧SFT 】Analyzing and Mitigating Object Hallucination: A Training Bias Perspectiv (Arxiv 2025.08)** [[paper]](https://www.alphaxiv.org/abs/2508.04567) 构建了一个benchmark发现MLLM更容易在训练见过的图片上出现幻觉，且用一个probe发现lm_head的输出相比其他MLLM模块的输出导致幻觉。提出了只SFT lm head的一种做法。
 
 ### 2024
@@ -371,12 +379,13 @@
 
 
 
-## Video Understanding
+## 🔥Video Understanding
 
 ### 2026
 
 1. **RISE-Video: Can Video Generators Decode Implicit World Rules?** (Arxiv 2026.02) [[paper]](https://arxiv.org/pdf/2602.05986) 探究能否理解隐含的世界规则（比如冰在热水中会融化），4个评价指标。发现对隐含规则理解较差。
 1. **AdaCodec: A Predictive Visual Code for Video MLLMs** (Arxiv 2026.06) [[paper]](https://www.alphaxiv.org/abs/2606.02569) 把视频切分成一系列block，每个block包含一个I-fram（encode单张图片的完整信息）和后续的一系列P-frame（只encode motion信息）。用更少的token实现了competitive的性能。
+1. **LongVT: Incentivizing “Thinking with Long Videos” via Native Tool Calling** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2511.20785)
 
 ### 2025
 
@@ -394,6 +403,14 @@
 \- [V-ReasonBench: Toward Unified Reasoning Benchmark Suite for
 Video Generation Models](https://arxiv.org/pdf/2511.16668)
 \- [Beyond the Last Frame: Process-aware Evaluation for Generative Video Reasoning](https://arxiv.org/pdf/2512.24952)
+
+
+
+## 🔥Spatial Intelligence
+
+### 2026
+
+1. **Thinking with Imagination: Agentic Visual Spatial Reasoning with World Simulators** [[paper]](https://arxiv.org/pdf/2606.06476v1) RL训一个vlm作为policy，用一个Bagel当world simulator（SFT训）。
 
 
 
@@ -803,6 +820,12 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
    takeaways: ①比较稳定成立的结论：OPD主要在错误轨迹上发挥作用（与ideal gradient一致）；②更强的student更适合用强teacher、summary for self-distillation；弱student更适合self-generated full correct solution + self-distillation。但这一结论并不稳定，会随数据集和模型变化。
 
+4. **EDGE-OPD: Internalizing Privileged Context with Evidence Guided On-Policy Distillation** (Arxiv 2026.05) [[paper]](http://arxiv.org/abs/2605.23493) 为了解决OSPD采样不出好轨迹的问题，提出让student在50%的情况下基于privileged context采样；为了解决privileged context不是对全部token都有引导作用的问题，提出只在见到privileged context后概率增加足够大的token上做OSPD（此时student的context里还是没有privilege，只是在privilege-available的情况下采样出的轨迹上更新）。
+
+5. **On-Policy Distillation: Promise, Pitfalls, and Prospects** (2026.06) [[blog]](https://louieworth.github.io/blog/opd_reflection/) 总结了OPD的几个问题和解决办法。问题包括：①teacher的局部监督失效（比如teacher可能既想把学生拉回teacher分布，又想continue student分布，这种混合导致监督信号不准） ②随着训练进行，student轨迹逐渐跑到了teacher熟悉的分布之外，导致监督失效 ③学生轨迹前半段有误时，OPD最多只能告诉学生后半段得重新生成，但是修正后的后半段由于没有真的生成，所以没法在后半段上提供信号
+
+6. **Trajectory-Refined Distillation** (Arxiv 2026.06) [[paper]](https://arxiv.org/pdf/2606.08432) 
+
 ### 2024
 
 1. **On-Policy Distillation of Language Models** (ICLR 2024) [[paper]](https://proceedings.iclr.cc/paper_files/paper/2024/file/5be69a584901a26c521c2b51e40a4c20-Paper-Conference.pdf?utm_source=chatgpt.com) 提出了on-policy distillation
@@ -936,6 +959,7 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 #### 2026
 
 1. **Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses** (Arxiv 2026.04) [[paper]](arxiv.org/abs/2604.25850) 让agent harness自进化，搭载gpt5.5效果能超过官方CLI。
+1. **MUSE: A Unified Agentic Harness for MLLMs** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.03005) 宣称是首个多模态Harness。一些亮点包括：①会有个verifier对结果进行细致的评判，不仅判对错，还会判错误类型；②错误反馈机制会让模型避免再重试时犯同样的错误。 测得任务还是比较toy，迷宫、jigsaw等、CoMT（推理QA）、word search（合成任务）。
 
 
 
@@ -956,15 +980,18 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
    1. 在线提取milestone：在人类rollout时，用LLM基于success轨迹提取；
    2. process reward给法：每个step reward不一样，对于正确轨迹，如果某个token属于milestone，则给reward，否则0；对错误轨迹，所有token会给一个基础得分，计算方法为看该轨迹命中了多少milestone，对于处于milestone内的token会额外给分。
    3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
+   4. 计算adv时，group为全部rollout，每个sample的reward为acc、format、milestone reward加起来
 5. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
 6. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了关于agentic RL的CA一系列挑战。
 7. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
 8. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
 9. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
+10. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
 
-#### 2025
+####  2025
 
 1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
 2. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
 3. **Planner-R1: Reward Shaping Enables Efficient Agentic RL with Smaller LLMs** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.25779) agent场景，拆成很多reward，直接加到一起，GRPO，效果显著
 4. **Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.14967) 将相邻两轮的answer prob增加作为process reward
+5. **Scaling Long-Horizon LLM Agent via Context-Folding** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.11967) 提出训练模型使用branch工具，把token消耗大的操作放在branch里执行，执行后只返回一句结果插入主推理链。提出了过程监督来鼓励模型将token消耗大的操作放进brancj。ICLR26被拒，原因是缺少reward的ablation
