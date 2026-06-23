@@ -954,6 +954,22 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 ## 🔥Agents
 
+### Survey
+
+#### 2026
+
+1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
+2. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了传统RL的CA以及对LLM方法的启发、各类CA方法（不同粒度和reward获取方式）、关于agentic RL的CA一系列挑战等。
+   1. 奖励获取的方式：①MC采样；②基于value function做temporal difference；③LLM-as-critic；④game-theoretic；⑤information-theoretic
+   2. agentic RL的挑战：①环境的随机性导致轨迹不可复现（导致MC和TD方法受影响）；②环境只能部分可观测（导致CA难以区分是acton不好还是环境信息受限）；③轨迹很长；④异构轨迹（tool、planning、formatting……，重要的tool选错和trivial的format不好的问题权重一样）；⑤中间步骤non-verifiable（某一步工具是好是坏不容易判断）；⑥存在罕见的、对结果影响巨大的分叉点step（分叉点和trivial step权重一样）
+   3. 一些agentic RL CA的insight总结：
+      1. agentPRM：MC 在agentic 场景代价很高，就训练一个critic
+      2. SWEET-RL、CriticSearch：可以用oracle信息（完整轨迹、gt等）来帮助对中间步的验证
+      3. 针对性reward：对verifiable/non-verifiable的action分别用verifiable reward或LLM-as-judge
+      4. HCAPO、C3：有点类似SWEET-RL，在轨迹完成之后根据outcome和ground truth来让一个LLM”想象“如果把某一个step去掉会是什么样的结果（codev也是类似的思路）
+
+
+
 ### Harness
 
 #### 2026
@@ -963,35 +979,59 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 
 
-### Training
+### General Agents/Training Techniques
 
 #### 2026
 
-1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
-2. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
-   1. **粗筛:**从原始文本筛选出带有多步操作的；
-   2. **提取:**模型从中提取工作流和工具定义；
-   3. **序列合成:**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
-   4.  **提高序列复杂度 (见A.4): ** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
-3. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
+1. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
+
+   **粗筛:**从原始文本筛选出带有多步操作的；
+
+   **提取:**模型从中提取工作流和工具定义；
+
+   **序列合成:**用一个strong teacher（GLM4.6）基于工作流和工具来合成序列，每条序列为 $[s, (u_t,a_t,o_t)]$ ，$s$ 为sys prompt、 $u_t$  为user query、 $a_t$ 为模型action、 $o_t$ 为observation 
+
+   **提高序列复杂度 (见A.4): ** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
+
+2. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
    1. 用gemini2.5pro给定任务描述，通过ICL生成subgoal
    2. RL w/ dense process reward：利用标好的subgoal，训练一个potential critic（LLM），给定state和final goal，输出[0,1]得分来评价当前state距离最终goal的完成程度；该reward和outcome reward加到一起
-4. **Adaptive Milestone Reward for GUI Agents** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.11524) 
+3. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
+4. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
+5. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
+
+#### 2025
+
+1. **Planner-R1: Reward Shaping Enables Efficient Agentic RL with Smaller LLMs** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.25779) agent场景，拆成很多reward，直接加到一起，GRPO，效果显著
+2. **Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.14967) 将相邻两轮的answer prob增加作为process reward
+3. **Scaling Long-Horizon LLM Agent via Context-Folding** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.11967) 提出训练模型使用branch工具，把token消耗大的操作放在branch里执行，执行后只返回一句结果插入主推理链。提出了过程监督来鼓励模型将token消耗大的操作放进brancj。ICLR26被拒，原因是缺少reward的ablation
+
+#### 2024
+
+1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
+
+
+
+### Search/Research Agents
+
+#### 2026
+
+1. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
+2. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
+
+####  2025
+
+1. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
+
+
+
+### GUI Agents
+
+#### 2026
+
+1. **Adaptive Milestone Reward for GUI Agents** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.11524) 
    1. 在线提取milestone：在人类rollout时，用LLM基于success轨迹提取；
    2. process reward给法：每个step reward不一样，对于正确轨迹，如果某个token属于milestone，则给reward，否则0；对错误轨迹，所有token会给一个基础得分，计算方法为看该轨迹命中了多少milestone，对于处于milestone内的token会额外给分。
    3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
    4. 计算adv时，group为全部rollout，每个sample的reward为acc、format、milestone reward加起来
-5. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
-6. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了关于agentic RL的CA一系列挑战。
-7. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
-8. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
-9. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
-10. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
 
-####  2025
-
-1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
-2. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
-3. **Planner-R1: Reward Shaping Enables Efficient Agentic RL with Smaller LLMs** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.25779) agent场景，拆成很多reward，直接加到一起，GRPO，效果显著
-4. **Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.14967) 将相邻两轮的answer prob增加作为process reward
-5. **Scaling Long-Horizon LLM Agent via Context-Folding** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.11967) 提出训练模型使用branch工具，把token消耗大的操作放在branch里执行，执行后只返回一句结果插入主推理链。提出了过程监督来鼓励模型将token消耗大的操作放进brancj。ICLR26被拒，原因是缺少reward的ablation
