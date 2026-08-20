@@ -41,6 +41,7 @@
   * [Interpretability](#interpretability)
   * [Other](#other)
 * [🔥Agents](#agents)
+* [World Models](#world-models)
 
 
 
@@ -243,6 +244,8 @@
    1. 只有很小一部分题（大约小于10%）是两种纯文本做不对，但code能做对的
    2. code把纯文本改对（tool-gain）和改错（tool-harm）的比例都很低
    3. 对deepeyesv2，仅保留code content相比仅保留code result，与完整code模式下样本的正误分布更像；对thyme，结论相反。（这部分没有一致结论）
+6. **【💡Understanding】Position: Your VLM May Not Be Thinking with Interleaved Images** [[paper]](https://openreview.net/pdf?id=ivAHZuj8k1) (ICML 2026) 发现现有的TWI模型其实纯文本推理性能也差不多，发现性能提升主要来自SFT。且对于vstar，发现即使mask掉gt resgion，TWI模型性能也比qwen2.5VL好，说明是过拟合了benchmark。一些给未来TWI工作的insight：①要做wo tool的ablation；②用能提供额外信息的工具，比如search、image editing和generation；③在更难的任务上测
+7. **【💡Understanding】Tool Calls as Text Scaffolds for Visual Reasoning** (Arxiv 2026.08) [[paper]](https://arxiv.org/pdf/2608.09682) 发现了和“Do Multimodal Agents Really Benefit from Tool Use”那篇第三点类似的结论，即性能提升主要来自工具调用的那句话（文字思考和code片段都有贡献）。
 
 
 #### 2025
@@ -278,7 +281,8 @@
 4. **【❄training-free】Let’s Think with Images Efficiently! An Interleaved-Modal Chain-of-Thought Reasoning Framework with Dynamic and Precise Visual Thoughts** (Arxiv 2026.03) [[paper]](https://arxiv.org/pdf/2603.21754) 认为现有crop经常会crop不准、滥用crop；提出在confidence低的时候才crop，并借助SAM2来获取比较准的crop （测得居然还是llava和qwen2）
 5. **【🔧SFT+🚀RL】AdaReasoner: Dynamic Tool Orchestration for Iterative Visual Reasoning** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.18631) interface tool而非code。RL reward：format+acc+tool reward。tool reward其实就是检查有效性，不检查正确性；比较创新的点是adaptive learning：训练时候(SFT/RL)把tool和参数的名字换成无意义代号，把tool的描述进行rephrase，发现能提升在测试时使用训练时没见过的工具的能力。
 6. **【🔧SFT+🚀RL】Agent Explorative Policy Optimization for Multimodal Agentic Reasoning** [[paper]](http://arxiv.org/abs/2605.28774) (Arxiv 2026.05) 一些motivation观察：①tool-RL时tool group很容易全错；②在tool节点进行多次sample，很容易采样出多样性很高的结果。由此提出AXPO在tool call节点进行resample以提高tool多样性和成功率来解决tool rollout全错的问题
-7. **【🔧SFT+🚀RL】Thinking with Imagination: Agentic Visual Spatial Reasoning with World Simulators** [[paper]](https://arxiv.org/pdf/2606.06476v1) RL训一个vlm作为policy，用一个Bagel当world simulator（SFT训）。
+7. **【🔧SFT+🚀RL】Thinking with Imagination: Agentic Visual Spatial Reasoning with World Simulators** (Arxiv 2026.06) [[paper]](https://arxiv.org/pdf/2606.06476v1) RL训一个vlm作为policy，用一个Bagel当world simulator（SFT训）。
+8. **【🔧SFT+🚀RL】TACO: Tool-Augmented Credit Optimization for Agentic Tool Use** (Arxiv 2026.06) [[paper]](https://arxiv.org/pdf/2606.30251#page=7.78) think with images新SOTA。做法是强制prefill进行纯文本推理，根据tool是否有增益来给adaptive reward。
 
 #### 2025
 
@@ -384,8 +388,21 @@
 ### 2026
 
 1. **RISE-Video: Can Video Generators Decode Implicit World Rules?** (Arxiv 2026.02) [[paper]](https://arxiv.org/pdf/2602.05986) 探究能否理解隐含的世界规则（比如冰在热水中会融化），4个评价指标。发现对隐含规则理解较差。
-1. **AdaCodec: A Predictive Visual Code for Video MLLMs** (Arxiv 2026.06) [[paper]](https://www.alphaxiv.org/abs/2606.02569) 把视频切分成一系列block，每个block包含一个I-fram（encode单张图片的完整信息）和后续的一系列P-frame（只encode motion信息）。用更少的token实现了competitive的性能。
+1. **AdaCodec: A Predictive Visual Code for Video MLLMs** (Arxiv 2026.06) [[paper]](https://www.alphaxiv.org/abs/2606.02569) 把视频切分成一系列block，每个block包含一个I-frame（encode单张图片的完整信息）和后续的一系列P-frame（只encode motion信息）。只有当画面变化剧烈才会启用一个新的I-frame。用更少的token实现了competitive的性能。
 1. **LongVT: Incentivizing “Thinking with Long Videos” via Native Tool Calling** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2511.20785)
+1. **【🔧SFT+🚀RL】JoyAI-VL-Interaction: Real-Time Vision-Language Interaction Intelligence** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.14777) 京东JoyAI，首个能主动说话而非轮式对话的流式视频理解模型
+1. **OpenVisTool: An Open Recipe for Synthesizing Instructive Visual Tool-Use Trajectories** (Arxiv 2026.08) [[paper]](https://arxiv.org/abs/2608.08557) 正确答案并不足以证明工具轨迹有教学价值；OpenVisTool 额外验证工具观察是否真正因果性地支持答案。
+1. **An Efficient Streaming Video Understanding Framework with Agentic Control** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.17921) R3-Streaming 把流式视频理解拆成记忆压缩、回答准备度判断和强/弱模型路由三个控制决策。
+1. **【Agentic⚙️】Omni-Decision: A Progressive Evidence-State Agent System for Omni-Modal QA** (Arxiv 2026.07) [[paper]](http://arxiv.org/abs/2607.11433) 一套training-free的harness用来做omni理解任务。维护一个state，用来列出“已确认的证据/冲突的证据/其他事实/不确定性。state->planner->reducer构成循环。planner（LLM）不亲自改state，而是由reducer按照预定义的规则根据planner的执行结果进行修改。只有当不确定集为空、冲突集为空、问题所需的所有事实已被获得，才输出最终答案。
+1. **【Agentic⚙️】Agentic Very Long Video Understanding** (Arxiv 2026.01) [[paper]](https://arxiv.org/abs/2606.31410) 解决超长时间视频理解（几十小时以上）。先对超长视频构建三类数据：visual embedding库（以1FPS抽取visual embedding）、audio库、实体图（节点为物体，边为关系，构建方式是对每个切出来的30s的视频片段先用video caption模型打caption、音频模型提取音频，然后用一个LLM把音频和caption融合成一段描述并提取实体和关系）。agentic推理：先把用户问题拆解成一系列子问题，然后调用visual search（agent输出查询文本和visual embedding库中的向量算相似度）、audio search、entity graph search（agent输出时间段、关键词、节点、关系）来检索信息。
+1. **【Agentic⚙️】Watching, Reasoning, and Searching: A Video Deep Research Benchmark on Open Web for Agentic Video Reasoning** (Arxix 2026.01) [[paper]](http://arxiv.org/abs/2601.06943) 提出了video deep research任务：问题必须得既看视频又联网搜索才能回答。数据合成主要靠人工提出多帧、多条推理问题并作质量筛查。
+1. **【Agentic⚙️】SAGE: Training Smart Any-Horizon Agents for Long Video Reasoning with Reinforcement Learning** (CVPR 2026) [[paper]](https://arxiv.org/html/2512.13874v1?utm_source=chatgpt.com) 数据合成：gemini提问题并产生工具调用轨迹（工具包括asr、定位事件时间、提取帧或片段、web-search等）。SFT+RL，RL包含过程奖励（json格式+参数合法+gpt4o判断）和结果奖励（最终json合法+答案正确+奖励用工具）。
+1. **【Agentic⚙️】InternVideo3: Agentify Foundation Models with Multimodal Contextual Reasoning**
+   1. 数据合成：强教师模型产生片段->场景->全视频逐级描述，避免一次对几小时的视频进行描述。基于描述生成四类问题（感知、时空理解、事件与动作推理、全局理解）。
+   1. RL只做了video多选题和时间定位。没啥可说的。
+   1. harness：⚠️论文在方法部分描述的是模型自主路由、递归调用工具的MCR Agent；但公开的训练数据和RL目标没有显示模型接受过这种Agent工具轨迹训练。
+      1. 记忆索引：全局-场景-片段-原始帧。查询时先读高层摘要。
+      1. 问题路由：系统根据问题类型选择初始策略，从而调用不同工具
 
 ### 2025
 
@@ -674,6 +691,7 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 1. **SRFT: A SINGLE-STAGE METHOD WITH SUPERVISED AND REINFORCEMENT FINE-TUNING FOR REASONING** (ICLR 2026) [[paper]](https://openreview.net/pdf?id=n6E0r6kQWQ) 实验上发现先RL再SFT性能会崩，性能突降伴随熵陡增；提出将SFT loss 和 RL loss混合，进行单阶段训练：SFT loss（减少高熵数据的weight以防止off-policy导致的性能崩塌） + 将SFT数据混入RL rollout数据算adv + RL loss（增加高熵rollout的weight以防止策略坍缩）。qwen2.5-7b性能可以显著超过SFT+RL
 1. **Learning to Hint for Reinforcement Learning** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.00698) 提出HiLL，针对hint的改进：① hint的产生是基于错误轨迹的，这样可以针对性产生 ②提出了一个指标hint reliance来衡量改对的轨迹有多大程度依赖于hint，reliance越低说明成功轨迹越容易迁移到测试时的no-hint场景，以此来给容易迁移的训练样本更高的权重
+1. **Zone of Proximal Policy Optimization: Teacher in Prompts, Not Gradients** (Arxiv 2026.06) [[paper]](https://arxiv.org/pdf/2606.18216) 挑难题，rollout时候在prompt里加入两类context：第一类是一个teacher的正确回复+policy的错误轨迹（但不说哪个对哪个错）；另一类是一堆policy的错误轨迹，并注明这都是错的，来在难题上采样出更好的轨迹
 
 ### 2025
 
@@ -959,7 +977,14 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 #### 2026
 
 1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
-2. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了传统RL的CA以及对LLM方法的启发、各类CA方法（不同粒度和reward获取方式）、关于agentic RL的CA一系列挑战等。
+
+
+
+### Credit Assignment
+
+#### 2026
+
+1. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了传统RL的CA以及对LLM方法的启发、各类CA方法（不同粒度和reward获取方式）、关于agentic RL的CA一系列挑战等。
    1. 奖励获取的方式：①MC采样；②基于value function做temporal difference；③LLM-as-critic；④game-theoretic；⑤information-theoretic
    2. agentic RL的挑战：①环境的随机性导致轨迹不可复现（导致MC和TD方法受影响）；②环境只能部分可观测（导致CA难以区分是acton不好还是环境信息受限）；③轨迹很长；④异构轨迹（tool、planning、formatting……，重要的tool选错和trivial的format不好的问题权重一样）；⑤中间步骤non-verifiable（某一步工具是好是坏不容易判断）；⑥存在罕见的、对结果影响巨大的分叉点step（分叉点和trivial step权重一样）
    3. 一些agentic RL CA的insight总结：
@@ -967,15 +992,27 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
       2. SWEET-RL、CriticSearch：可以用oracle信息（完整轨迹、gt等）来帮助对中间步的验证
       3. 针对性reward：对verifiable/non-verifiable的action分别用verifiable reward或LLM-as-judge
       4. HCAPO、C3：有点类似SWEET-RL，在轨迹完成之后根据outcome和ground truth来让一个LLM”想象“如果把某一个step去掉会是什么样的结果（codev也是类似的思路）
+      5. Memory-R2：在某一step进行分叉rollout，构造state相同的step-level group计算优势
+2. **OPID: On-policy Skill Distillation for Agentic Reinforcement Learning** (Arxiv 2026.06) 把有无skill in context时的token-wise prob diff作为token-wise advantage，和outcome advantage加到一起。测试时无需skill（skill被内化了）
 
 
 
-### Harness
+### Harness & Skills
 
 #### 2026
 
 1. **Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses** (Arxiv 2026.04) [[paper]](arxiv.org/abs/2604.25850) 让agent harness自进化，搭载gpt5.5效果能超过官方CLI。
 1. **MUSE: A Unified Agentic Harness for MLLMs** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.03005) 宣称是首个多模态Harness。一些亮点包括：①会有个verifier对结果进行细致的评判，不仅判对错，还会判错误类型；②错误反馈机制会让模型避免再重试时犯同样的错误。 测得任务还是比较toy，迷宫、jigsaw等、CoMT（推理QA）、word search（合成任务）。
+1. **Beyond Final Scores: A Systematic Evaluation of Agents for  Long-Horizon AI Research and Development** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.13417) 一些关于harness的insight：harness主要有三个作用：1️⃣管理context；2️⃣将模型从错误工具执行中恢复；3️⃣task-specific：针对不同任务可以有专门的优化（比如针对自动科研任务，有两个专门的机制很好用：1️⃣比较两个版本之间的结论的差异、保存有用的进展等；2️⃣帮助模型跳出局部最优（每隔5个step，若发现没啥进展，则让模型进行一次较大的结构改动））。
+1. **Omni-Decision: A Progressive Evidence-State Agent System for Omni-Modal QA** (Arxiv 2026.07) [[paper]](http://arxiv.org/abs/2607.11433) 一套training-free的harness用来做omni理解任务。维护一个state，用来列出“已确认的证据/冲突的证据/其他事实/不确定性。state->planner->reducer构成循环。planner（LLM）不亲自改state，而是由reducer按照预定义的规则根据planner的执行结果进行修改。只有当不确定集为空、冲突集为空、问题所需的所有事实已被获得，才输出最终答案。
+1. **SkillOpt: Executive Strategy for Self-Evolving Agent Skills** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2605.23904) [[机器之心]](https://mp.weixin.qq.com/s/pMlyj3a3KOh8L7cIHClRXA) 将skill优化建模为类似训练的过程：对skill文档的修改类似梯度下降，只保留能稳定提升验证集性能的修改。github star非常多。
+1. **XSKILL: Continual Learning from Experience and Skills in Multimodal Agents** (ICML 2026) [[paper]](https://arxiv.org/pdf/2603.12056) 在训练集上积累skills和experience，测试时把问题拆解为子问题并给每个子问题检索相关的experience（文本embedding相似度检索），然后对experience根据当前问题进行rewrite，得到refine后的exp之后再根据当前问题对skill也进行rewrite，然后交给policy使用。积累skills和experience的方法：
+   1. skills获取：看整个轨迹、正确答案，抽skill，输出每条轨迹的总结和抽取的skill
+   1. experience获取：同时给出多条轨迹的总结、正确与否，跨轨迹总结普遍的错误和成功经验
+   1. 知识固化：为了防止知识库爆炸：
+      1. skill manager：1️⃣保留可执行代码和工具模板；2️⃣删除task-specific entity；3️⃣合并相似workflow、设置公共部分；4️⃣文档超过1000词时强制压缩
+      1. Experience manager：限制experience bank最多120条，超过之后进行合并、抽象为一般条件、删除太显然/太具体/不具操作性的；
+1. **Rethinking Self-Evolving Agent Skills: Feedback Dynamics over Multiple Rounds** (Arxiv 2026.07) [[paper]](https://arxiv.org/pdf/2608.02636) 对skill自进化做了分析（根据第t轮的skill进行推理，得到结果（失败或成功）后根据反馈对skill进行更新，能提升验证集性能的才保留）。结论：1️⃣只有大约14%的skill带来了验证集提升；2️⃣失败轨迹告诉skill哪里需要改，成功轨迹告诉skill哪里需要保留；3️⃣验证集能提升不代表能泛化到其他任务
 
 
 
@@ -996,9 +1033,35 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 2. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
    1. 用gemini2.5pro给定任务描述，通过ICL生成subgoal
    2. RL w/ dense process reward：利用标好的subgoal，训练一个potential critic（LLM），给定state和final goal，输出[0,1]得分来评价当前state距离最终goal的完成程度；该reward和outcome reward加到一起
+
 3. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
+
 4. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
+
 5. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
+
+6. **Memory-R2: Fair Credit Assignment for Long-Horizon Memory-Augmented LLM Agents** [[paper]](https://arxiv.org/abs/2605.21768) GRPO不合适解决设计memory bank增删的场景：不同轨迹所处的memory bank状态不同，直接比较无法判断是动作不好还是memory bank不同导致的问题。做法：global reward+local reward，local reward是从同一个记忆状态出发采样不同的操作组成group算优势
+
+7. **Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26027) 做实验比较了tool-use场景RL一些trick的效果，发现如下：
+
+   1. ID场景下：用分布内数据做SFT在qwen2.5和qwen3上都提升稳定；SFT+GRPO对qwen2.5能提升，对qwen3不能；在RL全错数据上SFT交替RL（ETS）效果最好，在用错误轨迹合成的反思数据上SFT（RPS）效果也不错；在不做SFT时，LUFFY(把专家序列混入group)和hint-based guidance（HBG）分布内效果很烂
+   2. OOD场景下：训练数据是ID，测试数据存在工具种类和format的OOD时，所有训练方法都会掉点。LUFFY相对掉的最少。ETS和RPS掉点也比较明显。
+
+8. **The Verification Horizon: No Silver Bullet for Coding Agent Rewards** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26300) qwen team，真实世界的复杂任务中agent轨迹很长且很难被准确验证做的好不好，团队更准确地何验证和奖励做了广泛的实验分析，针对不同场景，特别是现实世界中的长程复杂任务，提出了不同的奖励策略：
+
+   1. 通用软件工程任务：SWE类，之前一般是看测试样例过不过来给奖励
+      1. 为了解决测试质量低的问题（任务说明和测使用例不符），用一个agentic judge进行判断：任务说明是否清晰、测试用例是否符合任务说明
+      2. 为了防止模型hack测试用例骗奖励，用一个monitor审查所有轨迹，并将作弊套路收集进一个监控规则库
+
+   2. 前端开发任务：用LLM充当裁判存在只偏爱视觉好看而忽视功能完整性、偏好很长的代码等问题
+      1. 静态检查：人工checklist
+      2. 动态检查：让模型输出一个点击序列，用网页自动测试化工具真的去点做出来的前端网页，把过程记录，交给LLM结合checklist进行检查
+
+   3. 真实世界任务：LLM将人类反馈标注为正面、中立和负面，然后用span KTO优化：正面拉进，负面推远
+   4. 超长周期代码任务：agent as judge，拆需求、逐项测试、给综合打分。裁判的常见问题包括不爱写测试、只关注局部和细节、帮着改代码等。此外，规则太复杂也会导致裁判性能下降。
+   5. 未来研究方向：①bug修复任务，同样是修好，也有质量差别，怎么评价；②在线用户反馈（目前大多是从历史对话里抽用户反馈，相当于离线数据）；③前端任务对齐人类感受；④verifier必须和policy协同进化
+
+9. **Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.30616) 数据合成：self-play机制：所有domain的数据构建都可以抽象成如下的过程。从初始图出发，一个proposer随机采样图上的一条轨迹并提出一个问题，一个solver去解答，然后一个verifier去检查答案、证据、轨迹。verifier检查通过（维度包括问题可验证、答案正确、问题足够non-trivial等）轨迹会重新插入graph（包含了solver在这个过程中的一系列新操作），检查失败的则重新进行self-play。训练：SFT+GRPO训domain专家（search、science、instruction following、general tool call）。student先做所有domain的SFT，然后用专家做OPD。
 
 #### 2025
 
@@ -1019,9 +1082,14 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 1. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
 2. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
 
+
 ####  2025
 
 1. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
+2. **WebSailor: Navigating Super-human Reasoning for Web Agent** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2507.02592) 构建知识图谱来合成多跳数据。优点：可验证性强。
+3. **WebSailor-V2: Bridging the Chasm to Proprietary Agents via Synthetic Data and Scalable Reinforcement Learning** (ICLR 2026) [[paper]](https://openreview.net/forum?id=HuP16O5SJf) 相比v1，引入了节点模糊化技巧来提升任务难度
+4. **WebResearcher: Unleashing unbounded reasoning capability in Long-Horizon Agents** (Arxiv 2025.09) [[paper]](https://arxiv.org/pdf/2509.13309) 从一批简单的种子QA开始，通过实体替换、条件追加、合并多题等技术来提升任务难度
+5. **CriticSearch: Fine-Grained Credit Assignment for Search Agents via a Retrospective Critic** (ACL 2025)
 
 
 
@@ -1034,4 +1102,16 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
    2. process reward给法：每个step reward不一样，对于正确轨迹，如果某个token属于milestone，则给reward，否则0；对错误轨迹，所有token会给一个基础得分，计算方法为看该轨迹命中了多少milestone，对于处于milestone内的token会额外给分。
    3. 如何match milestone：用Sentence-BERT计算语句相似度，高于阈值则算命中
    4. 计算adv时，group为全部rollout，每个sample的reward为acc、format、milestone reward加起来
+1. **Fara1.5 – A family of frontier computer use agent models** (Arxiv 2026.05) [[blog]](https://www.microsoft.com/en-us/research/articles/fara1-5-computer-use-agent/) microsoft开源模型
+   1. 数据合成：先用copilot合成网站，然后合成可验证任务，并用GPT5.4生成轨迹。轨迹筛选标准：正确性（LLM generated rubric judge）、效率（LLM as judge）以及用户交互体验（三种情况看处理的对不对：①该任务需要用户提供个人信息，但用户尚未提供。②任务描述不够清晰，或者缺少了当前步骤所必需的详细信息。③未经事先批准而进行的不可撤销操作）必须同时满足，才会被纳入训练数据。
+   2. 一些insight：在特定领域（比如mail、calendar、steam）训过性能涨幅明显
 
+
+
+# World Models
+
+## Survey
+
+### 2026
+
+1. **A Definition and Roadmap for World Models** (Arxiv 2026.07) [[paper]](http://arxiv.org/abs/2607.06401) 上海AI lab。从功能上，将现有工作分为renderer、simulator、planner三类；从架构上，分成了pixel-level重建、3D-based、latent-state-based。
