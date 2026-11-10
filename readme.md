@@ -43,7 +43,7 @@
 * [🔥Agents](#agents)
 * [World Models](#world-models)
 
-
+cd /kling_test/gen4/shiyang06/Project/Kling-VL-8B/codes/training/RL/klingmm_verl env INFER_MODE=benchmark INFER_RUN_ID=klink_parallel_generate_content_official_20261023_2 INFER_PYTHON=/kling_test/gen4/heguanlin/sglang-h200/env/bin/python KLINK_BASE_URL=http://klink.internal KLINK_MODEL=gemini-4-argon-official BENCHMARK_PROTOCOLS=generate_content BENCHMARK_CONCURRENCIES=64 BENCHMARK_SAMPLES_PER_QUESTION=1 BENCHMARK_RETRIES=0 BENCHMARK_SOURCE_RUN="$PWD/debug/runtime/reward_infer_rl_32b3caa8e02c/standalone/20261015T033049Z-4788c72ab6a9" bash kling/launchers/rl_reward_infer/run_grpo35a_timestampfixed_infer.sh
 
 # MLLM
 
@@ -176,43 +176,23 @@
 ### **2024**
 
 1. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
-
 2. **Visual Sketchpad: Sketching as a Visual Chain of Thought for Multimodal Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.09403) 让模型生成代码来调用工具根据现有的视觉输入产生新的视觉图像来作为推理的辅助，可以提升在各种视觉相关任务上的能力。
-
 3. **Task Navigator: Decomposing Complex Tasks for Multimodal Large Language Models** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024W/MAR/papers/Ma_Task_Navigator_Decomposing_Complex_Tasks_for_Multimodal_Large_Language_Models_CVPRW_2024_paper.pdf) 工程文章，借助LLM根据历史子问题和模型回答，迭代产生多个子问题，提升MLLM完成复杂视觉理解任务的能力。提出了VersaChallenge benchmark，包括常识推理、物理关系推理、未来预测等。
-
 4. **SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities** (CVPR 2024) [[paper]](https://ieeexplore.ieee.org/document/10658310/) 构建数据集，训了一个spatial-VLM用以解决空间任务
-
 5. **【📊dataset】SpatialRGPT: Grounded Spatial Reasoning in Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2406.01584) 构建空间位置关系数据集，添加了一个深度图->语言模块，来增强几何推理
-
 6. **Multimodal Chain-of-Thought Reasoning in Language Models** (TMLR 2024) [[paper]](http://arxiv.org/abs/2302.00923) 两阶段训练，第一阶段接受文本和视觉的融合特征输出一个rationale（推理过程的文本描述），第二阶段将生成的rationale和原始文本结合，再与视觉特征融合重新输入模型产生预测。
-
-7. **Thinking Before Looking: Improving Multimodal LLM Reasoning via Mitigating Visual Hallucination** (Arxiv Nov 2024) [[paper]](http://arxiv.org/abs/2411.12591) 对于VQA任务，提出thinking-before-looking范式，先利用一个LLM根据文本问题生成一堆更细致的问题，然后将这些问题和图片一起输给MLLM让其生成推理步骤。最终将原始问题、图片、推理步骤一起输给MLLM让其生成答案。
-
-8. **Link-Context Learning for Multimodal LLMs** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024/html/Tai_Link-Context_Learning_for_Multimodal_LLMs_CVPR_2024_paper.html) 提出一种新的fine-tune MLLM的方法：让context和query具有一定的causal联系，发现能提升模型通过context学习新概念的能力
-
-9. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
-
-10. **Natural Language Inference Improves Compositionality in Vision-Language Models** (ICLR 2025 Ratings 8866) [[paper]](https://openreview.net/forum?id=G3aXjVAJjU) prompt工程。任务是判断caption和图片相不相符。做法是让LLM生成与原始caption相符、不相符的yes or no问题，然后根据VLM在相符/不相符/原始问题上的logit来做出最终判断。
-
-11. **Interleaved-Modal Chain-of-Thought** (Arxiv 2024.11) [[paper]](https://arxiv.org/pdf/2411.19488) 在每一个reasoning step选出attention最高的visual tokens，保持原图的顺序插入到视觉和文本输入之后、文本rationale开始之前的位置，之后再据此生成rationale。按此方法迭代生成多个reasoning step，然后再在其后生成最终答案。
-
-12. **Progressive Multimodal Reasoning via Active Retrieval** (Arxiv 2024.12) [[paper]](Progressive Multimodal Reasoning via Active Retrieval) 提出了一个从外部知识库中根据当前推理步搜索相关知识，并通过MCTS来构建CoT的框架，并提出了在生成的CoT数据上进行PRM的方法。推理时根据PRM的打分，选取得分topk高的推理路径。
-
-13. **Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search** (Arxiv 2024.12) [[paper]](Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search) [[code]](https://github.com/HJYao00/Mulberry) 用MCTS构建CoT，其中每一步打分利用多个模型；同时构建反思链，做法是构建一个“低得分节点-反思prompt-高得分节点”的思维链。然后用生成的总共260K数据进行fine-tune。
-
-14. **Perception Tokens Enhance Visual Reasoning in Multimodal Language Models** (Arxiv 2024.12) [[paper]](http://arxiv.org/abs/2412.03548) 针对相对深度估计问题或计数问题，将深度图或bounding box转换为MLLM能处理的token来提供更精细的视觉信息，并加入到CoT中，来fine-tune MLLM。
-
-15. **MR-MLLM: Mutual Reinforcement of Multimodal Comprehension and Vision Perception** (Arxiv 2024.06) [[paper]](http://arxiv.org/abs/2406.15768)
-
-16. **【📊dataset】Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
-
-17. **Cantor: Inspiring Multimodal Chain-of-Thought of MLLM** (MM 2024) [[paper]](http://arxiv.org/abs/2404.16033) 纯prompt engineering文章。为了增强perception，提示MLLM根据问题找出具体该看什么图片细节，然后问一个MLLM让它专门去看，最后再综合它的输出来做最终回答
-
-18. **Self-Correction is More than Refinement: A Learning Framework for Visual and Language Reasoning Tasks** (Arxiv 2024.10) [[paper] ](https://arxiv.org/pdf/2410.04055) 给MLLM提供Self-correction Prompt，然后选出改对的和改错的样本分别作为正负样本进行DPO。
-
-19. **Beyond Embeddings: The Promise of Visual Table in Visual Reasoning** (EMNLP 2024) [[paper] ](http://arxiv.org/abs/2403.18252) 训练一个visual table generator，来产生对图片的详细描述。训练generator的方法：prompt GPT4V来生成visual table。总共从COCO找了61K数据。三阶段训练：1）caption数据上训练connector 2）在GPT生成的instruction tunning数据集上训练connector和LLM 3）在vis table数据上训练LLM。
-
+7. **Link-Context Learning for Multimodal LLMs** (CVPR 2024) [[paper]](https://openaccess.thecvf.com/content/CVPR2024/html/Tai_Link-Context_Learning_for_Multimodal_LLMs_CVPR_2024_paper.html) 提出一种新的fine-tune MLLM的方法：让context和query具有一定的causal联系，发现能提升模型通过context学习新概念的能力
+8. **Lever LM: Configuring In-Context Sequence to Lever Large Vision Language Models** (NeurIPS 2024) [[paper]](http://arxiv.org/abs/2312.10104) 先构建一个优质的ICL数据集，然后将该数据集中的image-text对视作token，用CLIP抽取特征作为token embedding，训练一个很小的Transformer（lever-LM）来在该数据集上进行next-token prediction（序列是从query到context这样倒着来的）。测试时，最后给定测试样本，拿lever-LM从该预先挑选好的数据集中预测后续的example来构成context。
+9. **Natural Language Inference Improves Compositionality in Vision-Language Models** (ICLR 2025 Ratings 8866) [[paper]](https://openreview.net/forum?id=G3aXjVAJjU) prompt工程。任务是判断caption和图片相不相符。做法是让LLM生成与原始caption相符、不相符的yes or no问题，然后根据VLM在相符/不相符/原始问题上的logit来做出最终判断。
+10. **Interleaved-Modal Chain-of-Thought** (Arxiv 2024.11) [[paper]](https://arxiv.org/pdf/2411.19488) 在每一个reasoning step选出attention最高的visual tokens，保持原图的顺序插入到视觉和文本输入之后、文本rationale开始之前的位置，之后再据此生成rationale。按此方法迭代生成多个reasoning step，然后再在其后生成最终答案。
+11. **Progressive Multimodal Reasoning via Active Retrieval** (Arxiv 2024.12) [[paper]](Progressive Multimodal Reasoning via Active Retrieval) 提出了一个从外部知识库中根据当前推理步搜索相关知识，并通过MCTS来构建CoT的框架，并提出了在生成的CoT数据上进行PRM的方法。推理时根据PRM的打分，选取得分topk高的推理路径。
+12. **Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search** (Arxiv 2024.12) [[paper]](Mulberry: Empowering MLLM with o1-like Reasoning and Reflection via Collective Monte Carlo Tree Search) [[code]](https://github.com/HJYao00/Mulberry) 用MCTS构建CoT，其中每一步打分利用多个模型；同时构建反思链，做法是构建一个“低得分节点-反思prompt-高得分节点”的思维链。然后用生成的总共260K数据进行fine-tune。
+13. **Perception Tokens Enhance Visual Reasoning in Multimodal Language Models** (Arxiv 2024.12) [[paper]](http://arxiv.org/abs/2412.03548) 针对相对深度估计问题或计数问题，将深度图或bounding box转换为MLLM能处理的token来提供更精细的视觉信息，并加入到CoT中，来fine-tune MLLM。
+14. **MR-MLLM: Mutual Reinforcement of Multimodal Comprehension and Vision Perception** (Arxiv 2024.06) [[paper]](http://arxiv.org/abs/2406.15768)
+15. **【📊dataset】Visual CoT: Advancing Multi-Modal Language Models with a Comprehensive Dataset and Benchmark for Chain-of-Thought Reasoning** (NeurIPS 2024 DB track) [[paper]](https://proceedings.neurips.cc/paper_files/paper/2024/file/0ff38d72a2e0aa6dbe42de83a17b2223-Paper-Datasets_and_Benchmarks_Track.pdf) 造了一个数据集Visual CoT，包含推理关键视觉区域的bounding box的坐标。提出的方法：训练MLLM在推理时输出bounding box。
+16. **Cantor: Inspiring Multimodal Chain-of-Thought of MLLM** (MM 2024) [[paper]](http://arxiv.org/abs/2404.16033) 纯prompt engineering文章。为了增强perception，提示MLLM根据问题找出具体该看什么图片细节，然后问一个MLLM让它专门去看，最后再综合它的输出来做最终回答
+17. **Self-Correction is More than Refinement: A Learning Framework for Visual and Language Reasoning Tasks** (Arxiv 2024.10) [[paper] ](https://arxiv.org/pdf/2410.04055) 给MLLM提供Self-correction Prompt，然后选出改对的和改错的样本分别作为正负样本进行DPO。
+18. **Beyond Embeddings: The Promise of Visual Table in Visual Reasoning** (EMNLP 2024) [[paper] ](http://arxiv.org/abs/2403.18252) 训练一个visual table generator，来产生对图片的详细描述。训练generator的方法：prompt GPT4V来生成visual table。总共从COCO找了61K数据。三阶段训练：1）caption数据上训练connector 2）在GPT生成的instruction tunning数据集上训练connector和LLM 3）在vis table数据上训练LLM。
 20. **From the Least to the Most: Building a Plug-and-Play Visual Reasoner via Data Synthesis** (EMNLP 2024) [[paper]](https://arxiv.org/pdf/2406.19934) 先用grounding DINO检测图中物体获得一系列节点（单物体/多物体/整张图），让GPT4根据这些节点反推每一步回答什么样的子问题、怎样调用工具，才能从前一步的图片节点得到下一步的图片节点。最后让GPT4把子图、GPT4生成的子问题和工具调用参数合成一个推理链。让gpt4生成10k这样的数据用来训练llama3-8b做提提问题和合成的任务。之后让这个sft之后的llama3-8b生成50k推理链，用来sft一个llava-1.5-7b作为reasoner，其具备提出子问题和调用工具的能力。
 
  ### 2023
@@ -403,12 +383,14 @@
    1. harness：⚠️论文在方法部分描述的是模型自主路由、递归调用工具的MCR Agent；但公开的训练数据和RL目标没有显示模型接受过这种Agent工具轨迹训练。
       1. 记忆索引：全局-场景-片段-原始帧。查询时先读高层摘要。
       1. 问题路由：系统根据问题类型选择初始策略，从而调用不同工具
+1. 
 
 ### 2025
 
 1. **Video-Thinker: Sparking "Thinking with Videos" via Reinforcement Learning** (Arxiv 2025.10) [[paper]](https://www.arxiv.org/abs/2510.23473) SFT+GRPO教会模型先输出<time>定位关键片段，再输出<caption>来描述，最后<think>的结构化思维方式。数据合成策略：
    * 针对 “有描述无推理” 的数据：这类数据具备精确的时间段标注和详尽的动作描述，但缺乏深度的逻辑问答。利用 DeepSeek-R1 强大的逻辑推理能力，以原有的细粒度片段描述为上下文，合成出需要跨越多个时间片段进行综合分析的复杂多跳问题，将感知任务升级为逻辑推理任务。
    * 针对 “有问答无细节” 的数据（如 STAR、ScaleLong、LVBench）：这类数据虽然包含极具挑战性的推理问答，却往往缺失了支撑答案的具体视觉描述。团队借助 Gemini-2.5-Flash-Lite 的长窗口视觉理解能力，以标准答案为锚点进行反向推导，为关键时间窗口生成了与答案强相关的精细化视觉描述（Answer-Conditioned Captions），填补了推理过程中视觉证据的空白。
+2. **Think With Videos For Agentic Long-Video Understanding** (Arxiv 2025.11) [[paper]](https://arxiv.org/pdf/2506.10821) 
 
 \- [Video models are zero-shot learners and reasoners](https://arxiv.org/pdf/2509.20328)
 \- [Thinking with Video: Video Generation as a Promising Multimodal Reasoning Paradigm](https://arxiv.org/pdf/2511.04570)
@@ -832,7 +814,7 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 1. **Unifying Group-Relative and Self-Distillation Policy Optimization via Sample Routing** (Arxiv 2026.04)[[paper]](https://arxiv.org/pdf/2604.02288) 正确样本做GRPO，错误样本做OPD。
 
-2. **Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe** (Arxiv 2026.04) [[paper]](https://arxiv.org/abs/2604.13016) OPD成功的两个前提条件：①学生与教师必须共享兼容的思维模式。②教师必须提供学生训练期间未见过的新知识，高分不等于新知识。③OPD会让student和teacher的高概率token趋于一致。优化策略：①让学生先在teacher rollout上SFT；②prompt用teacher训练时见过的格式
+2. **Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mechanism, and Recipe** (Arxiv 2026.04) [[paper]](https://arxiv.org/abs/2604.13016) [[公众号博客]](https://mp.weixin.qq.com/s/RCYmiKpofKtqfu2AHs8Ayw) OPD成功的两个前提条件：1️⃣学生与教师必须共享兼容的思维模式。2️⃣教师必须提供学生训练期间未见过的新知识，高分不等于新知识**（典型例子：学生是 ds-1.5b时，ds-1.5b+rl当教师的效果远好于未经rl的ds-7b。说明rl能给教师注入学生所需的新知识）**。其他发现：1️⃣OPD会让student和teacher的高概率token趋于一致。2️⃣把top-k token拆成两部分，发现仅在师生重合的top-k token上训能达到跟完整top-k一样的性能，但在非重合token上训却不行。优化策略：①让学生先在teacher rollout上SFT；②prompt用teacher训练时见过的格式
 
 3. **Unmasking On-Policy Distillation: Where It Helps, Where It Hurts, and Why** (Arxiv 2026.05) [[paper]](http://arxiv.org/abs/2605.10889) 核心motivation：teacher在不同token上的引导作用不一样，有些只是stylistic，有些才是有利于正确推理的关键引导；从增加student回答正确的概率这一角度分析，teacher的引导可能有利/中性/有害（其实就是看teacher gradient和ideal gradient的夹角）
 
@@ -843,6 +825,8 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 5. **On-Policy Distillation: Promise, Pitfalls, and Prospects** (2026.06) [[blog]](https://louieworth.github.io/blog/opd_reflection/) 总结了OPD的几个问题和解决办法。问题包括：①teacher的局部监督失效（比如teacher可能既想把学生拉回teacher分布，又想continue student分布，这种混合导致监督信号不准） ②随着训练进行，student轨迹逐渐跑到了teacher熟悉的分布之外，导致监督失效 ③学生轨迹前半段有误时，OPD最多只能告诉学生后半段得重新生成，但是修正后的后半段由于没有真的生成，所以没法在后半段上提供信号
 
 6. **Trajectory-Refined Distillation** (Arxiv 2026.06) [[paper]](https://arxiv.org/pdf/2606.08432) 
+
+7. **TIP: Token Importance in On-Policy Distillation** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2604.14084) 找高熵的（学生不确定的）和低熵但师生差异大的（学生自信地犯错的）token用于更新。一些takeaways：1️⃣全token OPD会大量训练format、师生已经一致、简单continuation词；2️⃣只训练低熵高师生差异token可以接近或者超过全token OPD。3️⃣高熵token和低熵高差异token哪种更work，视任务而定
 
 ### 2024
 
@@ -970,19 +954,54 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 
 
-## 🔥Agents
 
-### Survey
 
-#### 2026
+****
+
+
+
+# 🔥Agents
+
+## Survey
+
+### 2026
 
 1. **AI Agent Systems: Architectures, Applications, and Evaluation** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.01743) 综述
 
 
 
-### Credit Assignment
+## 🔥Code-Video/3D
 
-#### 2026
+### 2026
+
+1. **🌟VideoCoCo: Code-as-CoT for Physically-Consistent Video Generation via an Agentic Dual-Engine System** (Arxiv 2026.07) [[paper]](https://arxiv.org/abs/2607.27380v2) 一个coding agent通过code生成白膜，交给视频生成模型来生成。coding agent的实现：没有训练一个专门的 Blender coding model；而是利用现成强 coding agent（公开 skill 明确围绕 Codex 写）+ 专门设计的 agent skills/harness 来获得 prompt→Blender code 能力。
+2. **🌟SimWorlds: A Multi-Agent System for Dynamic 3D Scene Creation** (Arxiv 2026.07) [[paper]](https://arxiv.org/abs/2607.01766) 没有训练，只搭了一个text-to-blender工作流。 1️⃣planner提出全局plan和每个stage的局部详细plan（一个stage是blender的一个维度，比如建模、UV、材质等）。2️⃣每个stage一个coding agent根据局部详细plan生成blender code，交给一个verifier（规则式，基于blender属性做检查：物体从属关系、穿模和接触、当前state是否和plan一致）和一个reviewer（vlm，做视觉检查，看多角度图和多帧视频）做检查。coding和检查迭代进行。
+3. **BVB: Benchmarking Agentic Video Understanding via Programmatic Reconstruction in Blender** (Arxiv 2026.09) [[paper]](https://arxiv.org/pdf/2609.15478) 测试模型能否通过 Blender 编程复刻一段视频。评估维度：1️⃣看一个vlm在渲染视频和原视频上都能答对的问题，占在原视频能答对的问题的比例；2️⃣看原视频和渲染视频的V-JEPA表征的相似度。两个指标都是越高越好。
+4. **Recursive Code World Models: Building Complex Worlds through Recursive Scene Programs** (Arxiv 2026.09) [[paper]](http://arxiv.org/abs/2609.11499) 输入一张图片，输出3d建模code。整个构建过程是一个递归结构。在每层递归时，输入为 (state, context)，state包含(code, ref_image, camera_parameter, budget_left)。每层递归所做的事：1️⃣会选择未完成的子节点，为其构建state和context，递归调用构建函数；2️⃣收集子节点返回的新状态，用其更新当前状态，进行渲染-观察-refine。递归结束后，根节点就是想要的最终结果。
+5. **SimWorld Studio: Automatic Environment Generation with Evolving Coding Agent for Embodied Agent Learning** (Arxiv 2026.05) [[paper]](http://arxiv.org/abs/2605.09423)
+6. **Code World Model: Coding Agent as World Brain** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.25927) 侧重世界建模。从两个角度建模世界：1️⃣某一事件带来的宏观的因果影响，比如对人物关系、社会结构的影响（稀疏，需要世界知识和推理）；2️⃣位置、属性、碰撞等底层变化（密集、连续、实时）。当交互或事件发生，coding  agent负责调用现有代码或更新代码来控制世界状态，代码负责更新各个状态变量，执行结果返回给coding agent形成闭环。一个视频生成模型负责将proxy video渲染成真实视频，状态不仅包含语言（只包含语言会导致控制不够精确）。proxy rep：包含相机、实体位置、姿势、轨迹、空间关系，可由coding agent编程操作。proxy video：由proxy通过一个确定性的过程转换得来，只保留粗糙建模的时空信息。
+7. **🌟StoryBlender: Inter-Shot Consistent and Editable 3D Storyboard with Spatial-temporal Dynamics** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.03315) 文字->3d动画（没有视频生成模型），但给出一套比较完整的语言到blender视频的流程。1️⃣给出一段自然语言故事，一个导演director负责：建立连续记忆图（分镜大纲、全局资产表、场景和镜头上下文），然后按任务分发必要上下文给专门的agent（资产agent、布局agent、相机agent）。2️⃣为整个故事建立“可复用的标准演员和道具库”，让后续生成从反复画角色，转变为摆放、驱动和拍摄同一批 3D 实体：先检索现有资产->没有时生成->VLM负责归一化模型朝向和尺寸。3️⃣准备完资产之后，进行布局、角色运动和3d分镜的制作。这一步包含：Dimension Estimator确定真实尺寸、Spatial Planner摆放物体、Camera Operator设计构图与镜头运动，还有一系列agent负责材质、灯光等细节。这些方面都是“执行-观测-修改”闭环。补充：确定性检查的实现：llm把自然语言约束转为结构化约束（比如a面向b），然后程序按照确定性规则对agent输出的blender代码进行检查（计算a的法向量是否指向b）。
+8. **🌟Code Video Model** (Arxiv 2026.10) [[project_page]](https://code-video-model.github.io/) training-free，用一个coding agent写three.js得到白模再让minimax H3渲染视频。创新点：为了解决低质量白模产生错误引导的问题，提出在H3的20步采样过程中，只在前5步用白模作为参考，后15步不用；在自己提的一个bench上测，用gpt6等模型机评，测的结构遵循（视频生成模型是否遵循了白模）、外观表现、生成质量。
+9. **PROWBench: Do Video Models Render What the Program Specifies?** (Arxiv 2026.10) [[paper]](http://arxiv.org/abs/2610.02205) 主要是测dit基于代理视频生成的视频是否符合代理视频背后的程序状态。测的指标：1️⃣规则式计算：实体的位置、范围是否符合引擎轨迹的IoU；2️⃣VLM-as-judge：动作是否在规定时间段出现、交互动作及其预期结束状态是否都实现、重现一致性、多视角一致性等；3️⃣专用模型打分：成像质量MUSIQ、美学质量等。结论：1️⃣代理视频相比相机轨迹约束效果更好；2️⃣MiniMax-H3、Seedance 2.5 无需针对这些代理额外训练，就具有较强表现；3️⃣位置正确、动作正确和画质好，是不同能力；4️⃣长视频和多视角仍然明显困难；5️⃣代理怎么设计仍是开放问题：包围盒容易留下身份—外观绑定、朝向和关节动作歧义，较具体的代理又可能被模型照搬到最终外观中
+10. **CineRecon: Benchmarking Frontier Models for Agentic Cinematic Reconstruction** (Arxiv 2026.10) [[paper]](https://arxiv.org/pdf/2610.16577v1) 测现有agent用blender复刻一段视频的能力。从相机、动态、静态三个维度测，前三名：opus5.5（76.6）、gpt6-astra（63.8）、kimi k3（52.4）。评测方法：使用绑定实体与时间的检查清单，由vlm比较时间对齐的参考帧和渲染帧，从相机、静态、动态一致性三个维度、11 类指标评分。
+11. **【Real-time Interaction🎮】Programmable World Model** (Arxiv 2026.09) [[project page]](https://alaya-lab.github.io/pwm/) [[paper]](http://arxiv.org/abs/2609.10540) 给定参考图和一段话，coding agent生成程序来定义实体/关系/规则，视频生成模型接受实时计算的proxy表征（逐帧的身份/语义/运动方向表征，不是rgb白模，因此需要训一个controlNet让视频模型理解这些表示）并实时渲染。用户可以输入键鼠信息游玩，程序接受这些信息并实时更新状态。
+12. **【Real-time Interaction🎮】AgentGarten: Code Worlds for Evolving Agents** (Arxiv 2026.10) [[paper]](http://arxiv.org/abs/2610.12374) 构建供智能体交互和学习的“可编程虚拟世界”，兼顾可靠的物理规则与丰富的视觉外观。仿真器维护物体位置、碰撞和交互规则，并输出深度或法线；共享的神经渲染器据此实时生成画面，让智能体“看画面→执行动作→观察结果”。
+
+
+
+## Agentic Visual Generation
+
+### 2026
+
+1. **StoryEngine: A State-Grounded Agentic Framework for Video Storytelling** (Arxiv 2026.09) [[paper]](http://arxiv.org/abs/2609.33627) 传统流程经常把上一段生成视频作为下一段的条件，从而导致错误传播。本文方法：状态表（记录对物体的约束。LLM先完成规划整个状态，再据此生成视频） → 选择匹配的视觉资产（人物、物体、环境的参考图）＋编写约束（LLM给出状态表的演变） → 生成起始帧 → 图生视频 → 检查与重试。
+1. **MaLiang-Harness: A Programmable Path to Image and Video Generation** (Arxiv 2026.09) [[paper]](http://arxiv.org/abs/2609.34309) 做文生图和视频，但主要是借助代码而非扩散模型（通过canvas/svg/three.js）。文生图扩散模型最多用于生成原始素材。整个流程遵循生成代码-渲染-检查闭环，一些关键设计：1️⃣记录整份作品的每个版本（包含一个全局版本号，代码、关联素材、用户prompt和当前计划）2️⃣并把每次代码修改和视觉渲染结果绑定，以便恢复历史。
+1. **GroundShot: Visually Consistent Multi-Shot Long Video Generation via Entity-Grounded Shot Scheduling** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.20799) 针对多镜头长视频中人物、物体和场景的外观跨镜头漂移，以及按叙事顺序生成时低质量参考导致误差累积的问题，提出无需训练、可适配不同生成模型的 GroundShot 框架：先根据预期参考质量重排镜头生成顺序，优先生成能清晰展示实体的镜头，再从生成结果中定位、提取并筛选实体级参考，建立以固定标准参考为核心、辅以一致性补充视图的视觉记忆；后续镜头检索这些参考进行条件生成，并结合质量检查与针对性重试减少错误，最后恢复叙事顺序，从而提升跨镜头视觉一致性。
+
+
+
+## Credit Assignment
+
+### 2026
 
 1. **From Reasoning to Agentic: Credit Assignment in Reinforcement Learning for Large Language Models** (Arxiv 206.04) [[paper]](http://arxiv.org/abs/2604.09459) RL的credit assignment（CA）综述。总结了传统RL的CA以及对LLM方法的启发、各类CA方法（不同粒度和reward获取方式）、关于agentic RL的CA一系列挑战等。
    1. 奖励获取的方式：①MC采样；②基于value function做temporal difference；③LLM-as-critic；④game-theoretic；⑤information-theoretic
@@ -997,9 +1016,9 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 
 
-### Harness & Skills
+## Harness & Skills
 
-#### 2026
+### 2026
 
 1. **Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses** (Arxiv 2026.04) [[paper]](arxiv.org/abs/2604.25850) 让agent harness自进化，搭载gpt5.5效果能超过官方CLI。
 1. **MUSE: A Unified Agentic Harness for MLLMs** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.03005) 宣称是首个多模态Harness。一些亮点包括：①会有个verifier对结果进行细致的评判，不仅判对错，还会判错误类型；②错误反馈机制会让模型避免再重试时犯同样的错误。 测得任务还是比较toy，迷宫、jigsaw等、CoMT（推理QA）、word search（合成任务）。
@@ -1013,12 +1032,18 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
       1. skill manager：1️⃣保留可执行代码和工具模板；2️⃣删除task-specific entity；3️⃣合并相似workflow、设置公共部分；4️⃣文档超过1000词时强制压缩
       1. Experience manager：限制experience bank最多120条，超过之后进行合并、抽象为一般条件、删除太显然/太具体/不具操作性的；
 1. **Rethinking Self-Evolving Agent Skills: Feedback Dynamics over Multiple Rounds** (Arxiv 2026.07) [[paper]](https://arxiv.org/pdf/2608.02636) 对skill自进化做了分析（根据第t轮的skill进行推理，得到结果（失败或成功）后根据反馈对skill进行更新，能提升验证集性能的才保留）。结论：1️⃣只有大约14%的skill带来了验证集提升；2️⃣失败轨迹告诉skill哪里需要改，成功轨迹告诉skill哪里需要保留；3️⃣验证集能提升不代表能泛化到其他任务
+1. **Agentic Harness Engineering: Observability-Driven Automatic Evolution of Coding-Agent Harnesses** (Arxiv 2026.04) [[paper]](http://arxiv.org/abs/2604.25850) 针对coding任务的自进化harness。在terminalbench2上边迭代，在swebench上测。核心设计：1️⃣七类组件（system prompt、tool描述、tool实现、skill，等等），互相解耦（基于现有的NexAU框架）。使得错误归因和修改每次局限到一类组件。2️⃣采用Agent Debugger框架：每个query的轨迹放到一起，用一个debugger agent来分析错误原因和成功原因并保存。3️⃣修改器基于debugger给出的证据进行修改，并严格记录每次编辑的记录、思考过程。每次编辑时会生成一个manifest，包含：失败证据、修复内容、预期效果，下一轮会结合实际结果以及该预期来对该次编辑进行评估。
+1. **Harness Continual Learning: Continual Adaptation Beyond Model Parameters** (Arxiv 2026.08) [[paper]](https://arxiv.org/pdf/2608.19013) harness自进化，基本还是那一套：在验证集上推理、总结错误、修harness、保留能带来提升且不会破坏旧能力的。
+1. **MetaVideoAgent: Automated Video-Agent Evolution for Long-Form Video Understanding** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.04587) 认为视频任务异构性强，因此提出了针对不同分布进行harness自进化的框架。将harness建模为5个模块：structuring（离线构建的视频描述、embedding等）、localization（证据定位）、memory、perception、reasoning。每次修改时把问题归因到其中一个模块。
+1. **Awesome Reliable Self-Evolving Agents** [[web page]](https://wkqdzkd.github.io/Awesome-Reliable-Self-Evolving-Agents/) 综述，把agent自进化划分为了5个层级（输出、模型权重、harness、改进方式、评估机制）。
+1. **Rethinking the Evaluation of Harness Evolution for Agents** (Arxiv 2026.07) [[paper]](https://arxiv.org/abs/2607.12227) 对harness自进化的质疑：1️⃣对比不公平：很少跟test-time scaling在相同budget的条件下比；2️⃣搜索集和测试集是同一个或来自同分布：泛化能力得不到印证。在termimal bench2.1上用gpt5.4和opus4.6把几种harness自进化方法和同等预算的tts做了比较，发现优势不明显，泛化也有限。
+1. **LongHorizon-Harness: Advancing Long-Horizon Agents for Real-World Tasks** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.01964) 长程任务harness。一些takeaway：1️⃣把长期可靠性视为状态管理问题：持续保留“哪些要求完成、证据是什么、还缺什么”，而不是不断累积执行对话；2️⃣执行与验收分离：新上下文执行子任务，独立、只读检查环境后再更新状态，避免将执行者的“已完成”直接当作事实。3️⃣Harness只适合依赖多阶段状态维护与恢复的任务，不能补足模型不会的数学、视觉或算法能力。
 
 
 
-### General Agents/Training Techniques
+## General Agents/Training Techniques
 
-#### 2026
+### 2026
 
 1. **Unlocking Implicit Experience: Synthesizing Tool-Use Trajectories from Text** (Arxiv 2026.01) [[paper]](http://arxiv.org/abs/2601.10355) 美团提出了一套从互联网原始文本合成多轮工具调用序列并定义工具的框架：
 
@@ -1063,27 +1088,29 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 9. **Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.30616) 数据合成：self-play机制：所有domain的数据构建都可以抽象成如下的过程。从初始图出发，一个proposer随机采样图上的一条轨迹并提出一个问题，一个solver去解答，然后一个verifier去检查答案、证据、轨迹。verifier检查通过（维度包括问题可验证、答案正确、问题足够non-trivial等）轨迹会重新插入graph（包含了solver在这个过程中的一系列新操作），检查失败的则重新进行self-play。训练：SFT+GRPO训domain专家（search、science、instruction following、general tool call）。student先做所有domain的SFT，然后用专家做OPD。
 
-#### 2025
+10. **Apodex 1.1: Scaling Agentic Intelligence for Complex Work** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.23283) 1️⃣训练环境包含文件/搜索/代码三种，构造原则：覆盖更多任务/更长证据链和依赖关系/计算资源有约束。2️⃣数据构造闭环：分析失败轨迹 → 识别能力缺口 → 构造相应任务与环境 → 独立验证任务和评分器 → 收集交互轨迹 → 用于 SFT 和 RL。3️⃣多智能体框架怎么训：主agent把任务拆成子任务，交给子agent去做；子agent异步提交结果，不必等待其他agent；当新证据、失败反馈或用户补充信息出现时，主智能体修改任务板，并依据依赖关系更新分支。
+
+### 2025
 
 1. **Planner-R1: Reward Shaping Enables Efficient Agentic RL with Smaller LLMs** (Arxiv 2025.09) [[paper]](http://arxiv.org/abs/2509.25779) agent场景，拆成很多reward，直接加到一起，GRPO，效果显著
 2. **Information Gain-based Policy Optimization: A Simple and Effective Approach for Multi-Turn Search Agents** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.14967) 将相邻两轮的answer prob增加作为process reward
 3. **Scaling Long-Horizon LLM Agent via Context-Folding** (Arxiv 2025.10) [[paper]](https://arxiv.org/abs/2510.11967) 提出训练模型使用branch工具，把token消耗大的操作放在branch里执行，执行后只返回一句结果插入主推理链。提出了过程监督来鼓励模型将token消耗大的操作放进brancj。ICLR26被拒，原因是缺少reward的ablation
 
-#### 2024
+### 2024
 
 1. **Multi-modal Agent Tuning: Building a VLM-Driven Agent for Efficient Tool Usage** (ICLR 2025 Spotlight) T3-Agent。提了一套数据合成策略：先让gpt4o-mini合成文本问题（没有file），然后让其根据这个问题去找files（图片等），然后用gpt4o-mini作为agent合成SFT数据来fine-tune Qwen2-VL-7B
 
 
 
-### Search/Research Agents
+## Search/Research Agents
 
-#### 2026
+### 2026
 
 1. **Towards Long-horizon Agentic Multimodal Search** (Arxiv 2026.04) [[paper]](https://arxiv.org/pdf/2604.12890) 多模态搜索采用按需加载图片（fetch_image/zoom_in）的渐进式感知；合成数据流水线是关键，消融实验证明按需看图能力不可或缺（去掉后分数从58.0降至48.5）。
 2. **OpenSearch-VL: An Open Recipe for Frontier Multimodal Search Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.05185) search agent的新sota，开源了数据，能用多种工具（search、crop等）一些RL设计：①RL process reward：用gpt5.4给一个[0,1]的得分，给了四个rubric；②为了不浪费失败轨迹（死循环或崩溃）的前半段，将这些轨迹也纳入group adv计算；③为了防止失败轨迹的valid前半段在group中容易被抑制，选择在其adv小于0时grad置零，而只保留其adv大于0时的梯度
 
 
-####  2025
+###  2025
 
 1. **Step-DeepResearch Technical Report** [[paper]](http://arxiv.org/abs/2512.20491) (Arxiv 2025.12) Search Agent
 2. **WebSailor: Navigating Super-human Reasoning for Web Agent** (Arxiv 2025.06) [[paper]](http://arxiv.org/abs/2507.02592) 构建知识图谱来合成多跳数据。优点：可验证性强。
@@ -1093,9 +1120,9 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
 
 
-### GUI Agents
+## GUI Agents
 
-#### 2026
+### 2026
 
 1. **Adaptive Milestone Reward for GUI Agents** (Arxiv 2026.02) [[paper]](http://arxiv.org/abs/2602.11524) 
    1. 在线提取milestone：在人类rollout时，用LLM基于success轨迹提取；
