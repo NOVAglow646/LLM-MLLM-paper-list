@@ -6,6 +6,7 @@
 
 ###  🔥 Updates
 
+- 2026-11 接下来主要关注agentic multimodal (video/3D) generation & understanding
 - 2025-11 接下来主要关注agentic MLLM，latent visual reasoning，unified model，world model等。
 - 2025-03 接下来主要关注MLLM的reasoning和perception的问题，以及LLM的reasoning、test-time scaling。
 - 2024-12 接下来主要关注VLM的hallucination、reasoning问题。同时也会follow ICL的最新进展。
