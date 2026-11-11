@@ -1056,24 +1056,26 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
 
    **提高序列复杂度 (见A.4): ** 通过让teacher做refinement实现。增加sys prompt中的限制条件、提高用户要求的模糊度和复杂性、提高assistant回复质量、提高环境复杂度等 。**ablation显示这部分提升显著**
 
-2. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
+2. **【🔧SFT+🚀RL】Teaching LLMs to Learn Tool Trialing and Execution through Environment Interaction** (Arxiv 2026.01) [[paper]](https://arxiv.org/abs/2601.12762) [[code]](https://github.com/NEUIR/ToolMaster) 提出 ToolMaster，将工具学习从模仿专家轨迹转为先试用工具、再执行任务的范式：先用包含工具试用与自我纠错的教师合成轨迹进行 SFT，再通过 GRPO 协调试用和执行两个阶段，让模型利用环境反馈学习陌生工具的使用。
+
+3. **A Subgoal-driven Framework for Improving Long-Horizon LLM Agents** (Arxiv 2026.03) [[paper]](http://arxiv.org/abs/2603.19685) google的工程文章，提出MiRA-RL，针对web agent，核心技术点：
    1. 用gemini2.5pro给定任务描述，通过ICL生成subgoal
    2. RL w/ dense process reward：利用标好的subgoal，训练一个potential critic（LLM），给定state和final goal，输出[0,1]得分来评价当前state距离最终goal的完成程度；该reward和outcome reward加到一起
 
-3. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
+4. **Revisiting DAgger in the Era of LLM-Agents** (Arxiv 2026.05) [[paper]](https://arxiv.org/abs/2605.12913) 为了解决SFT的off policy、RLVR的sparse reward、OPD在long-horizon失效且没法提升采样成功率问题，提出让student和teacher交替产生轨迹，并逐步减少teacher占比，最后再这样的轨迹上做SFT。能在很难的SWE任务上超越GRPO、SFT、OPD
 
-4. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
+5. **Milestone-Guided Policy Learning for Long-Horizon Language Agents** (ICML 2026) [[paper]](Milestone-Guided Policy Learning for Long-Horizon Language Agents) 过程奖励：先基于规则把轨迹切分成K+1个片段（K个milestone）。然后对于属于片段k的token t，计算advantage的group为所有达到了milestone k的轨迹的第k个片段。过程reward r_t计算方法为：只要其所属的片段小于K_i（其所在轨迹达到的最后一个milestone以前）就给分（这个给分方式还是略显简单粗暴，因为不知道milestone是不是好的milestone）。
 
-5. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
+6. **Deep Research as Rubric for Reinforcement Learning** (Arxiv 2026.05) [[paper]](https://arxiv.org/pdf/2606.01091) [[zhihu]](https://zhuanlan.zhihu.com/p/2047992906619917582) 针对每个问题通过deep research的方式生成高质量rubric（通过GPT5或者policy自己）。RL时ruburic给分原则：每条rubric给一部分分，全满足时reward为1。效果很好。
 
-6. **Memory-R2: Fair Credit Assignment for Long-Horizon Memory-Augmented LLM Agents** [[paper]](https://arxiv.org/abs/2605.21768) GRPO不合适解决设计memory bank增删的场景：不同轨迹所处的memory bank状态不同，直接比较无法判断是动作不好还是memory bank不同导致的问题。做法：global reward+local reward，local reward是从同一个记忆状态出发采样不同的操作组成group算优势
+7. **Memory-R2: Fair Credit Assignment for Long-Horizon Memory-Augmented LLM Agents** [[paper]](https://arxiv.org/abs/2605.21768) GRPO不合适解决设计memory bank增删的场景：不同轨迹所处的memory bank状态不同，直接比较无法判断是动作不好还是memory bank不同导致的问题。做法：global reward+local reward，local reward是从同一个记忆状态出发采样不同的操作组成group算优势
 
-7. **Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26027) 做实验比较了tool-use场景RL一些trick的效果，发现如下：
+8. **Why Multi-Step Tool-Use Reinforcement Learning Collapses and How Supervisory Signals Fix It** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26027) 做实验比较了tool-use场景RL一些trick的效果，发现如下：
 
    1. ID场景下：用分布内数据做SFT在qwen2.5和qwen3上都提升稳定；SFT+GRPO对qwen2.5能提升，对qwen3不能；在RL全错数据上SFT交替RL（ETS）效果最好，在用错误轨迹合成的反思数据上SFT（RPS）效果也不错；在不做SFT时，LUFFY(把专家序列混入group)和hint-based guidance（HBG）分布内效果很烂
    2. OOD场景下：训练数据是ID，测试数据存在工具种类和format的OOD时，所有训练方法都会掉点。LUFFY相对掉的最少。ETS和RPS掉点也比较明显。
 
-8. **The Verification Horizon: No Silver Bullet for Coding Agent Rewards** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26300) qwen team，真实世界的复杂任务中agent轨迹很长且很难被准确验证做的好不好，团队更准确地何验证和奖励做了广泛的实验分析，针对不同场景，特别是现实世界中的长程复杂任务，提出了不同的奖励策略：
+9. **The Verification Horizon: No Silver Bullet for Coding Agent Rewards** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.26300) qwen team，真实世界的复杂任务中agent轨迹很长且很难被准确验证做的好不好，团队更准确地何验证和奖励做了广泛的实验分析，针对不同场景，特别是现实世界中的长程复杂任务，提出了不同的奖励策略：
 
    1. 通用软件工程任务：SWE类，之前一般是看测试样例过不过来给奖励
       1. 为了解决测试质量低的问题（任务说明和测使用例不符），用一个agentic judge进行判断：任务说明是否清晰、测试用例是否符合任务说明
@@ -1087,9 +1089,9 @@ Video Generation Models](https://arxiv.org/pdf/2511.16668)
    4. 超长周期代码任务：agent as judge，拆需求、逐项测试、给综合打分。裁判的常见问题包括不爱写测试、只关注局部和细节、帮着改代码等。此外，规则太复杂也会导致裁判性能下降。
    5. 未来研究方向：①bug修复任务，同样是修好，也有质量差别，怎么评价；②在线用户反馈（目前大多是从历史对话里抽用户反馈，相当于离线数据）；③前端任务对齐人类感受；④verifier必须和policy协同进化
 
-9. **Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.30616) 数据合成：self-play机制：所有domain的数据构建都可以抽象成如下的过程。从初始图出发，一个proposer随机采样图上的一条轨迹并提出一个问题，一个solver去解答，然后一个verifier去检查答案、证据、轨迹。verifier检查通过（维度包括问题可验证、答案正确、问题足够non-trivial等）轨迹会重新插入graph（包含了solver在这个过程中的一系列新操作），检查失败的则重新进行self-play。训练：SFT+GRPO训domain专家（search、science、instruction following、general tool call）。student先做所有domain的SFT，然后用专家做OPD。
+10. **Scaling the Horizon, Not the Parameters: Reaching Trillion-Parameter Performance with a 35B Agent** (Arxiv 2026.06) [[paper]](http://arxiv.org/abs/2606.30616) 数据合成：self-play机制：所有domain的数据构建都可以抽象成如下的过程。从初始图出发，一个proposer随机采样图上的一条轨迹并提出一个问题，一个solver去解答，然后一个verifier去检查答案、证据、轨迹。verifier检查通过（维度包括问题可验证、答案正确、问题足够non-trivial等）轨迹会重新插入graph（包含了solver在这个过程中的一系列新操作），检查失败的则重新进行self-play。训练：SFT+GRPO训domain专家（search、science、instruction following、general tool call）。student先做所有domain的SFT，然后用专家做OPD。
 
-10. **Apodex 1.1: Scaling Agentic Intelligence for Complex Work** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.23283) 1️⃣训练环境包含文件/搜索/代码三种，构造原则：覆盖更多任务/更长证据链和依赖关系/计算资源有约束。2️⃣数据构造闭环：分析失败轨迹 → 识别能力缺口 → 构造相应任务与环境 → 独立验证任务和评分器 → 收集交互轨迹 → 用于 SFT 和 RL。3️⃣多智能体框架怎么训：主agent把任务拆成子任务，交给子agent去做；子agent异步提交结果，不必等待其他agent；当新证据、失败反馈或用户补充信息出现时，主智能体修改任务板，并依据依赖关系更新分支。
+11. **Apodex 1.1: Scaling Agentic Intelligence for Complex Work** (Arxiv 2026.08) [[paper]](http://arxiv.org/abs/2608.23283) 1️⃣训练环境包含文件/搜索/代码三种，构造原则：覆盖更多任务/更长证据链和依赖关系/计算资源有约束。2️⃣数据构造闭环：分析失败轨迹 → 识别能力缺口 → 构造相应任务与环境 → 独立验证任务和评分器 → 收集交互轨迹 → 用于 SFT 和 RL。3️⃣多智能体框架怎么训：主agent把任务拆成子任务，交给子agent去做；子agent异步提交结果，不必等待其他agent；当新证据、失败反馈或用户补充信息出现时，主智能体修改任务板，并依据依赖关系更新分支。
 
 ### 2025
 
